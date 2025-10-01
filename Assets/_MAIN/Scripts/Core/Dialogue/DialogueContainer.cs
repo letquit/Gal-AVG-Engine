@@ -15,11 +15,11 @@ namespace DIALOGUE
         /// 对话框的根游戏对象，用于控制整个对话框的显示和隐藏
         /// </summary>
         public GameObject root;
-
+        
         /// <summary>
-        /// 显示角色名称的TextMeshProUGUI文本组件
+        /// 角色名称容器，用于存储和管理角色名称相关的UI组件引用
         /// </summary>
-        public TextMeshProUGUI nameText;
+        public NameContainer nameContainer;
 
         /// <summary>
         /// 显示对话内容的TextMeshProUGUI文本组件
