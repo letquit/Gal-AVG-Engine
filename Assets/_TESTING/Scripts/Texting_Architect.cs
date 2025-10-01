@@ -1,4 +1,5 @@
 using System;
+using DIALOGUE;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
