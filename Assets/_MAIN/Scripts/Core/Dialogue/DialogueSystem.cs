@@ -15,7 +15,7 @@ namespace DIALOGUE
         private ConversationManager conversationManager;
         private TextArchitect architect;
 
-        public static DialogueSystem instance;
+        public static DialogueSystem instance { get; private set; }
 
         public delegate void DialogueSystemEvent();
         public event DialogueSystemEvent onUserPrompt_Next;
@@ -52,6 +52,7 @@ namespace DIALOGUE
             
             architect = new TextArchitect(dialogueContainer.dialogueText);
             conversationManager = new ConversationManager(architect);
+            _initialized = true;
         }
         
         /// <summary>
@@ -63,7 +64,8 @@ namespace DIALOGUE
         }
 
         /// <summary>
-        /// 显示说话者名称
+        /// 判断说话者是否为叙述者（narrator），如果是则不显示名称
+        /// 否则显示说话者名称
         /// </summary>
         /// <param name="speakerName">说话者的名称</param>
         public void ShowSpeakerName(string speakerName = "")
@@ -81,6 +83,7 @@ namespace DIALOGUE
 
         /// <summary>
         /// 让指定角色说出一段对话
+        /// 将单条对话包装成列表形式传递给对话管理器
         /// </summary>
         /// <param name="speaker">说话者名称</param>
         /// <param name="dialogue">对话内容</param>
@@ -92,6 +95,7 @@ namespace DIALOGUE
 
         /// <summary>
         /// 开始播放一组对话
+        /// 调用对话管理器启动对话流程
         /// </summary>
         /// <param name="conversation">对话内容列表，每条格式为 "角色名 \"对话内容\""</param>
         public void Say(List<string> conversation)

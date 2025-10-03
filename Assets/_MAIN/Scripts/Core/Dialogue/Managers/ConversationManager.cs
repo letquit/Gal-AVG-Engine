@@ -82,16 +82,21 @@ namespace DIALOGUE
         /// <returns>IEnumerator 用于协程执行。</returns>
         IEnumerator RunningConversation(List<string> conversation)
         {
+            // 遍历所有对话行
             for (int i = 0; i < conversation.Count; i++)
             {
+                // 跳过空行
                 if (string.IsNullOrWhiteSpace(conversation[i]))
                     continue;
                 
+                // 解析当前行
                 DIALOGUE_LINE line = DialogueParser.Parse(conversation[i]);
 
+                // 如果有对话内容，则执行对话逻辑
                 if (line.hasDialogue)
                     yield return Line_RunDialogue(line);
                 
+                // 如果有命令内容，则执行命令逻辑
                 if (line.hasCommands)
                     yield return Line_RunCommands(line);
             }
@@ -104,13 +109,14 @@ namespace DIALOGUE
         /// <returns>IEnumerator 用于协程执行。</returns>
         IEnumerator Line_RunDialogue(DIALOGUE_LINE line)
         {
+            // 显示说话者名称（如果存在）
             if (line.hasSpeaker)
                 dialogueSystem.ShowSpeakerName(line.speaker);
-            else
-                dialogueSystem.HideSpeakerName();
 
-            yield return BuildDialogue(line.dialogue);
+            // 构建并显示对话段落
+            yield return BuildLineSegments(line.dialogue);
             
+            // 等待用户输入继续
             yield return WaitForUserInput();
         }
         
@@ -126,19 +132,70 @@ namespace DIALOGUE
         }
 
         /// <summary>
+        /// 构建并播放对话的所有段落。
+        /// </summary>
+        /// <param name="line">包含多个段落的对话数据。</param>
+        /// <returns>IEnumerator 用于协程执行。</returns>
+        IEnumerator BuildLineSegments(DL_DIALOGUE_DATA line)
+        {
+            // 遍历所有对话段落
+            for (int i = 0; i < line.segments.Count; i++)
+            {
+                DL_DIALOGUE_DATA.DIALOGUE_SEGMENT segment = line.segments[i];
+                
+                // 等待该段落开始信号被触发
+                yield return WaitForDialogueSegmentSignalToBeTriggered(segment);
+                
+                // 构建并显示该段对话文本
+                yield return BuildDialogue(segment.dialogue, segment.appendText);
+            }
+        }
+
+        /// <summary>
+        /// 等待特定对话段落的开始信号被触发。
+        /// </summary>
+        /// <param name="segment">当前处理的对话段落。</param>
+        /// <returns>IEnumerator 用于协程执行。</returns>
+        IEnumerator WaitForDialogueSegmentSignalToBeTriggered(DL_DIALOGUE_DATA.DIALOGUE_SEGMENT segment)
+        {
+            switch (segment.startSignal)
+            {
+                case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.C:
+                case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.A:
+                    // 等待用户输入
+                    yield return WaitForUserInput();
+                    break;
+                case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.WC:
+                case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.WA:
+                    // 等待指定延迟时间
+                    yield return new WaitForSeconds(segment.signalDelay);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
         /// 构建并显示对话文本，支持用户快速跳过或强制完成。
         /// </summary>
         /// <param name="dialogue">要显示的对话文本。</param>
+        /// <param name="append">是否将文本追加到现有内容之后。</param>
         /// <returns>IEnumerator 用于协程执行。</returns>
-        IEnumerator BuildDialogue(string dialogue)
+        IEnumerator BuildDialogue(string dialogue, bool append = false)
         {
-            
-            architect.Build(dialogue);
+            // 根据是否追加决定构建方式
+            if (!append)
+                architect.Build(dialogue);
+            else
+                architect.Append(dialogue);
 
+            // 持续检查文本是否仍在构建中
             while (architect.isBuilding)
             {
+                // 如果用户触发了下一步操作
                 if (userPrompt)
                 {
+                    // 第一次点击加速显示，第二次强制完成
                     if (!architect.hurryUp)
                         architect.hurryUp = true;
                     else

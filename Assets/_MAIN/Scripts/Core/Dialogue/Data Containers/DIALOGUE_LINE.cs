@@ -16,7 +16,7 @@ namespace DIALOGUE
         /// <summary>
         /// 对话内容
         /// </summary>
-        public string dialogue;
+        public DL_DIALOGUE_DATA dialogue;
         
         /// <summary>
         /// 命令字符串
@@ -27,11 +27,11 @@ namespace DIALOGUE
         /// 检查是否存在说话者
         /// </summary>
         public bool hasSpeaker => speaker != string.Empty;
-        
+
         /// <summary>
         /// 检查是否存在对话内容
         /// </summary>
-        public bool hasDialogue => dialogue != string.Empty;
+        public bool hasDialogue => dialogue.hasDialogue;
         
         /// <summary>
         /// 检查是否存在命令
@@ -47,8 +47,9 @@ namespace DIALOGUE
         public DIALOGUE_LINE(string speaker, string dialogue, string commands)
         {
             this.speaker = speaker;
-            this.dialogue = dialogue;
+            this.dialogue = new DL_DIALOGUE_DATA(dialogue);
             this.commands = commands;
         }
     }
 }
+

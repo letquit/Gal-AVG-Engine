@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TestDialogueFiles : MonoBehaviour
 {
+    [SerializeField] private TextAsset fileToRead = null;
     private void Start()
     {
         StartConversation();
@@ -11,8 +12,8 @@ public class TestDialogueFiles : MonoBehaviour
 
     private void StartConversation()
     {
-        List<string> lines = FileManager.ReadTextAsset("testFile");
-
+        List<string> lines = FileManager.ReadTextAsset(fileToRead);
+        
         DialogueSystem.instance.Say(lines);
     }
 }
