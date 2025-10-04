@@ -18,11 +18,6 @@ public class DL_DIALOGUE_DATA
     private const string segmentIdentifierPattern = @"\{[ca]\}|\{w[ca]\s\d*\.?\d*\}";
 
     /// <summary>
-    /// 获取一个布尔值，表示当前对话是否包含任何段落。
-    /// </summary>
-    public bool hasDialogue => segments.Count > 0;
-
-    /// <summary>
     /// 初始化一个新的 DL_DIALOGUE_DATA 实例，并解析原始对话字符串。
     /// </summary>
     /// <param name="rawDialogue">需要解析的原始对话字符串。</param>

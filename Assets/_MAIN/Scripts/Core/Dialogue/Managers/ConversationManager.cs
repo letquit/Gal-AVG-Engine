@@ -111,10 +111,10 @@ namespace DIALOGUE
         {
             // 显示说话者名称（如果存在）
             if (line.hasSpeaker)
-                dialogueSystem.ShowSpeakerName(line.speaker.displayname);
+                dialogueSystem.ShowSpeakerName(line.speakerData.displayname);
 
             // 构建并显示对话段落
-            yield return BuildLineSegments(line.dialogue);
+            yield return BuildLineSegments(line.dialogueData);
             
             // 等待用户输入继续
             yield return WaitForUserInput();
@@ -127,7 +127,7 @@ namespace DIALOGUE
         /// <returns>IEnumerator 用于协程执行。</returns>
         IEnumerator Line_RunCommands(DIALOGUE_LINE line)
         {
-            Debug.Log(line.commands);
+            Debug.Log(line.commandData);
             yield return null;
         }
 
