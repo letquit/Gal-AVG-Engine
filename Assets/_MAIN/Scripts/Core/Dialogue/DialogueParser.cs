@@ -9,7 +9,7 @@ namespace DIALOGUE
     /// </summary>
     public class DialogueParser
     {
-        private const string commandRegexPattern = "\\w*[^\\s]\\(";
+        private const string commandRegexPattern = @"\w*[^\s]\(";
         
         /// <summary>
         /// 解析原始对话行并创建一个 DIALOGUE_LINE 对象。
@@ -91,3 +91,4 @@ namespace DIALOGUE
         }
     }
 }
+

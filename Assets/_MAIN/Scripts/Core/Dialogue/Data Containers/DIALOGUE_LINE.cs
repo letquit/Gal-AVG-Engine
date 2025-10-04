@@ -11,7 +11,7 @@ namespace DIALOGUE
         /// <summary>
         /// 说话者名称
         /// </summary>
-        public string speaker;
+        public DL_SPEAKER_DATA speaker;
         
         /// <summary>
         /// 对话内容
@@ -22,11 +22,11 @@ namespace DIALOGUE
         /// 命令字符串
         /// </summary>
         public string commands;
-        
+
         /// <summary>
         /// 检查是否存在说话者
         /// </summary>
-        public bool hasSpeaker => speaker != string.Empty;
+        public bool hasSpeaker => speaker != null;
 
         /// <summary>
         /// 检查是否存在对话内容
@@ -46,8 +46,11 @@ namespace DIALOGUE
         /// <param name="commands">命令字符串</param>
         public DIALOGUE_LINE(string speaker, string dialogue, string commands)
         {
-            this.speaker = speaker;
+            // 如果说话者字符串为空或只包含空白字符，则设置为null，否则创建新的说话者数据对象
+            this.speaker = (string.IsNullOrWhiteSpace(speaker) ? null : new DL_SPEAKER_DATA(speaker));
+            // 创建新的对话数据对象
             this.dialogue = new DL_DIALOGUE_DATA(dialogue);
+            // 设置命令字符串
             this.commands = commands;
         }
     }

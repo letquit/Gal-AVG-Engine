@@ -111,7 +111,7 @@ namespace DIALOGUE
         {
             // 显示说话者名称（如果存在）
             if (line.hasSpeaker)
-                dialogueSystem.ShowSpeakerName(line.speaker);
+                dialogueSystem.ShowSpeakerName(line.speaker.displayname);
 
             // 构建并显示对话段落
             yield return BuildLineSegments(line.dialogue);
