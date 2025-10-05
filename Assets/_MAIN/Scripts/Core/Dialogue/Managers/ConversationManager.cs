@@ -99,6 +99,9 @@ namespace DIALOGUE
                 // 如果有命令内容，则执行命令逻辑
                 if (line.hasCommands)
                     yield return Line_RunCommands(line);
+                // 如果当前行包含对话内容，则等待用户输入后继续执行
+                if (line.hasDialogue)
+                    yield return WaitForUserInput();
             }
         }
 
@@ -115,9 +118,6 @@ namespace DIALOGUE
 
             // 构建并显示对话段落
             yield return BuildLineSegments(line.dialogueData);
-            
-            // 等待用户输入继续
-            yield return WaitForUserInput();
         }
         
         /// <summary>
@@ -127,7 +127,16 @@ namespace DIALOGUE
         /// <returns>IEnumerator 用于协程执行。</returns>
         IEnumerator Line_RunCommands(DIALOGUE_LINE line)
         {
-            Debug.Log(line.commandData);
+            List<DL_COMMAND_DATA.Command> commands = line.commandData.commands;
+
+            foreach (DL_COMMAND_DATA.Command command in commands)
+            {
+                if (command.waitForCompletion)
+                    yield return CommandManager.instance.Execute(command.name, command.arguments);
+                else
+                    CommandManager.instance.Execute(command.name, command.arguments);
+            }
+            
             yield return null;
         }
 

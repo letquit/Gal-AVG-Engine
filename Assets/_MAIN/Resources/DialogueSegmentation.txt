@@ -1,6 +1,9 @@
 
+Elen "(This is a thought)"
 
+print_1p("This is a command running straight from our dialogue file!")
 
+John "Move Left and then Right." print_1p("Start Moving"), [wait]moveCharDemo(left), [wait]moveCharDemo(right), print_1p("Done Moving")
 
 John "Let's play some music!" playSong("Funky Beets" -v 0.75 -p 1), setMood(chill)
 
