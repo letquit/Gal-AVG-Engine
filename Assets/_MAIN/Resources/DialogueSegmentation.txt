@@ -1,4 +1,6 @@
 
+This is a random line of dialogue here.
+
 Elen "(This is a thought)"
 
 print_1p("This is a command running straight from our dialogue file!")

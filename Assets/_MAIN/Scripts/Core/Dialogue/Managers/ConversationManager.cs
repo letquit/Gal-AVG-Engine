@@ -91,6 +91,7 @@ namespace DIALOGUE
                 
                 // 解析当前行
                 DIALOGUE_LINE line = DialogueParser.Parse(conversation[i]);
+                Debug.Log($"Parsed line - Speaker: {line.hasSpeaker}, Dialogue: {line.hasDialogue}, Commands: {line.hasCommands}");
 
                 // 如果有对话内容，则执行对话逻辑
                 if (line.hasDialogue)
