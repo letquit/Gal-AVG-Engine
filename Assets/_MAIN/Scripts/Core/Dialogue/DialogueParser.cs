@@ -18,11 +18,11 @@ namespace DIALOGUE
         /// <returns>包含解析后发言者、对话内容和命令的 DIALOGUE_LINE 对象</returns>
         public static DIALOGUE_LINE Parse(string rawLine)
         {
-            Debug.Log($"Parsing line - '{rawLine}'");
+            // Debug.Log($"Parsing line - '{rawLine}'");
             
             (string speaker, string dialogue, string commands) = RipContent(rawLine);
             
-            Debug.Log($"Speaker = '{speaker}'\nDialogue = '{dialogue}'\nCommands = '{commands}'");
+            // Debug.Log($"Speaker = '{speaker}'\nDialogue = '{dialogue}'\nCommands = '{commands}'");
             
             return new DIALOGUE_LINE(speaker, dialogue, commands);
         }

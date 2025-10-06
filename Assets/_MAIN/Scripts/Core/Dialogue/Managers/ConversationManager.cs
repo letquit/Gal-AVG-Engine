@@ -57,11 +57,16 @@ namespace DIALOGUE
         /// 启动一个新的对话流程。
         /// </summary>
         /// <param name="conversation">包含对话内容的字符串列表。</param>
-        public void StarConversation(List<string> conversation)
+        /// <returns>表示对话流程的协程对象。</returns>
+        public Coroutine StarConversation(List<string> conversation)
         {
+            // 停止当前正在进行的对话
             StopConversation();
             
+            // 启动新的对话协程并保存引用
             process = dialogueSystem.StartCoroutine(RunningConversation(conversation));
+            
+            return process;
         }
 
         /// <summary>
@@ -92,7 +97,7 @@ namespace DIALOGUE
                 
                 // 解析当前行
                 DIALOGUE_LINE line = DialogueParser.Parse(conversation[i]);
-                Debug.Log($"Parsed line - Speaker: {line.hasSpeaker}, Dialogue: {line.hasDialogue}, Commands: {line.hasCommands}");
+                // Debug.Log($"Parsed line - Speaker: {line.hasSpeaker}, Dialogue: {line.hasDialogue}, Commands: {line.hasCommands}");
 
                 // 如果有对话内容，则执行对话逻辑
                 if (line.hasDialogue)
@@ -117,6 +122,9 @@ namespace DIALOGUE
             // 显示说话者名称（如果存在）
             if (line.hasSpeaker)
                 dialogueSystem.ShowSpeakerName(line.speakerData.displayname);
+            else if (!string.IsNullOrEmpty(dialogueSystem.dialogueContainer.nameContainer.nameText.text))
+                // 如果当前已有名称显示，保持显示状态
+                dialogueSystem.dialogueContainer.nameContainer.Show();
 
             // 构建并显示对话段落
             yield return BuildLineSegments(line.dialogueData);

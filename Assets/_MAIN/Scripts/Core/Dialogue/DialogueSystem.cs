@@ -13,17 +13,45 @@ namespace DIALOGUE
     {
         [SerializeField]
         private DialogueSystemConfigurationSO _config;
+        
+        /// <summary>
+        /// 获取对话系统的配置对象
+        /// </summary>
         public DialogueSystemConfigurationSO config => _config;
         
+        /// <summary>
+        /// 对话容器，用于管理对话界面中的各个UI元素
+        /// </summary>
         public DialogueContainer dialogueContainer = new DialogueContainer();
+        
+        /// <summary>
+        /// 对话管理器，用于控制对话流程的执行
+        /// </summary>
         private ConversationManager conversationManager;
+        
+        /// <summary>
+        /// 文本构建器，用于逐字显示对话文本效果
+        /// </summary>
         private TextArchitect architect;
 
+        /// <summary>
+        /// 对话系统的单例实例
+        /// </summary>
         public static DialogueSystem instance { get; private set; }
 
+        /// <summary>
+        /// 对话系统事件委托，用于定义无参数的事件回调
+        /// </summary>
         public delegate void DialogueSystemEvent();
+        
+        /// <summary>
+        /// 用户按下“下一句”按钮时触发的事件
+        /// </summary>
         public event DialogueSystemEvent onUserPrompt_Next;
 
+        /// <summary>
+        /// 获取当前是否正在运行对话流程
+        /// </summary>
         public bool isRunningConversation => conversationManager.isRunning;
 
         /// <summary>
@@ -91,10 +119,11 @@ namespace DIALOGUE
         /// </summary>
         /// <param name="speaker">说话者名称</param>
         /// <param name="dialogue">对话内容</param>
-        public void Say(string speaker, string dialogue)
+        /// <returns>返回一个协程对象，可用于控制对话播放过程</returns>
+        public Coroutine Say(string speaker, string dialogue)
         { 
             List<string> conversation = new List<string>() { $"{speaker} \"{dialogue}\"" };
-            Say(conversation);
+            return Say(conversation);
         }
 
         /// <summary>
@@ -102,9 +131,10 @@ namespace DIALOGUE
         /// 调用对话管理器启动对话流程
         /// </summary>
         /// <param name="conversation">对话内容列表，每条格式为 "角色名 \"对话内容\""</param>
-        public void Say(List<string> conversation)
+        /// <returns>返回一个协程对象，可用于控制对话播放过程</returns>
+        public Coroutine Say(List<string> conversation)
         {
-            conversationManager.StarConversation(conversation);
+            return conversationManager.StarConversation(conversation);
         }
     }
 }
