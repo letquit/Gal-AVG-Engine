@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DIALOGUE;
+using TMPro;
 using UnityEngine;
 
 namespace CHARACTERS
@@ -24,6 +25,9 @@ namespace CHARACTERS
         /// </summary>
         public RectTransform root = null;
 
+        /// <summary>
+        /// 角色配置数据，包含与该角色相关的样式和行为设置
+        /// </summary>
         public CharacterConfigData config;
         
         /// <summary>
@@ -61,10 +65,44 @@ namespace CHARACTERS
             if (!string.IsNullOrEmpty(displayName))
             {
                 dialogueSystem.ShowSpeakerName(displayName);
-                dialogueSystem.ApplySpeakerDataToDialogueContainer(name);
+                UpdateTextCustomizationsOnScreen();
             }
             return dialogueSystem.Say(dialogue);
         }
+        
+        /// <summary>
+        /// 设置角色名称的颜色
+        /// </summary>
+        /// <param name="color">要应用的颜色值</param>
+        public void SetNameColor(Color color) => config.nameColor = color;
+
+        /// <summary>
+        /// 设置角色对话文本的颜色
+        /// </summary>
+        /// <param name="color">要应用的颜色值</param>
+        public void SetDialogueColor(Color color) => config.dialogueColor = color;
+
+        /// <summary>
+        /// 设置角色名称使用的字体
+        /// </summary>
+        /// <param name="font">要应用的字体资源</param>
+        public void SetNameFont(TMP_FontAsset font) => config.nameFont = font;
+
+        /// <summary>
+        /// 设置角色对话文本使用的字体
+        /// </summary>
+        /// <param name="font">要应用的字体资源</param>
+        public void SetDialogueFont(TMP_FontAsset font) => config.dialogueFont = font;
+        
+        /// <summary>
+        /// 重置当前角色的配置数据为默认配置
+        /// </summary>
+        public void ResetConfigurationData() => config = CharacterManager.instance.GetCharacterConfig(name);
+        
+        /// <summary>
+        /// 更新屏幕上当前角色的文本自定义样式
+        /// </summary>
+        public void UpdateTextCustomizationsOnScreen() => dialogueSystem.ApplySpeakerDataToDialogueContainer(config);
         
         /// <summary>
         /// 角色类型枚举，定义了支持的不同角色表现形式
@@ -94,4 +132,3 @@ namespace CHARACTERS
         }
     }
 }
-

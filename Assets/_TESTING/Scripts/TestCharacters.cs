@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using CHARACTERS;
 using DIALOGUE;
+using TMPro;
 using UnityEngine;
 
 namespace TESTING
 {
     public class TestCharacters : MonoBehaviour
     {
+        public TMP_FontAsset tempFont;
+        
         private void Start()
         {
             // Character Elen = CharacterManager.instance.CreateCharacter("Elen");
@@ -30,6 +33,17 @@ namespace TESTING
                 "What's your name?",
                 "Oh,{wa 1} that's very nice."
             };
+            
+            yield return Elen.Say(lines);
+            
+            Elen.SetNameColor(Color.red);
+            Elen.SetDialogueColor(Color.green);
+            Elen.SetNameFont(tempFont);
+            Elen.SetDialogueFont(tempFont);
+
+            yield return Elen.Say(lines);
+            
+            Elen.ResetConfigurationData();
             
             yield return Elen.Say(lines);
             
