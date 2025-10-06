@@ -1,4 +1,5 @@
 using System;
+using CHARACTERS;
 using TMPro;
 using UnityEngine;
 
@@ -35,5 +36,29 @@ namespace DIALOGUE
             // 隐藏根对象以隐藏整个名称容器
             root.SetActive(false);
         }
+        
+        /// <summary>
+        /// 设置名称文本的颜色
+        /// </summary>
+        /// <param name="color">要设置的颜色值</param>
+        public void SetNameColor(Color color) => nameText.color = color;
+        
+        /// <summary>
+        /// 设置名称文本的字体
+        /// </summary>
+        /// <param name="font">要设置的字体资源</param>
+        public void SetNameFont(TMP_FontAsset font) => nameText.font = font;
+        
+        
+        /// <summary>
+        /// 根据角色配置数据设置名称显示样式
+        /// </summary>
+        /// <param name="config">包含名称颜色和字体配置的数据对象</param>
+        public void SetConfig(CharacterConfigData config)
+        {
+            SetNameColor(config.nameColor);
+            SetNameFont(config.nameFont);
+        }
     }
 }
+

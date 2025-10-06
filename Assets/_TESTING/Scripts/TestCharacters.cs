@@ -22,7 +22,7 @@ namespace TESTING
         {
             Character Elen = CharacterManager.instance.CreateCharacter("Elen");
             Character Adam = CharacterManager.instance.CreateCharacter("Adam");
-            Character Sarah = CharacterManager.instance.CreateCharacter("Sarah");
+            Character Ben = CharacterManager.instance.CreateCharacter("Benjamin");
             List<string> lines = new List<string>()
             {
                 "Hi, there!",
@@ -41,7 +41,7 @@ namespace TESTING
             
             yield return Adam.Say(lines);
 
-            yield return Sarah.Say("This is a line that I want to say.{a} It is a simple line.");
+            yield return Ben.Say("This is a line that I want to say.{a} It is a simple line.");
             
             Debug.Log("Finished");
         }

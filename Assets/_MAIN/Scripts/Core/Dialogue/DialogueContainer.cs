@@ -1,4 +1,5 @@
 using System;
+using CHARACTERS;
 using TMPro;
 using UnityEngine;
 
@@ -25,5 +26,28 @@ namespace DIALOGUE
         /// 显示对话内容的TextMeshProUGUI文本组件
         /// </summary>
         public TextMeshProUGUI dialogueText;
+        
+        /// <summary>
+        /// 设置对话文本的颜色
+        /// </summary>
+        /// <param name="color">要设置的颜色值</param>
+        public void SetDialogueColor(Color color) => dialogueText.color = color;
+        
+        /// <summary>
+        /// 设置对话文本的字体
+        /// </summary>
+        /// <param name="font">要设置的字体资源</param>
+        public void SetDialogueFont(TMP_FontAsset font) => dialogueText.font = font;
+        
+        /// <summary>
+        /// 根据角色配置数据设置对话文本的样式
+        /// </summary>
+        /// <param name="config">包含对话文本颜色和字体配置的角色配置数据</param>
+        public void SetConfig(CharacterConfigData config)
+        {
+            SetDialogueColor(config.dialogueColor);
+            SetDialogueFont(config.dialogueFont);
+        }
     }
 }
+

@@ -23,6 +23,8 @@ namespace CHARACTERS
         /// 角色在UI中的根节点变换组件
         /// </summary>
         public RectTransform root = null;
+
+        public CharacterConfigData config;
         
         /// <summary>
         /// 获取全局对话系统实例的引用
@@ -33,10 +35,12 @@ namespace CHARACTERS
         /// 初始化角色对象
         /// </summary>
         /// <param name="name">角色名称</param>
-        public Character(string name)
+        /// <param name="config">角色配置数据</param>
+        public Character(string name, CharacterConfigData config)
         {
             this.name = name;
             displayName = name;
+            this.config = config;
         }
         
         /// <summary>
@@ -57,6 +61,7 @@ namespace CHARACTERS
             if (!string.IsNullOrEmpty(displayName))
             {
                 dialogueSystem.ShowSpeakerName(displayName);
+                dialogueSystem.ApplySpeakerDataToDialogueContainer(name);
             }
             return dialogueSystem.Say(dialogue);
         }
@@ -89,3 +94,4 @@ namespace CHARACTERS
         }
     }
 }
+

@@ -35,6 +35,32 @@ namespace CHARACTERS
         }
 
         /// <summary>
+        /// 根据角色名称获取角色配置数据
+        /// </summary>
+        /// <param name="characterName">要查询的角色名称</param>
+        /// <returns>对应的角色配置数据，如果未找到则返回null</returns>
+        public CharacterConfigData GetCharacterConfig(string characterName)
+        {
+            return config.GetConfig(characterName);
+        }
+
+        /// <summary>
+        /// 获取指定名称的角色实例
+        /// </summary>
+        /// <param name="characterName">要获取的角色名称</param>
+        /// <param name="createIfDoesNotExist">当角色不存在时是否自动创建</param>
+        /// <returns>找到或新创建的角色实例，如果未找到且不创建则返回null</returns>
+        public Character GetCharacter(string characterName, bool createIfDoesNotExist = false)
+        {
+            if (characters.ContainsKey(characterName.ToLower()))
+                return characters[characterName.ToLower()];
+            else if (createIfDoesNotExist)
+                return CreateCharacter(characterName);
+            
+            return null;
+        }
+
+        /// <summary>
         /// 创建指定名称的角色实例
         /// </summary>
         /// <param name="characterName">要创建的角色名称</param>
@@ -88,17 +114,17 @@ namespace CHARACTERS
             switch (config.characterType)
             {
                 case Character.CharacterType.Text:
-                    return new Character_Text(info.name);
+                    return new Character_Text(info.name, config);
 
                 case Character.CharacterType.Sprite:
                 case Character.CharacterType.SpriteSheet:
-                    return new Character_Sprite(info.name);
+                    return new Character_Sprite(info.name, config);
 
                 case Character.CharacterType.Live2D:
-                    return new Character_Live2D(info.name);
+                    return new Character_Live2D(info.name, config);
 
                 case Character.CharacterType.Model3D:
-                    return new Character_Model3D(info.name);
+                    return new Character_Model3D(info.name, config);
 
                 default:
                     return null;

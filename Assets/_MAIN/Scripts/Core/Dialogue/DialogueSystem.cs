@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CHARACTERS;
 using UnityEngine;
 
 namespace DIALOGUE
@@ -93,6 +94,28 @@ namespace DIALOGUE
         public void OnUserPrompt_Next()
         {
             onUserPrompt_Next?.Invoke();
+        }
+
+        /// <summary>
+        /// 根据说话者名称获取角色配置数据并应用到对话容器中
+        /// </summary>
+        /// <param name="speakerName">说话者的名称</param>
+        public void ApplySpeakerDataToDialogueContainer(string speakerName)
+        {
+            Character character = CharacterManager.instance.GetCharacter(speakerName);
+            CharacterConfigData config = character != null ? character.config : CharacterManager.instance.GetCharacterConfig(speakerName);
+            
+            ApplySpeakerDataToDialogueContainer(config);
+        }
+
+        /// <summary>
+        /// 应用指定的角色配置数据到对话容器中
+        /// </summary>
+        /// <param name="config">角色配置数据</param>
+        public void ApplySpeakerDataToDialogueContainer(CharacterConfigData config)
+        {
+            dialogueContainer.SetConfig(config);
+            dialogueContainer.nameContainer.SetConfig(config);
         }
 
         /// <summary>
