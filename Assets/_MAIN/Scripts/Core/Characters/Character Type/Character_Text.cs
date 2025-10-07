@@ -12,7 +12,7 @@ namespace CHARACTERS
         /// 构造函数，初始化文本角色对象
         /// </summary>
         /// <param name="name">角色的名称</param>
-        public Character_Text(string name, CharacterConfigData config) : base(name, config)
+        public Character_Text(string name, CharacterConfigData config) : base(name, config, prefab: null)
         {
             Debug.Log($"Created Text Character: '{name}'");
         }

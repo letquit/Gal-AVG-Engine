@@ -25,6 +25,14 @@ namespace CHARACTERS
         /// 获取对话系统配置中的角色配置资源
         /// </summary>
         private CharacterConfigSO config => DialogueSystem.instance.config.characterConfigurationAsset;
+
+        private const string CHARACTER_NAME_ID = "<charname>";
+        private string characterRootPath => $"Characters/{CHARACTER_NAME_ID}";
+        private string characterPrefabPath => $"{characterRootPath}/Character - [{CHARACTER_NAME_ID}]";
+
+        [SerializeField]
+        private RectTransform _characterpanel = null;
+        public RectTransform characterPanel => _characterpanel;
         
         /// <summary>
         /// 初始化单例实例
@@ -97,9 +105,32 @@ namespace CHARACTERS
             result.name = characterName;
 
             result.config = config.GetConfig(characterName);
+
+            result.prefab = GetPrefabForCharacter(characterName);
             
             return result;
         }
+
+        /// <summary>
+        /// 加载指定角色的预制体资源
+        /// </summary>
+        /// <param name="characterName">角色名称</param>
+        /// <returns>加载到的角色预制体对象，若路径无效则返回null</returns>
+        private GameObject GetPrefabForCharacter(string characterName)
+        {
+            string prefabPath = FormatCharacterPath(characterPrefabPath, characterName);
+            // Debug.Log($"Prefab path: '{prefabPath}'");
+            return Resources.Load<GameObject>(prefabPath);
+        }
+
+        /// <summary>
+        /// 替换路径字符串中的占位符为实际角色名称
+        /// </summary>
+        /// <param name="path">原始路径模板</param>
+        /// <param name="characterName">替换用的角色名称</param>
+        /// <returns>格式化后的完整路径</returns>
+        private string FormatCharacterPath(string path, string characterName) =>
+            path.Replace(CHARACTER_NAME_ID, characterName);
 
         /// <summary>
         /// 根据角色信息创建对应类型的角色实例
@@ -118,13 +149,13 @@ namespace CHARACTERS
 
                 case Character.CharacterType.Sprite:
                 case Character.CharacterType.SpriteSheet:
-                    return new Character_Sprite(info.name, config);
+                    return new Character_Sprite(info.name, config, info.prefab);
 
                 case Character.CharacterType.Live2D:
-                    return new Character_Live2D(info.name, config);
+                    return new Character_Live2D(info.name, config, info.prefab);
 
                 case Character.CharacterType.Model3D:
-                    return new Character_Model3D(info.name, config);
+                    return new Character_Model3D(info.name, config, info.prefab);
 
                 default:
                     return null;
@@ -145,6 +176,11 @@ namespace CHARACTERS
             /// 角色配置数据
             /// </summary>
             public CharacterConfigData config = null;
+
+            /// <summary>
+            /// 角色使用的预制体资源
+            /// </summary>
+            public GameObject prefab = null;
         }
     }
 }
