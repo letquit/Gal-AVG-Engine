@@ -20,6 +20,11 @@ namespace CHARACTERS
 
         public TMP_FontAsset nameFont;
         public TMP_FontAsset dialogueFont;
+        
+        /// <summary>
+        /// 可选的角色预制体引用，用于直接指定角色预制体资源
+        /// </summary>
+        public GameObject characterPrefab;
 
         /// <summary>
         /// 创建当前角色配置数据的深拷贝副本
@@ -34,6 +39,7 @@ namespace CHARACTERS
             result.characterType = characterType;
             result.nameFont = nameFont;
             result.dialogueFont = dialogueFont;
+            result.characterPrefab = characterPrefab;
             
             // 创建颜色的深拷贝，避免引用相同颜色对象
             result.nameColor = new Color(nameColor.r, nameColor.g, nameColor.b, nameColor.a);
@@ -64,6 +70,7 @@ namespace CHARACTERS
                 result.name = "";
                 result.alias = "";
                 result.characterType = Character.CharacterType.Text;
+                result.characterPrefab = null;
                 
                 result.nameFont = defaultFont;
                 result.dialogueFont = defaultFont;
@@ -77,4 +84,3 @@ namespace CHARACTERS
         }
     }
 }
-

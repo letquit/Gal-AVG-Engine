@@ -146,6 +146,15 @@ namespace CHARACTERS
         /// <returns>加载到的角色预制体对象，若路径无效则返回null</returns>
         private GameObject GetPrefabForCharacter(string characterName)
         {
+            // 首先尝试从配置中获取直接引用的预制体
+            CharacterConfigData configData = config.GetConfig(characterName);
+            if (configData.characterPrefab != null)
+            {
+                // Debug.Log("Using direct prefab reference for character: " + characterName);
+                return configData.characterPrefab;
+            }
+    
+            // 否则使用路径查找机制
             string prefabPath = FormatCharacterPath(characterPrefabPath, characterName);
             // Debug.Log($"Prefab path: '{prefabPath}'");
             return Resources.Load<GameObject>(prefabPath);
