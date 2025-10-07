@@ -26,12 +26,35 @@ namespace CHARACTERS
         /// </summary>
         private CharacterConfigSO config => DialogueSystem.instance.config.characterConfigurationAsset;
 
+        /// <summary>
+        /// 角色转换标识符常量，用于字符串转换操作
+        /// </summary>
+        private const string CHARACTER_CASTING_ID = " as ";
+
+        /// <summary>
+        /// 角色名称标识符常量，用作路径中的占位符
+        /// </summary>
         private const string CHARACTER_NAME_ID = "<charname>";
+
+        /// <summary>
+        /// 获取角色根路径的属性
+        /// </summary>
         private string characterRootPath => $"Characters/{CHARACTER_NAME_ID}";
+
+        /// <summary>
+        /// 获取角色预制体路径的属性
+        /// </summary>
         private string characterPrefabPath => $"{characterRootPath}/Character - [{CHARACTER_NAME_ID}]";
 
+        /// <summary>
+        /// 序列化字段，用于存储角色面板的RectTransform引用
+        /// </summary>
         [SerializeField]
         private RectTransform _characterpanel = null;
+
+        /// <summary>
+        /// 获取角色面板RectTransform的公共属性
+        /// </summary>
         public RectTransform characterPanel => _characterpanel;
         
         /// <summary>
@@ -102,11 +125,16 @@ namespace CHARACTERS
         {
             CHARACTER_INFO result = new CHARACTER_INFO();
 
-            result.name = characterName;
+            // 解析角色名称和扮演ID，获取名称数据数组
+            string[] nameData = characterName.Split(CHARACTER_CASTING_ID, StringSplitOptions.RemoveEmptyEntries);
+            result.name = nameData[0];
+            result.castingName = nameData.Length > 1 ? nameData[1] : result.name;
 
-            result.config = config.GetConfig(characterName);
+            // 根据扮演名称获取角色配置信息
+            result.config = config.GetConfig(result.castingName);
 
-            result.prefab = GetPrefabForCharacter(characterName);
+            // 获取角色对应的预制体资源
+            result.prefab = GetPrefabForCharacter(result.castingName);
             
             return result;
         }
@@ -171,6 +199,11 @@ namespace CHARACTERS
             /// 角色名称
             /// </summary>
             public string name = "";
+            
+            /// <summary>
+            /// 存储投射名称的公共字段
+            /// </summary>
+            public string castingName = "";
 
             /// <summary>
             /// 角色配置数据
@@ -184,3 +217,4 @@ namespace CHARACTERS
         }
     }
 }
+

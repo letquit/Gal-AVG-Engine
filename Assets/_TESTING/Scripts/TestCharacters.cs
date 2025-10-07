@@ -11,6 +11,8 @@ namespace TESTING
     public class TestCharacters : MonoBehaviour
     {
         public TMP_FontAsset tempFont;
+
+        private Character CreateCharacter(string name) => CharacterManager.instance.CreateCharacter(name);
         
         private void Start()
         {
@@ -23,19 +25,22 @@ namespace TESTING
         
         private IEnumerator Test()
         {
-            yield return new WaitForSeconds(1f);
+            Character guard1 = CreateCharacter("Guard1 as Generic");
+            Character guard2 = CreateCharacter("Guard2 as Generic");
+            Character guard3 = CreateCharacter("Guard3 as Generic");
             
-            Character Stella = CharacterManager.instance.CreateCharacter("Stella");
+            guard1.Show();
+            guard2.Show();
+            guard3.Show();
 
-            yield return new WaitForSeconds(1f);
+            guard1.SetDialogueFont(tempFont);
+            guard1.SetNameFont(tempFont);
+            guard2.SetDialogueColor(Color.cyan);
+            guard3.SetNameColor(Color.red);
             
-            yield return Stella.Hide();
-            
-            yield return new WaitForSeconds(0.5f);
-            
-            yield return Stella.Show();
-            
-            yield return Stella.Say("Hello!");
+            yield return guard1.Say("I want to say something important.");
+            yield return guard2.Say("Hold your peace.");
+            yield return guard3.Say("Let him speak...");
         }
     }
 }
