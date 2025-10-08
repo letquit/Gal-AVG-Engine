@@ -25,22 +25,33 @@ namespace TESTING
         
         private IEnumerator Test()
         {
-            Character guard1 = CreateCharacter("Guard1 as Generic");
-            Character guard2 = CreateCharacter("Guard2 as Generic");
-            Character guard3 = CreateCharacter("Guard3 as Generic");
+            Character Guard = CreateCharacter("Guard as Generic");
+            Character Raelin = CreateCharacter("Raelin");
+            Character Stella = CreateCharacter("Stella");
+            Character Student = CreateCharacter("Female Student 2");
             
-            guard1.Show();
-            guard2.Show();
-            guard3.Show();
+            // Guard.SetPosition(Vector2.zero);
+            Raelin.SetPosition(new Vector2(0.5f, 0.5f));
+            Stella.SetPosition(Vector2.one);
+            Student.SetPosition(Vector2.zero);
+            
+            // Guard.Show();
+            Raelin.Show();
+            Stella.Show();
+            
+            yield return Student.Show();
+            
+            yield return Student.MoveToPosition(Vector2.one, smooth: true);
+            yield return Student.MoveToPosition(Vector2.zero, smooth: true);
 
-            guard1.SetDialogueFont(tempFont);
-            guard1.SetNameFont(tempFont);
-            guard2.SetDialogueColor(Color.cyan);
-            guard3.SetNameColor(Color.red);
+            Guard.SetDialogueFont(tempFont);
+            Guard.SetNameFont(tempFont);
+            Raelin.SetDialogueColor(Color.cyan);
+            Stella.SetNameColor(Color.red);
             
-            yield return guard1.Say("I want to say something important.");
-            yield return guard2.Say("Hold your peace.");
-            yield return guard3.Say("Let him speak...");
+            yield return Guard.Say("I want to say something important.");
+            yield return Raelin.Say("Hold your peace.");
+            yield return Stella.Say("Let him speak...");
         }
     }
 }

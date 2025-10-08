@@ -24,7 +24,7 @@ namespace CHARACTERS
         /// <summary>
         /// 角色在UI中的根节点变换组件
         /// </summary>
-        public static RectTransform root = null;
+        public RectTransform root = null;
 
         /// <summary>
         /// 角色配置数据，包含与该角色相关的样式和行为设置
@@ -57,6 +57,11 @@ namespace CHARACTERS
         protected Coroutine co_hiding;
 
         /// <summary>
+        /// 当前正在进行的移动协程
+        /// </summary>
+        protected Coroutine co_moving;
+
+        /// <summary>
         /// 指示角色是否正在揭示过程中
         /// </summary>
         public bool isRevealing => co_revealing != null;
@@ -65,6 +70,11 @@ namespace CHARACTERS
         /// 指示角色是否正在隐藏过程中
         /// </summary>
         public bool isHiding => co_hiding != null;
+        
+        /// <summary>
+        /// 指示角色是否正在移动过程中
+        /// </summary>
+        public bool isMoving => co_moving != null;
 
         /// <summary>
         /// 指示角色当前是否可见（由子类实现具体逻辑）
@@ -193,6 +203,129 @@ namespace CHARACTERS
             Debug.Log("Show/Hide cannot be called from a base character type.");
             yield return null;
         }
+        
+        /// <summary>
+        /// 设置UI元素的位置，通过将目标位置转换为相对角色锚点目标来实现。
+        /// </summary>
+        /// <param name="position">目标位置（Vector2）</param>
+        public virtual void SetPosition(Vector2 position)
+        {
+            // 如果根节点为空，则直接返回
+            if (root == null)
+                return;
+            
+            // 将UI目标位置转换为相对角色锚点的目标值
+            (Vector2 minAnchorTarget, Vector2 maxAnchorTarget) = ConvertUITargetPositionToRelativeCharacterAnchorTargets(position);
+           
+            // 设置锚点范围
+            root.anchorMin = minAnchorTarget;
+            root.anchorMax = maxAnchorTarget;
+        }
+
+        /// <summary>
+        /// 启动协程，将UI元素平滑移动到指定位置。
+        /// </summary>
+        /// <param name="position">目标位置（Vector2）</param>
+        /// <param name="speed">移动速度，默认为2f</param>
+        /// <param name="smooth">是否使用平滑插值移动，默认为false</param>
+        /// <returns>启动的协程对象，如果根节点为空则返回null</returns>
+        public virtual Coroutine MoveToPosition(Vector2 position, float speed = 2f, bool smooth = false)
+        {
+            // 如果根节点为空，无法执行移动操作
+            if (root == null)
+                return null;
+            
+            // 如果当前正在移动，先停止之前的协程
+            if (isMoving)
+                manager.StopCoroutine(co_moving);
+            
+            // 启动新的移动协程
+            co_moving = manager.StartCoroutine(MovingToPosition(position, speed, smooth));
+            
+            return co_moving;
+        }
+
+        /// <summary>
+        /// 协程函数，负责实际的移动逻辑，支持平滑或线性移动方式。
+        /// </summary>
+        /// <param name="position">目标位置</param>
+        /// <param name="speed">移动速度</param>
+        /// <param name="smooth">是否启用平滑插值</param>
+        /// <returns>IEnumerator用于协程执行</returns>
+        private IEnumerator MovingToPosition(Vector2 position, float speed, bool smooth)
+        {
+            // 计算目标锚点范围
+            (Vector2 minAnchorTarget, Vector2 maxAnchorTarget) = ConvertUITargetPositionToRelativeCharacterAnchorTargets(position);
+            // 保存当前锚点的尺寸（padding）
+            Vector2 padding = root.anchorMax - root.anchorMin;
+    
+            // 保存初始位置（这是关键修改点）
+            Vector2 initialMinAnchor = root.anchorMin;
+            float elapsedTime = 0f;
+    
+            // 如果启用平滑模式
+            if (smooth)
+            {
+                // 计算总移动距离，用于确定所需总时间
+                float totalDistance = Vector2.Distance(initialMinAnchor, minAnchorTarget);
+                float totalTime = totalDistance / (speed * 0.35f); // 调整与MoveTowards相似的速度
+        
+                // 随着时间推移线性增加t值
+                while (elapsedTime < totalTime)
+                {
+                    // t值随时间线性增长，从0到1
+                    float t = elapsedTime / totalTime;
+            
+                    // 使用初始位置和目标位置进行插值，而不是当前位置
+                    root.anchorMin = Vector2.Lerp(initialMinAnchor, minAnchorTarget, t);
+                    root.anchorMax = root.anchorMin + padding;
+            
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+        
+                // 确保最终精确到达目标位置
+                root.anchorMin = minAnchorTarget;
+                root.anchorMax = maxAnchorTarget;
+            }
+            else
+            {
+                // 非平滑模式使用MoveTowards（保持原有逻辑）
+                while (root.anchorMin != minAnchorTarget || root.anchorMax != maxAnchorTarget)
+                {
+                    root.anchorMin = Vector2.MoveTowards(root.anchorMin, minAnchorTarget, speed * Time.deltaTime * 0.35f);
+                    root.anchorMax = root.anchorMin + padding;
+                    yield return null;
+                }
+            }
+    
+            // 移动完成日志输出
+            Debug.Log("Done moving.");
+            co_moving = null;
+        }
+
+        /// <summary>
+        /// 将UI目标位置转换为相对于角色的锚点目标范围。
+        /// </summary>
+        /// <param name="position">输入的UI位置（Vector2）</param>
+        /// <returns>包含最小锚点和最大锚点的元组</returns>
+        protected (Vector2, Vector2) ConvertUITargetPositionToRelativeCharacterAnchorTargets(Vector2 position)
+        {
+            // 获取当前锚点的尺寸（padding）
+            Vector2 padding = root.anchorMax - root.anchorMin;
+            
+            // 计算可移动的最大比例值
+            float maxX = 1f - padding.x;
+            float maxY = 1f - padding.y;
+
+            // 计算目标锚点最小值
+            Vector2 minAnchorTarget = new Vector2(maxX * position.x, maxY * position.y);
+            // 计算目标锚点最大值
+            Vector2 maxAnchorTarget = minAnchorTarget + padding;
+            
+            return (minAnchorTarget, maxAnchorTarget);
+        }
+
         
         /// <summary>
         /// 角色类型枚举，定义了支持的不同角色表现形式
