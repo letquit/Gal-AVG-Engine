@@ -39,12 +39,18 @@ namespace CHARACTERS
         /// <summary>
         /// 获取角色根路径的属性
         /// </summary>
-        private string characterRootPath => $"Characters/{CHARACTER_NAME_ID}";
-
+        public string characterRootPathFormat => $"Characters/{CHARACTER_NAME_ID}";
+        
+        /// <summary>
+        /// 获取角色预制体名称的格式化字符串
+        /// </summary>
+        /// <returns>返回格式化后的角色预制体名称字符串，格式为"Character - [角色名称ID]"</returns>
+        public string characterPrefabNameFormat => $"Character - [{CHARACTER_NAME_ID}]";
+        
         /// <summary>
         /// 获取角色预制体路径的属性
         /// </summary>
-        private string characterPrefabPath => $"{characterRootPath}/Character - [{CHARACTER_NAME_ID}]";
+        public string characterPrefabPathFormat => $"{characterRootPathFormat}/{characterPrefabNameFormat}";
 
         /// <summary>
         /// 序列化字段，用于存储角色面板的RectTransform引用
@@ -155,7 +161,7 @@ namespace CHARACTERS
             }
     
             // 否则使用路径查找机制
-            string prefabPath = FormatCharacterPath(characterPrefabPath, characterName);
+            string prefabPath = FormatCharacterPath(characterPrefabPathFormat, characterName);
             // Debug.Log($"Prefab path: '{prefabPath}'");
             return Resources.Load<GameObject>(prefabPath);
         }
@@ -166,7 +172,7 @@ namespace CHARACTERS
         /// <param name="path">原始路径模板</param>
         /// <param name="characterName">替换用的角色名称</param>
         /// <returns>格式化后的完整路径</returns>
-        private string FormatCharacterPath(string path, string characterName) =>
+        public string FormatCharacterPath(string path, string characterName) =>
             path.Replace(CHARACTER_NAME_ID, characterName);
 
         /// <summary>
