@@ -43,9 +43,14 @@ namespace CHARACTERS
         public Animator animator;
         
         /// <summary>
+        /// 获取或设置颜色属性
+        /// </summary>
+        public Color color { get; private set; } = Color.white;
+        
+        /// <summary>
         /// 获取角色管理器实例的引用
         /// </summary>
-        protected CharacterManager manager => CharacterManager.instance;
+        protected CharacterManager characterManager => CharacterManager.instance;
         
         /// <summary>
         /// 获取全局对话系统实例的引用
@@ -67,6 +72,8 @@ namespace CHARACTERS
         /// </summary>
         protected Coroutine co_moving;
 
+        protected Coroutine co_changingColor;
+
         /// <summary>
         /// 指示角色是否正在揭示过程中
         /// </summary>
@@ -81,6 +88,12 @@ namespace CHARACTERS
         /// 指示角色是否正在移动过程中
         /// </summary>
         public bool isMoving => co_moving != null;
+        
+        /// <summary>
+        /// 获取一个布尔值，指示是否正在执行颜色变化操作
+        /// </summary>
+        public bool isChangingColor => co_changingColor != null;
+
 
         /// <summary>
         /// 获取或设置一个值，该值指示当前对象是否可见。
@@ -102,8 +115,10 @@ namespace CHARACTERS
 
             if (prefab != null)
             {
-                GameObject ob = Object.Instantiate(prefab, manager.characterPanel);
-                ob.name = manager.FormatCharacterPath(manager.characterPrefabNameFormat, name);
+                // 实例化角色预制体，并设置其父节点为角色面板
+                GameObject ob = Object.Instantiate(prefab, characterManager.characterPanel);
+                // 设置角色名称
+                ob.name = characterManager.FormatCharacterPath(characterManager.characterPrefabNameFormat, name);
                 ob.SetActive(true);
                 root = ob.GetComponent<RectTransform>();
                 animator = root.GetComponentInChildren<Animator>();
@@ -177,9 +192,9 @@ namespace CHARACTERS
                 return co_revealing;
             
             if (isHiding)
-                manager.StopCoroutine(co_hiding);
+                characterManager.StopCoroutine(co_hiding);
             
-            co_revealing = manager.StartCoroutine(ShowingOrHiding(true));
+            co_revealing = characterManager.StartCoroutine(ShowingOrHiding(true));
             
             return co_revealing;
         }
@@ -194,9 +209,9 @@ namespace CHARACTERS
                 return co_hiding;
             
             if (isRevealing)
-                manager.StopCoroutine(co_revealing);
+                characterManager.StopCoroutine(co_revealing);
             
-            co_hiding = manager.StartCoroutine(ShowingOrHiding(false));
+            co_hiding = characterManager.StartCoroutine(ShowingOrHiding(false));
             
             return co_hiding;
         }
@@ -245,10 +260,10 @@ namespace CHARACTERS
             
             // 如果当前正在移动，先停止之前的协程
             if (isMoving)
-                manager.StopCoroutine(co_moving);
+                characterManager.StopCoroutine(co_moving);
             
             // 启动新的移动协程
-            co_moving = manager.StartCoroutine(MovingToPosition(position, speed, smooth));
+            co_moving = characterManager.StartCoroutine(MovingToPosition(position, speed, smooth));
             
             return co_moving;
         }
@@ -334,6 +349,46 @@ namespace CHARACTERS
             return (minAnchorTarget, maxAnchorTarget);
         }
 
+        /// <summary>
+        /// 设置颜色
+        /// </summary>
+        /// <param name="color">要设置的颜色</param>
+        public virtual void SetColor(Color color)
+        {
+            this.color = color;
+        }
+
+        /// <summary>
+        /// 过渡颜色变化
+        /// </summary>
+        /// <param name="color">目标颜色</param>
+        /// <param name="speed">颜色变化速度，默认为1f</param>
+        /// <returns>颜色变化协程</returns>
+        public Coroutine TransitionColor(Color color, float speed = 1f)
+        {
+            this.color = color;
+            
+            // 如果正在变色，则停止之前的协程
+            if (isChangingColor)
+                characterManager.StopCoroutine(co_changingColor);
+            
+            // 启动新的变色协程
+            co_changingColor = characterManager.StartCoroutine(ChangingColor(color, speed));
+            
+            return co_changingColor;
+        }
+        
+        /// <summary>
+        /// 颜色变化协程
+        /// </summary>
+        /// <param name="color">目标颜色</param>
+        /// <param name="speed">变化速度</param>
+        /// <returns>枚举器</returns>
+        public virtual IEnumerator ChangingColor(Color color, float speed)
+        {
+            Debug.Log("Color changing is not applicable on this character type!");
+            yield return null;
+        }
         
         /// <summary>
         /// 角色类型枚举，定义了支持的不同角色表现形式

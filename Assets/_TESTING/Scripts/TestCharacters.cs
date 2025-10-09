@@ -32,8 +32,11 @@ namespace TESTING
             
             yield return new WaitForSeconds(1f);
 
-            yield return Raelin.TransitionSprite(Raelin.GetSprite("B_Embarrassed"), 1);
-            Raelin.TransitionSprite(Raelin.GetSprite("B2"));
+            // Raelin.layers[1].SetColor(Color.red);
+            yield return Raelin.TransitionColor(Color.red, 0.3f);
+            yield return Raelin.TransitionColor(Color.blue);
+            yield return Raelin.TransitionColor(Color.yellow);
+            yield return Raelin.TransitionColor(Color.white);
             
             yield return null;
         }

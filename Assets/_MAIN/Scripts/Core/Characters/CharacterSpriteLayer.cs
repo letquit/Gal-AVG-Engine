@@ -36,6 +36,7 @@ namespace CHARACTERS
 
         private Coroutine co_transitioningLayer = null;
         private Coroutine co_levelingAlpha = null;
+        private Coroutine co_changingColor = null;
 
         /// <summary>
         /// 判断是否正在进行图层过渡动画。
@@ -46,6 +47,11 @@ namespace CHARACTERS
         /// 判断是否正在进行透明度渐变操作。
         /// </summary>
         public bool isLevelingAlpha => co_levelingAlpha != null;
+        
+        /// <summary>
+        /// 判断是否正在进行颜色变换操作。
+        /// </summary>
+        public bool isChangingColor =>  co_changingColor != null;
         
         /// <summary>
         /// 构造函数，初始化一个角色精灵图层对象。
@@ -175,6 +181,71 @@ namespace CHARACTERS
             }
             
             co_levelingAlpha = null;
+        }
+
+        /// <summary>
+        /// 设置当前及历史渲染器的颜色。
+        /// </summary>
+        /// <param name="color">要应用的颜色值。</param>
+        public void SetColor(Color color)
+        {
+            renderer.color = color;
+
+            foreach (CanvasGroup oldCG in oldRenderers)
+            {
+                oldCG.GetComponent<Image>().color = color;
+            }
+        }
+
+        /// <summary>
+        /// 对当前及历史渲染器执行颜色过渡动画。
+        /// </summary>
+        /// <param name="color">目标颜色。</param>
+        /// <param name="speed">颜色过渡速度倍率。</param>
+        /// <returns>启动的颜色过渡协程。</returns>
+        public Coroutine TransitionColor(Color color, float speed)
+        {
+            if (isChangingColor)
+                characterManager.StopCoroutine(co_changingColor);
+
+            co_changingColor = characterManager.StartCoroutine(ChangingColor(color, speed));
+            
+            return co_changingColor;
+        }
+        
+        /// <summary>
+        /// 实现颜色渐变的具体逻辑。
+        /// 在指定时间内线性插值当前和历史渲染器的颜色。
+        /// </summary>
+        /// <param name="color">目标颜色。</param>
+        /// <param name="speedMultiplier">过渡速度乘数。</param>
+        /// <returns>IEnumerator 类型，供 Unity 协程使用。</returns>
+        private IEnumerator ChangingColor(Color color, float speedMultiplier)
+        {
+            Color oldColor = renderer.color;
+            List<Image> oldImages = new List<Image>();
+
+            foreach (var oldCG in oldRenderers)
+            {
+                oldImages.Add(oldCG.GetComponent<Image>());
+            }
+
+            float colorPercent = 0;
+            while (colorPercent < 1)
+            {
+                colorPercent += DEFAULT_TRANSITION_SPEED * speedMultiplier * Time.deltaTime;
+                
+                renderer.color = Color.Lerp(oldColor, color, colorPercent);
+
+                foreach (Image oldImage in oldImages)
+                {
+                    oldImage.color = renderer.color;
+                }
+                
+                yield return null;
+            }
+            
+            co_changingColor = null;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -168,6 +169,44 @@ namespace CHARACTERS
             
             co_revealing = null;
             co_hiding = null;
+        }
+        
+        /// <summary>
+        /// 设置角色精灵的整体颜色
+        /// </summary>
+        /// <param name="color">要设置的颜色</param>
+        public override void SetColor(Color color)
+        {
+            base.SetColor(color);
+
+            // 为所有图层设置颜色
+            foreach (CharacterSpriteLayer layer in layers)
+            {
+                layer.SetColor(color);
+            }
+        }
+
+        /// <summary>
+        /// 异步改变角色精灵的颜色
+        /// </summary>
+        /// <param name="color">目标颜色</param>
+        /// <param name="speed">颜色变换速度</param>
+        /// <returns>用于协程的IEnumerator对象</returns>
+        public override IEnumerator ChangingColor(Color color, float speed)
+        {
+            // 启动所有图层的颜色过渡动画
+            foreach (CharacterSpriteLayer layer in layers)
+                layer.TransitionColor(color, speed);
+
+            yield return null;
+
+            // 等待所有图层完成颜色变换
+            while (layers.Any(l => l.isChangingColor))
+            {
+                yield return null;
+            }
+            
+            co_changingColor = null;
         }
     }
 }
