@@ -1,6 +1,8 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using System;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// 文本构建器类，用于控制TextMeshPro文本的显示方式，支持即时显示、打字机效果和淡入效果。
@@ -74,6 +76,21 @@ public class TextArchitect
     /// 是否加速显示文本
     /// </summary>
     public bool hurryUp = false;
+
+    /// <summary>
+    /// 字符显示事件，用于播放打字音效
+    /// </summary>
+    public event Action<char> OnCharacterTyped;
+
+    /// <summary>
+    /// 批量字符显示事件，当一次显示多个字符时触发
+    /// </summary>
+    public event Action<int> OnMultipleCharactersTyped;
+    
+    /// <summary>
+    /// 对话开始事件，包含文本内容和预计显示时间
+    /// </summary>
+    public event Action<string, float> OnDialogueStart;
     
     /// <summary>
     /// 构造函数，使用TextMeshProUGUI组件初始化
@@ -151,6 +168,13 @@ public class TextArchitect
     IEnumerator Building()
     {
         Prepare();
+        
+        // 计算文本显示所需总时间
+        float displayTime = CalculateDisplayTime();
+        
+        // 触发对话开始事件
+        OnDialogueStart?.Invoke(targetText, displayTime);
+        
         switch (buildMethod)
         {
             case BuildMethod.typewriter:
@@ -162,6 +186,52 @@ public class TextArchitect
         }
         
         OnComplete();
+    }
+
+    /// <summary>
+    /// 计算文本显示所需的总时间
+    /// </summary>
+    private float CalculateDisplayTime()
+    {
+        if (buildMethod == BuildMethod.instant)
+            return 0;
+            
+        // 获取有效字符数量
+        int effectiveCharCount = CountEffectiveCharacters(targetText);
+        
+        // 根据速度计算显示时间
+        float timePerChar = 0.05f / speed; // 每个字符基础显示时间
+        return effectiveCharCount * timePerChar;
+    }
+
+    /// <summary>
+    /// 计算文本中的有效字符数量（排除特殊指令等）
+    /// </summary>
+    private int CountEffectiveCharacters(string text)
+    {
+        int count = 0;
+        bool inSpecialCommand = false;
+        
+        foreach (char c in text)
+        {
+            // 处理特殊命令 {command}
+            if (c == '{') 
+            {
+                inSpecialCommand = true;
+                continue;
+            }
+            
+            if (inSpecialCommand)
+            {
+                if (c == '}') 
+                    inSpecialCommand = false;
+                continue;
+            }
+            
+            count++;
+        }
+        
+        return count;
     }
 
     /// <summary>
@@ -295,13 +365,38 @@ public class TextArchitect
     /// <returns>IEnumerator对象，用于协程执行</returns>
     private IEnumerator Build_Typewriter()
     {
+        // 保存之前的可见字符数
+        int previousVisibleCharacters = tmpro.maxVisibleCharacters;
+    
+        // 循环显示字符直到所有字符都显示完毕
         while (tmpro.maxVisibleCharacters < tmpro.textInfo.characterCount)
         {
-            tmpro.maxVisibleCharacters += hurryUp ? charactersPerCycle * 5 : charactersPerCycle;
+            // 根据是否加速来决定每次显示的字符数量
+            int charCountToAdd = hurryUp ? charactersPerCycle * 5 : charactersPerCycle;
+            int oldCharCount = tmpro.maxVisibleCharacters;
+            tmpro.maxVisibleCharacters += charCountToAdd;
+            
+            // 根据显示的字符数量触发相应的事件
+            if (charCountToAdd == 1)
+            {
+                // 如果只显示一个字符，触发单字符事件
+                if (oldCharCount < tmpro.textInfo.characterCount)
+                {
+                    char typedChar = tmpro.text[oldCharCount];
+                    OnCharacterTyped?.Invoke(typedChar);
+                }
+            }
+            else
+            {
+                // 如果显示多个字符，触发多字符事件
+                OnMultipleCharactersTyped?.Invoke(charCountToAdd);
+            }
 
-            yield return new WaitForSeconds(0.015f / speed);
+            // 根据速度设置等待时间
+            yield return new WaitForSeconds(0.05f / speed);
         }
     }
+
 
     /// <summary>
     /// 淡入效果的实现协程

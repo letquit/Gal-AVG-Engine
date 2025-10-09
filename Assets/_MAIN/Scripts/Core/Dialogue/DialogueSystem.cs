@@ -15,6 +15,9 @@ namespace DIALOGUE
         [SerializeField]
         private DialogueSystemConfigurationSO _config;
         
+        [SerializeField] 
+        private AudioManager audioManager;
+        
         /// <summary>
         /// 获取对话系统的配置对象
         /// </summary>
@@ -78,15 +81,34 @@ namespace DIALOGUE
         /// 防止重复初始化
         /// </summary>
         private bool _initialized = false;
+        
+        /// <summary>
+        /// 初始化对话系统组件
+        /// </summary>
         private void Initialize()
         {
+            // 检查是否已经初始化，避免重复初始化
             if (_initialized)
                 return;
             
+            // 创建文本构建器实例并设置相关参数
             architect = new TextArchitect(dialogueContainer.dialogueText);
+            architect.speed = 0.5f;
+            architect.characterMultiplier = 1;
+            
+            // 创建对话管理器实例
             conversationManager = new ConversationManager(architect);
+            
+            // 如果音频管理器存在，则注册文本构建器
+            if (audioManager != null)
+            {
+                audioManager.RegisterTextArchitect(architect);
+            }
+            
+            // 标记初始化完成
             _initialized = true;
         }
+
         
         /// <summary>
         /// 触发用户按下“下一句”按键的事件
