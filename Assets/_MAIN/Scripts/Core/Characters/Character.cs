@@ -16,6 +16,11 @@ namespace CHARACTERS
         /// </summary>
         public const bool ENABLE_ON_START = true;
 
+        /// <summary>
+        /// 未高亮状态下的暗化强度常量值
+        /// </summary>
+        private const float UNHIGHLIGHTED_DARKEN_STRENGTH = 0.65f;
+
         
         /// <summary>
         /// 角色名称
@@ -46,6 +51,27 @@ namespace CHARACTERS
         /// 获取或设置颜色属性
         /// </summary>
         public Color color { get; private set; } = Color.white;
+        /// <summary>
+        /// 获取当前显示的颜色，根据高亮状态返回对应的高亮或非高亮颜色
+        /// </summary>
+        protected Color displayColor => highlighted ? highlightedColor : unhighlightedColor;
+
+        /// <summary>
+        /// 获取高亮状态下的颜色
+        /// </summary>
+        protected Color highlightedColor => color;
+        
+        /// <summary>
+        /// 获取非高亮状态下的颜色，通过对原始颜色的RGB分量进行暗化处理得到
+        /// </summary>
+        protected Color unhighlightedColor => new Color(color.r * UNHIGHLIGHTED_DARKEN_STRENGTH, color.g * UNHIGHLIGHTED_DARKEN_STRENGTH, color.b * UNHIGHLIGHTED_DARKEN_STRENGTH, color.a);
+        
+        /// <summary>
+        /// 获取或设置当前是否处于高亮状态
+        /// </summary>
+        public bool highlighted { get; protected set; } = true;
+
+        
         
         /// <summary>
         /// 获取角色管理器实例的引用
@@ -72,7 +98,15 @@ namespace CHARACTERS
         /// </summary>
         protected Coroutine co_moving;
 
+        /// <summary>
+        /// 协程变量，用于控制颜色变化的协程执行
+        /// </summary>
         protected Coroutine co_changingColor;
+        
+        /// <summary>
+        /// 协程变量，用于控制高亮效果的协程执行
+        /// </summary>
+        protected Coroutine co_highlighting;
 
         /// <summary>
         /// 指示角色是否正在揭示过程中
@@ -93,6 +127,16 @@ namespace CHARACTERS
         /// 获取一个布尔值，指示是否正在执行颜色变化操作
         /// </summary>
         public bool isChangingColor => co_changingColor != null;
+
+        /// <summary>
+        /// 获取当前是否处于高亮状态的标识
+        /// </summary>
+        public bool isHighlighting => (highlighted && co_highlighting != null);
+
+        /// <summary>
+        /// 获取当前是否处于取消高亮状态的标识
+        /// </summary>
+        public bool isUnHighlighting => (!highlighted && co_highlighting != null);
 
 
         /// <summary>
@@ -373,7 +417,7 @@ namespace CHARACTERS
                 characterManager.StopCoroutine(co_changingColor);
             
             // 启动新的变色协程
-            co_changingColor = characterManager.StartCoroutine(ChangingColor(color, speed));
+            co_changingColor = characterManager.StartCoroutine(ChangingColor(displayColor, speed));
             
             return co_changingColor;
         }
@@ -387,6 +431,60 @@ namespace CHARACTERS
         public virtual IEnumerator ChangingColor(Color color, float speed)
         {
             Debug.Log("Color changing is not applicable on this character type!");
+            yield return null;
+        }
+        
+        /// <summary>
+        /// 启动高亮显示效果的协程
+        /// </summary>
+        /// <param name="speed">高亮变化的速度倍数，默认为1f</param>
+        /// <returns>返回正在执行的高亮协程对象</returns>
+        public Coroutine Highlight(float speed = 1f)
+        {
+            // 如果正在高亮过程中，则直接返回当前协程
+            if (isHighlighting)
+                return co_highlighting;
+            
+            // 如果正在取消高亮，则停止当前协程
+            if (isUnHighlighting)
+                characterManager.StopCoroutine(co_highlighting);
+
+            highlighted = true;
+            co_highlighting = characterManager.StartCoroutine(Highlighting(highlighted, speed));
+            
+            return co_highlighting;
+        }
+        
+        /// <summary>
+        /// 启动取消高亮显示效果的协程
+        /// </summary>
+        /// <param name="speed">取消高亮变化的速度倍数，默认为1f</param>
+        /// <returns>返回正在执行的取消高亮协程对象</returns>
+        public Coroutine UnHighlight(float speed = 1f)
+        {
+            // 如果正在取消高亮过程中，则直接返回当前协程
+            if (isUnHighlighting)
+                return co_highlighting;
+            
+            // 如果正在高亮，则停止当前协程
+            if (isHighlighting)
+                characterManager.StopCoroutine(co_highlighting);
+
+            highlighted = false;
+            co_highlighting = characterManager.StartCoroutine(Highlighting(highlighted, speed));
+            
+            return co_highlighting;
+        }
+        
+        /// <summary>
+        /// 高亮效果的核心实现协程（虚方法，需要子类重写具体实现）
+        /// </summary>
+        /// <param name="highlight">是否启用高亮效果</param>
+        /// <param name="speedMultiplier">速度倍数</param>
+        /// <returns>协程迭代器</returns>
+        public virtual IEnumerator Highlighting(bool highlight, float speedMultiplier)
+        {
+            Debug.Log("Highlighting is not available on this character type!");
             yield return null;
         }
         

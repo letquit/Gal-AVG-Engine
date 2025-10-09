@@ -27,16 +27,43 @@ namespace TESTING
         {
             // Character_Sprite Guard = CreateCharacter("Guard as Generic") as Character_Sprite;
             Character_Sprite Raelin = CreateCharacter("Raelin") as Character_Sprite;
-            // Character_Sprite Stella = CreateCharacter("Stella") as Character_Sprite;
+            Character_Sprite Stella = CreateCharacter("Stella") as Character_Sprite;
             // Character_Sprite Student = CreateCharacter("Female Student 2") as Character_Sprite;
             
-            yield return new WaitForSeconds(1f);
+            // yield return new WaitForSeconds(1f);
+            //
+            // yield return Raelin.Unhighlight();
+            //
+            // yield return new WaitForSeconds(1f);
+            //
+            // yield return Raelin.TransitionColor(Color.red);
+            //
+            // yield return new WaitForSeconds(1f);
+            //
+            // yield return Raelin.Highlight();
+            //
+            // yield return new WaitForSeconds(1f);
+            //
+            // yield return Raelin.TransitionColor(Color.white);
+            
+            Raelin.SetPosition(Vector2.zero);
+            Stella.SetPosition(new Vector2(1, 0));
 
-            // Raelin.layers[1].SetColor(Color.red);
-            yield return Raelin.TransitionColor(Color.red, 0.3f);
-            yield return Raelin.TransitionColor(Color.blue);
-            yield return Raelin.TransitionColor(Color.yellow);
-            yield return Raelin.TransitionColor(Color.white);
+            Stella.UnHighlight();
+            yield return Raelin.Say("I want to say something.");
+
+            Raelin.UnHighlight();
+            Stella.Highlight();
+            yield return Stella.Say("But I want to say something too!{c}Can I go first?");
+
+            Raelin.Highlight();
+            Stella.UnHighlight();
+            yield return Raelin.Say("Sure, {a} be my guest.");
+
+            Stella.Highlight();
+            Raelin.UnHighlight();
+            Stella.TransitionSprite(Stella.GetSprite("shy 1"), layer: 1);
+            yield return Stella.Say("Yay!");
             
             yield return null;
         }

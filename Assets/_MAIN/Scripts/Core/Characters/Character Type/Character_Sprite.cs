@@ -12,8 +12,22 @@ namespace CHARACTERS
     /// </summary>
     public class Character_Sprite : Character
     {
+        /// <summary>
+        /// 精灵渲染器父对象名称常量
+        /// 用于标识包含精灵渲染器组件的父级游戏对象名称
+        /// </summary>
         private const string SPRITE_RENDERERD_PARENT_NAME = "Renderers";
+        
+        /// <summary>
+        /// 精灵图集默认表单名称常量
+        /// 当未指定具体精灵表单时使用的默认名称
+        /// </summary>
         private const string SPRITESHEET_DEFAULT_SHEETNAME = "Default";
+        
+        /// <summary>
+        /// 精灵图表集纹理精灵分隔符常量
+        /// 用于分隔纹理名称和精灵名称的字符分隔符
+        /// </summary>
         private const char SPRITESHEET_TEX_SPRITE_DELIMITTER = '-';
         
         /// <summary>
@@ -178,10 +192,13 @@ namespace CHARACTERS
         public override void SetColor(Color color)
         {
             base.SetColor(color);
+            
+            color = displayColor;
 
             // 为所有图层设置颜色
             foreach (CharacterSpriteLayer layer in layers)
             {
+                layer.StopChangingColor();
                 layer.SetColor(color);
             }
         }
@@ -202,11 +219,33 @@ namespace CHARACTERS
 
             // 等待所有图层完成颜色变换
             while (layers.Any(l => l.isChangingColor))
-            {
                 yield return null;
-            }
             
             co_changingColor = null;
         }
+
+        /// <summary>
+        /// 高亮显示字符精灵的协程函数
+        /// </summary>
+        /// <param name="highlight">是否启用高亮显示（注意：根据代码实现，此参数未被使用）</param>
+        /// <param name="speedMultiplier">颜色变换的速度倍数</param>
+        /// <returns>返回一个迭代器对象，用于协程执行</returns>
+        public override IEnumerator Highlighting(bool highlight, float speedMultiplier)
+        {
+            Color targetColor = displayColor;
+
+            // 为所有图层启动颜色过渡动画
+            foreach (CharacterSpriteLayer layer in layers)
+                layer.TransitionColor(targetColor, speedMultiplier);
+            
+            yield return null;
+            
+            // 等待所有图层完成颜色变换
+            while (layers.Any(l => l.isChangingColor))
+                yield return null;
+            
+            co_highlighting = null;
+        }
+
     }
 }

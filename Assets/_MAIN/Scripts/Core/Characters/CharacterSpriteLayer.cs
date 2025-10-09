@@ -12,9 +12,20 @@ namespace CHARACTERS
     /// </summary>
     public class CharacterSpriteLayer
     {
+        /// <summary>
+        /// 获取CharacterManager实例的属性访问器
+        /// </summary>
+        /// <returns>返回CharacterManager的单例实例</returns>
         private CharacterManager characterManager => CharacterManager.instance;
         
+        /// <summary>
+        /// 默认转换速度常量，用于控制角色变换的基准速度
+        /// </summary>
         private const float DEFAULT_TRANSITION_SPEED = 3f;
+        
+        /// <summary>
+        /// 转换速度倍数因子，用于调整实际转换速度相对于默认速度的比例
+        /// </summary>
         private float transitionSpeedMultiplier = 1f;
         
         /// <summary>
@@ -32,10 +43,24 @@ namespace CHARACTERS
         /// </summary>
         public CanvasGroup rendererCG => renderer.GetComponent<CanvasGroup>();
         
+        /// <summary>
+        /// 存储旧的CanvasGroup组件列表，用于过渡效果处理
+        /// </summary>
         private List<CanvasGroup> oldRenderers = new List<CanvasGroup>();
 
+        /// <summary>
+        /// 过渡层协程引用，用于控制层级过渡动画的执行
+        /// </summary>
         private Coroutine co_transitioningLayer = null;
+        
+        /// <summary>
+        /// 透明度调节协程引用，用于控制UI元素透明度渐变效果
+        /// </summary>
         private Coroutine co_levelingAlpha = null;
+        
+        /// <summary>
+        /// 颜色变化协程引用，用于控制UI元素颜色渐变效果
+        /// </summary>
         private Coroutine co_changingColor = null;
 
         /// <summary>
@@ -211,6 +236,25 @@ namespace CHARACTERS
             co_changingColor = characterManager.StartCoroutine(ChangingColor(color, speed));
             
             return co_changingColor;
+        }
+
+        /// <summary>
+        /// 停止角色颜色变化的效果
+        /// </summary>
+        /// <remarks>
+        /// 此方法会检查当前是否正在执行颜色变化效果，如果是则停止对应的协程并清理引用
+        /// </remarks>
+        public void StopChangingColor()
+        {
+            // 如果当前没有执行颜色变化效果，则直接返回
+            if (!isChangingColor)
+                return;
+            
+            // 停止颜色变化的协程
+            characterManager.StopCoroutine(co_changingColor);
+            
+            // 清理协程引用
+            co_changingColor = null;
         }
         
         /// <summary>
