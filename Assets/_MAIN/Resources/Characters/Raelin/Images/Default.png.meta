@@ -3,7 +3,7 @@ guid: 418997cd131ebf84fac6b738543fe03f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -20,11 +20,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMasterTextureLimit: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -63,8 +64,10 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 1
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 8192
     resizeAlgorithm: 0
@@ -74,9 +77,10 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -86,9 +90,10 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Server
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -98,10 +103,11 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Windows Store Apps
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -110,22 +116,24 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Raelin_0
+      name: A1
       rect:
         serializedVersion: 2
         x: 5
-        y: 7958
+        y: 7959
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -137,7 +145,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_1
+      name: A2
       rect:
         serializedVersion: 2
         x: 488
@@ -145,8 +153,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -158,7 +167,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_2
+      name: B1
       rect:
         serializedVersion: 2
         x: 5
@@ -166,8 +175,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -179,16 +189,17 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_3
+      name: B2
       rect:
         serializedVersion: 2
-        x: 488
+        x: 487
         y: 7235
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -200,7 +211,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_4
+      name: A_Scold
       rect:
         serializedVersion: 2
         x: 5
@@ -208,8 +219,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -221,7 +233,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_5
+      name: B_Scold
       rect:
         serializedVersion: 2
         x: 488
@@ -229,8 +241,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -242,7 +255,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_6
+      name: A_Blush
       rect:
         serializedVersion: 2
         x: 5
@@ -250,8 +263,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -263,7 +277,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_7
+      name: B_Blush
       rect:
         serializedVersion: 2
         x: 488
@@ -271,8 +285,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -284,7 +299,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_8
+      name: A_Happy
       rect:
         serializedVersion: 2
         x: 5
@@ -292,8 +307,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -305,7 +321,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_9
+      name: B_Happy
       rect:
         serializedVersion: 2
         x: 488
@@ -313,8 +329,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -326,7 +343,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_10
+      name: A_Guilty
       rect:
         serializedVersion: 2
         x: 5
@@ -334,8 +351,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -347,7 +365,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_11
+      name: B_Guilty
       rect:
         serializedVersion: 2
         x: 488
@@ -355,8 +373,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -368,7 +387,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_12
+      name: A_Laugh
       rect:
         serializedVersion: 2
         x: 5
@@ -376,8 +395,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -389,7 +409,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_13
+      name: B_Laugh
       rect:
         serializedVersion: 2
         x: 488
@@ -397,8 +417,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -410,7 +431,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_14
+      name: A_Stern
       rect:
         serializedVersion: 2
         x: 5
@@ -418,8 +439,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -431,7 +453,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_15
+      name: B_Stern
       rect:
         serializedVersion: 2
         x: 488
@@ -439,8 +461,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -452,7 +475,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_16
+      name: A_Scared
       rect:
         serializedVersion: 2
         x: 5
@@ -460,8 +483,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -473,7 +497,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_17
+      name: B_Scared
       rect:
         serializedVersion: 2
         x: 488
@@ -481,8 +505,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -494,7 +519,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_18
+      name: A_Shocked
       rect:
         serializedVersion: 2
         x: 5
@@ -502,8 +527,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -515,7 +541,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_19
+      name: B_Shocked
       rect:
         serializedVersion: 2
         x: 488
@@ -523,8 +549,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -536,7 +563,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_20
+      name: A_Embarrassed
       rect:
         serializedVersion: 2
         x: 5
@@ -544,8 +571,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -557,7 +585,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_21
+      name: B_Embarrassed
       rect:
         serializedVersion: 2
         x: 488
@@ -565,8 +593,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -578,7 +607,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_22
+      name: A_Default
       rect:
         serializedVersion: 2
         x: 5
@@ -586,8 +615,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -599,7 +629,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raelin_23
+      name: B_Default
       rect:
         serializedVersion: 2
         x: 488
@@ -607,8 +637,9 @@ TextureImporter:
         width: 476
         height: 716
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -620,6 +651,7 @@ TextureImporter:
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
     spriteID: e05e30b46441eda4da1995fdfb5cf2ac
@@ -629,34 +661,36 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
-      Raelin_11: -1818594040
-      Raelin_4: 877658820
-      Raelin_12: 752875108
-      Raelin_3: -984643779
-      Raelin_6: -231494423
-      Raelin_20: -12134526
-      Raelin_2: 2143271235
-      Raelin_9: 1731016576
-      Raelin_22: -831843799
-      Raelin_21: -899087398
-      Raelin_5: 1533307292
-      Raelin_23: 2079976379
-      Raelin_8: -861763730
-      Raelin_7: 455040721
-      Raelin_17: 2089198746
-      Raelin_16: 1148731873
-      Raelin_13: -810301392
-      Raelin_0: -539901293
-      Raelin_18: -819501888
-      Raelin_14: 1930344441
-      Raelin_19: -1330446141
-      Raelin_10: 1799884572
-      Raelin_1: 371039983
-      Raelin_15: -1720575887
-  spritePackingTag: 
+      A1: -539901293
+      A2: 371039983
+      A_Blush: -231494423
+      A_Default: -831843799
+      A_Embarrassed: -12134526
+      A_Guilty: 1799884572
+      A_Happy: -861763730
+      A_Laugh: 752875108
+      A_Scared: 1148731873
+      A_Scold: 877658820
+      A_Shocked: -819501888
+      A_Stern: 1930344441
+      B1: 2143271235
+      B2: -984643779
+      B_Blush: 455040721
+      B_Default: 2079976379
+      B_Embarrassed: -899087398
+      B_Guilty: -1818594040
+      B_Happy: 1731016576
+      B_Laugh: -810301392
+      B_Scared: 2089198746
+      B_Scold: 1533307292
+      B_Shocked: -1330446141
+      B_Stern: -1720575887
+      Default1: -539901293
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

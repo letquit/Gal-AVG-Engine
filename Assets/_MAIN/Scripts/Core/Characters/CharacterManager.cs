@@ -142,6 +142,11 @@ namespace CHARACTERS
             // 获取角色对应的预制体资源
             result.prefab = GetPrefabForCharacter(result.castingName);
             
+            // 设置角色根目录文件夹路径
+            // 通过格式化字符串和角色名称生成完整的角色根目录路径
+            result.rootCharacterFolder = FormatCharacterPath(characterRootPathFormat, result.castingName);
+            
+            
             return result;
         }
 
@@ -174,17 +179,17 @@ namespace CHARACTERS
         /// <returns>格式化后的完整路径</returns>
         public string FormatCharacterPath(string path, string characterName) =>
             path.Replace(CHARACTER_NAME_ID, characterName);
-
+        
         /// <summary>
-        /// 根据角色信息创建对应类型的角色实例
+        /// 根据角色信息创建对应类型的角色对象
         /// </summary>
-        /// <param name="info">包含角色名称和配置信息的结构体</param>
-        /// <returns>创建的角色实例，如果类型不支持则返回null</returns>
+        /// <param name="info">包含角色配置信息、预制体和文件路径的CHARACTER_INFO对象</param>
+        /// <returns>根据角色类型创建的具体角色对象，如果类型不匹配则返回null</returns>
         private Character CreateCharacterFromInfo(CHARACTER_INFO info)
         {
             CharacterConfigData config = info.config;
             
-            // 根据角色配置中的类型创建对应的角色实例
+            // 根据角色配置中的角色类型创建对应的角色实例
             switch (config.characterType)
             {
                 case Character.CharacterType.Text:
@@ -192,18 +197,19 @@ namespace CHARACTERS
 
                 case Character.CharacterType.Sprite:
                 case Character.CharacterType.SpriteSheet:
-                    return new Character_Sprite(info.name, config, info.prefab);
+                    return new Character_Sprite(info.name, config, info.prefab, info.rootCharacterFolder);
 
                 case Character.CharacterType.Live2D:
-                    return new Character_Live2D(info.name, config, info.prefab);
+                    return new Character_Live2D(info.name, config, info.prefab, info.rootCharacterFolder);
 
                 case Character.CharacterType.Model3D:
-                    return new Character_Model3D(info.name, config, info.prefab);
+                    return new Character_Model3D(info.name, config, info.prefab, info.rootCharacterFolder);
 
                 default:
                     return null;
             }
         }
+
         
         /// <summary>
         /// 内部结构体，用于存储角色的基本信息
@@ -219,6 +225,11 @@ namespace CHARACTERS
             /// 存储投射名称的公共字段
             /// </summary>
             public string castingName = "";
+            
+            /// <summary>
+            /// 根角色文件夹路径
+            /// </summary>
+            public string rootCharacterFolder = "";
 
             /// <summary>
             /// 角色配置数据

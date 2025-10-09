@@ -12,6 +12,12 @@ namespace CHARACTERS
     public abstract class Character
     {
         /// <summary>
+        /// 启动时是否启用的常量配置
+        /// </summary>
+        public const bool ENABLE_ON_START = true;
+
+        
+        /// <summary>
         /// 角色名称
         /// </summary>
         public string name = "";
@@ -77,9 +83,10 @@ namespace CHARACTERS
         public bool isMoving => co_moving != null;
 
         /// <summary>
-        /// 指示角色当前是否可见（由子类实现具体逻辑）
+        /// 获取或设置一个值，该值指示当前对象是否可见。
         /// </summary>
-        public virtual bool isVisible => false;
+        public virtual bool isVisible { get; set; }
+
 
         /// <summary>
         /// 初始化角色对象
