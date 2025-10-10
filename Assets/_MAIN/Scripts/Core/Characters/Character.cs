@@ -27,6 +27,11 @@ namespace CHARACTERS
         public const bool DEFAULT_ORIENTATION_IS_FACING_LEFT = true;
         
         /// <summary>
+        /// 动画刷新触发器的常量定义，用于控制动画状态机中的刷新操作
+        /// </summary>
+        public const string ANIMATION_REFRESH_TRIGGER = "Refresh";
+        
+        /// <summary>
         /// 角色名称
         /// </summary>
         public string name = "";
@@ -599,6 +604,25 @@ namespace CHARACTERS
                 characterManager.SortCharacters();
         }
 
+        /// <summary>
+        /// 触发动画触发器
+        /// </summary>
+        /// <param name="animation">动画触发器的名称</param>
+        public void Animate(string animation)
+        {
+            animator.SetTrigger(animation);
+        }
+        
+        /// <summary>
+        /// 设置动画布尔状态并刷新动画
+        /// </summary>
+        /// <param name="animation">动画布尔参数的名称</param>
+        /// <param name="state">布尔状态值</param>
+        public void Animate(string animation, bool state)
+        {
+            animator.SetBool(animation, state);
+            animator.SetTrigger(ANIMATION_REFRESH_TRIGGER);
+        }
         
         /// <summary>
         /// 角色类型枚举，定义了支持的不同角色表现形式

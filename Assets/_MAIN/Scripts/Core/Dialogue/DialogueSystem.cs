@@ -93,7 +93,8 @@ namespace DIALOGUE
             
             // 创建文本构建器实例并设置相关参数
             architect = new TextArchitect(dialogueContainer.dialogueText);
-            architect.speed = 0.5f;
+            // 显示速度
+            architect.speed = 1f;
             architect.characterMultiplier = 1;
             
             // 创建对话管理器实例

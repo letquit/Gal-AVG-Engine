@@ -28,35 +28,40 @@ namespace TESTING
         
         private IEnumerator Test()
         {
-            Character_Sprite Guard = CreateCharacter("Guard as Generic") as Character_Sprite;
-            Character_Sprite GuardRed = CreateCharacter("Guard Red as Generic") as Character_Sprite;
+            // Character_Sprite Guard = CreateCharacter("Guard as Generic") as Character_Sprite;
+            // Character_Sprite GuardRed = CreateCharacter("Guard Red as Generic") as Character_Sprite;
             Character_Sprite Raelin = CreateCharacter("Raelin") as Character_Sprite;
             Character_Sprite Stella = CreateCharacter("Stella") as Character_Sprite;
             // Character_Sprite Student = CreateCharacter("Female Student 2") as Character_Sprite;
 
-            GuardRed.SetColor(Color.red);
-            
-            Raelin.SetPosition(new Vector2(.3f, 0));
-            Stella.SetPosition(new Vector2(.45f, 0));
-            Guard.SetPosition(new Vector2(.6f, 0));
-            GuardRed.SetPosition(new Vector2(.75f, 0));
-            
-            GuardRed.SetPriority(1000);
-            Stella.SetPriority(15);
-            Raelin.SetPriority(8);
-            Guard.SetPriority(30);
-            
+            Raelin.SetPosition(new Vector2(0, 0));
+            Stella.SetPosition(new Vector2(1, 0));
+
             yield return new WaitForSeconds(1);
-            
-            CharacterManager.instance.SortCharacters(new string[] {"Stella", "Raelin"});
-            
-            yield return new WaitForSeconds(1);
-            
-            CharacterManager.instance.SortCharacters();
-            
-            yield return new WaitForSeconds(1);
-            
-            CharacterManager.instance.SortCharacters(new string[] {"Raelin", "Guard Red", "Guard", "Stella"});
+
+            audioManager.SwitchAudioSet("Stella");
+            Stella.TransitionSprite(Stella.GetSprite("2"));
+            Stella.TransitionSprite(Stella.GetSprite("default 1"), layer: 1);
+            Stella.Animate("Hop");
+            yield return Stella.Say("Where did this wind chill come from?");
+
+            audioManager.SwitchAudioSet("Raelin");
+            Raelin.FaceRight();
+            Raelin.TransitionSprite(Raelin.GetSprite("A2"));
+            Raelin.TransitionSprite(Raelin.GetSprite("A_Shocked"), layer: 1);
+            Raelin.MoveToPosition(new Vector2(0.1f, 0));
+            Raelin.Animate("Shiver", true);
+            yield return Raelin.Say("I don't know -- but I hate it! {a} It's freezing!");
+
+            audioManager.SwitchAudioSet("Stella");
+            Stella.TransitionSprite(Stella.GetSprite("shy 1"), layer: 1);
+            yield return Stella.Say("Oh, it's over!");
+
+            audioManager.SwitchAudioSet("Raelin");
+            Raelin.TransitionSprite(Raelin.GetSprite("A2"));
+            Raelin.TransitionSprite(Raelin.GetSprite("A_Shocked"), layer: 1);
+            Raelin.Animate("Shiver", false);
+            yield return Raelin.Say("Thank the Lord... {a} I'm not wearing enough clothes for that crap.");
             
             yield return null;
         }
