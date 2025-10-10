@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DIALOGUE;
 using UnityEngine;
 
@@ -116,8 +117,8 @@ namespace CHARACTERS
          
             Character character = CreateCharacterFromInfo(info);
             
-            // 将新创建的角色添加到字典中
-            characters.Add(characterName.ToLower(), character);
+            // 添加角色实例到字典中
+            characters.Add(info.name.ToLower(), character);
             
             return character;
         }
@@ -210,6 +211,71 @@ namespace CHARACTERS
             }
         }
 
+        /// <summary>
+        /// 对所有角色按照优先级进行排序，活跃角色优先，非活跃角色保持原有顺序
+        /// </summary>
+        public void SortCharacters()
+        {
+            // 分离活跃角色和非活跃角色
+            List<Character> activeCharacters = characters.Values.Where(c => c.root.gameObject.activeInHierarchy && c.isVisible).ToList();
+            List<Character> inactiveCharacters = characters.Values.Except(activeCharacters).ToList();
+            
+            // 按优先级对活跃角色进行排序
+            activeCharacters.Sort((a, b) => a.priority.CompareTo(b.priority));
+            activeCharacters.Concat(inactiveCharacters);
+            
+            SortCharacters(activeCharacters);
+        }
+
+        /// <summary>
+        /// 根据指定的角色名称数组对角色进行排序，指定的角色将获得更高的优先级
+        /// </summary>
+        /// <param name="characterNames">需要优先排序的角色名称数组</param>
+        public void SortCharacters(string[] characterNames)
+        {
+            List<Character> sortedCharacters = new List<Character>();
+
+            // 根据名称获取角色对象
+            sortedCharacters = characterNames
+                .Select(name => GetCharacter(name))
+                .Where(character => character != null)
+                .ToList();
+            
+            // 获取未指定排序的角色并按优先级排序
+            List<Character> remainingCharacters = characters.Values
+                .Except(sortedCharacters)
+                .OrderBy(character => character.priority)
+                .ToList();
+            
+            // 反转指定排序的角色列表
+            sortedCharacters.Reverse();
+
+            // 为指定排序的角色设置新的优先级
+            int startingPriority = remainingCharacters.Count > 0 ? remainingCharacters.Max(c => c.priority) : 0;
+            for (int i = 0; i < sortedCharacters.Count; i++)
+            {
+                Character character = sortedCharacters[i];
+                character.SetPriority(startingPriority + i + 1, false);
+            }
+            
+            // 合并所有角色并进行排序
+            List<Character> allCharacters = remainingCharacters.Concat(sortedCharacters).ToList();
+            SortCharacters(allCharacters);
+        }
+
+        /// <summary>
+        /// 根据角色列表设置角色在层级中的显示顺序
+        /// </summary>
+        /// <param name="charactersSortingOrder">按排序顺序排列的角色列表</param>
+        private void SortCharacters(List<Character> charactersSortingOrder)
+        {
+            int i = 0;
+            foreach (Character character in charactersSortingOrder)
+            {
+                Debug.Log($"{character.name} priority is {character.priority}");
+                character.root.SetSiblingIndex(i++);
+            }
+        }
         
         /// <summary>
         /// 内部结构体，用于存储角色的基本信息

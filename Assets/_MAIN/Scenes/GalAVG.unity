@@ -3332,7 +3332,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u4F60\u597D"
+  m_text: Dialogue Text Will Go Here. We are going to be saying a lot in this dialogue
+    box right here!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}
   m_sharedMaterial: {fileID: 8470918057969326350, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}

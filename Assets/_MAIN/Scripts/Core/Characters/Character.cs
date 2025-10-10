@@ -81,6 +81,12 @@ namespace CHARACTERS
         protected bool facingLeft = DEFAULT_ORIENTATION_IS_FACING_LEFT;
         
         /// <summary>
+        /// 获取或设置优先级属性
+        /// </summary>
+        public int priority { get; protected set; }
+
+        
+        /// <summary>
         /// 获取角色管理器实例的引用
         /// </summary>
         protected CharacterManager characterManager => CharacterManager.instance;
@@ -578,6 +584,21 @@ namespace CHARACTERS
             Debug.Log("Cannot flip a character of this type!");
             yield return null;
         }
+
+        /// <summary>
+        /// 设置优先级，并可选择是否自动对UI上的角色进行排序
+        /// </summary>
+        /// <param name="priority">优先级数值</param>
+        /// <param name="autoSortCharactersOnUI">是否自动对UI上的角色进行排序，默认为true</param>
+        public void SetPriority(int priority, bool autoSortCharactersOnUI = true)
+        {
+            this.priority = priority;
+            
+            // 如果需要自动排序，则调用角色管理器的排序方法
+            if (autoSortCharactersOnUI)
+                characterManager.SortCharacters();
+        }
+
         
         /// <summary>
         /// 角色类型枚举，定义了支持的不同角色表现形式

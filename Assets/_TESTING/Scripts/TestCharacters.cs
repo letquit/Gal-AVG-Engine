@@ -28,41 +28,35 @@ namespace TESTING
         
         private IEnumerator Test()
         {
-            // Character_Sprite Guard = CreateCharacter("Guard as Generic") as Character_Sprite;
+            Character_Sprite Guard = CreateCharacter("Guard as Generic") as Character_Sprite;
+            Character_Sprite GuardRed = CreateCharacter("Guard Red as Generic") as Character_Sprite;
             Character_Sprite Raelin = CreateCharacter("Raelin") as Character_Sprite;
             Character_Sprite Stella = CreateCharacter("Stella") as Character_Sprite;
             // Character_Sprite Student = CreateCharacter("Female Student 2") as Character_Sprite;
 
-            Raelin.SetPosition(Vector2.zero);
-            Stella.SetPosition(new Vector2(1, 0));
-
+            GuardRed.SetColor(Color.red);
+            
+            Raelin.SetPosition(new Vector2(.3f, 0));
+            Stella.SetPosition(new Vector2(.45f, 0));
+            Guard.SetPosition(new Vector2(.6f, 0));
+            GuardRed.SetPosition(new Vector2(.75f, 0));
+            
+            GuardRed.SetPriority(1000);
+            Stella.SetPriority(15);
+            Raelin.SetPriority(8);
+            Guard.SetPriority(30);
+            
             yield return new WaitForSeconds(1);
-
-            yield return Raelin.Flip(.3f);
             
-            yield return Raelin.FaceRight(immediate: true);
+            CharacterManager.instance.SortCharacters(new string[] {"Stella", "Raelin"});
             
-            yield return Raelin.FaceLeft(immediate: true);
+            yield return new WaitForSeconds(1);
             
-            audioManager.SwitchAudioSet("Raelin");
-            Stella.UnHighlight();
-            yield return Raelin.Say("我想说点什么。");
-
-            audioManager.SwitchAudioSet("Stella");
-            Raelin.UnHighlight();
-            Stella.Highlight();
-            yield return Stella.Say("但我也想说点什么！{c}我可以先说吗？");
-
-            audioManager.SwitchAudioSet("Raelin");
-            Raelin.Highlight();
-            Stella.UnHighlight();
-            yield return Raelin.Say("当然，{a}请便。");
-
-            audioManager.SwitchAudioSet("Stella");
-            Stella.Highlight();
-            Raelin.UnHighlight();
-            Stella.TransitionSprite(Stella.GetSprite("shy 1"), layer: 1);
-            yield return Stella.Say("好耶！");
+            CharacterManager.instance.SortCharacters();
+            
+            yield return new WaitForSeconds(1);
+            
+            CharacterManager.instance.SortCharacters(new string[] {"Raelin", "Guard Red", "Guard", "Stella"});
             
             yield return null;
         }
