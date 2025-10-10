@@ -247,5 +247,31 @@ namespace CHARACTERS
             co_highlighting = null;
         }
 
+        /// <summary>
+        /// 使角色面向指定方向，并等待翻转动画完成
+        /// </summary>
+        /// <param name="faceLeft">true表示面向左侧，false表示面向右侧</param>
+        /// <param name="speedMultiplier">翻转速度的倍数，默认为1.0</param>
+        /// <param name="immediate">是否立即翻转，true表示跳过动画直接完成翻转</param>
+        /// <returns>IEnumerator迭代器，用于协程执行</returns>
+        public override IEnumerator FaceDirection(bool faceLeft, float speedMultiplier, bool immediate)
+        {
+            // 通知所有图层开始面向指定方向
+            foreach (CharacterSpriteLayer layer in layers)
+            {
+                if (faceLeft)
+                    layer.FaceLeft(speedMultiplier, immediate);
+                else
+                    layer.FaceRight(speedMultiplier, immediate);
+            }
+            
+            yield return null;
+
+            // 等待所有图层完成翻转动画
+            while (layers.Any(l => l.isFlipping))
+                yield return null;
+            
+            co_flipping = null;
+        }
     }
 }

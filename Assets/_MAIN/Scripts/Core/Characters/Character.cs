@@ -20,7 +20,11 @@ namespace CHARACTERS
         /// 未高亮状态下的暗化强度常量值
         /// </summary>
         private const float UNHIGHLIGHTED_DARKEN_STRENGTH = 0.65f;
-
+        
+        /// <summary>
+        /// 默认方向是否朝左的常量定义
+        /// </summary>
+        public const bool DEFAULT_ORIENTATION_IS_FACING_LEFT = true;
         
         /// <summary>
         /// 角色名称
@@ -70,8 +74,11 @@ namespace CHARACTERS
         /// 获取或设置当前是否处于高亮状态
         /// </summary>
         public bool highlighted { get; protected set; } = true;
-
         
+        /// <summary>
+        /// 面向左侧的默认方向
+        /// </summary>
+        protected bool facingLeft = DEFAULT_ORIENTATION_IS_FACING_LEFT;
         
         /// <summary>
         /// 获取角色管理器实例的引用
@@ -109,6 +116,11 @@ namespace CHARACTERS
         protected Coroutine co_highlighting;
 
         /// <summary>
+        /// 协程对象，用于控制翻转动画或操作的执行流程
+        /// </summary>
+        protected Coroutine co_flipping;
+
+        /// <summary>
         /// 指示角色是否正在揭示过程中
         /// </summary>
         public bool isRevealing => co_revealing != null;
@@ -144,6 +156,20 @@ namespace CHARACTERS
         /// </summary>
         public virtual bool isVisible { get; set; }
 
+        /// <summary>
+        /// 获取角色是否面向左方
+        /// </summary>
+        public bool isFacingLeft => facingLeft;
+        
+        /// <summary>
+        /// 获取角色是否面向右方
+        /// </summary>
+        public bool isFacingRight => !facingLeft;
+        
+        /// <summary>
+        /// 获取角色是否正在翻转
+        /// </summary>
+        public bool isFlipping => co_flipping != null;
 
         /// <summary>
         /// 初始化角色对象
@@ -485,6 +511,71 @@ namespace CHARACTERS
         public virtual IEnumerator Highlighting(bool highlight, float speedMultiplier)
         {
             Debug.Log("Highlighting is not available on this character type!");
+            yield return null;
+        }
+        
+        /// <summary>
+        /// 翻转角色面向方向的公共接口方法
+        /// </summary>
+        /// <param name="speed">翻转速度倍数，默认为1</param>
+        /// <param name="immediate">是否立即翻转，默认为false</param>
+        /// <returns>控制翻转过程的协程对象</returns>
+        public Coroutine Flip(float speed = 1, bool immediate = false)
+        {
+            if (isFacingLeft)
+                return FaceRight(speed, immediate);
+            else
+                return FaceLeft(speed, immediate);
+        }
+
+        /// <summary>
+        /// 使角色面向左侧
+        /// </summary>
+        /// <param name="speed">翻转速度倍数，默认为1</param>
+        /// <param name="immediate">是否立即翻转，默认为false</param>
+        /// <returns>控制翻转过程的协程对象</returns>
+        public Coroutine FaceLeft(float speed = 1, bool immediate = false)
+        {
+            // 如果正在翻转中，则停止当前翻转协程
+            if (isFlipping)
+                characterManager.StopCoroutine(co_flipping);
+            
+            facingLeft = true;
+            // 启动新的面向方向协程
+            co_flipping = characterManager.StartCoroutine(FaceDirection(facingLeft, speed, immediate));
+            
+            return co_flipping;
+        }
+        
+        /// <summary>
+        /// 使角色面向右侧
+        /// </summary>
+        /// <param name="speed">翻转速度倍数，默认为1</param>
+        /// <param name="immediate">是否立即翻转，默认为false</param>
+        /// <returns>控制翻转过程的协程对象</returns>
+        public Coroutine FaceRight(float speed = 1, bool immediate = false)
+        {
+            // 如果正在翻转中，则停止当前翻转协程
+            if (isFlipping)
+                characterManager.StopCoroutine(co_flipping);
+            
+            facingLeft = false;
+            // 启动新的面向方向协程
+            co_flipping = characterManager.StartCoroutine(FaceDirection(facingLeft, speed, immediate));
+            
+            return co_flipping;
+        }
+
+        /// <summary>
+        /// 面向指定方向的虚方法，子类需要重写此方法来实现具体的翻转逻辑
+        /// </summary>
+        /// <param name="faceLeft">是否面向左侧</param>
+        /// <param name="speedMultiplier">翻转速度倍数</param>
+        /// <param name="immediate">是否立即翻转</param>
+        /// <returns>控制翻转过程的枚举器</returns>
+        public virtual IEnumerator FaceDirection(bool faceLeft, float speedMultiplier, bool immediate)
+        {
+            Debug.Log("Cannot flip a character of this type!");
             yield return null;
         }
         

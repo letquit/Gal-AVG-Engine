@@ -62,6 +62,16 @@ namespace CHARACTERS
         /// 颜色变化协程引用，用于控制UI元素颜色渐变效果
         /// </summary>
         private Coroutine co_changingColor = null;
+        
+        /// <summary>
+        /// 协程对象，用于控制角色翻转的动画过程
+        /// </summary>
+        private Coroutine co_flipping = null;
+
+        /// <summary>
+        /// 标识角色当前是否面向左侧的布尔值，默认值由Character类的DEFAULT_ORIENTATION_IS_FACING_LEFT常量决定
+        /// </summary>
+        private bool isFacingLeft = Character.DEFAULT_ORIENTATION_IS_FACING_LEFT;
 
         /// <summary>
         /// 判断是否正在进行图层过渡动画。
@@ -77,6 +87,11 @@ namespace CHARACTERS
         /// 判断是否正在进行颜色变换操作。
         /// </summary>
         public bool isChangingColor =>  co_changingColor != null;
+        
+        /// <summary>
+        /// 获取当前是否正在执行翻转操作的状态
+        /// </summary>
+        public bool isFlipping => co_flipping != null;
         
         /// <summary>
         /// 构造函数，初始化一个角色精灵图层对象。
@@ -290,6 +305,91 @@ namespace CHARACTERS
             }
             
             co_changingColor = null;
+        }
+
+        /// <summary>
+        /// 使角色面向左侧
+        /// </summary>
+        /// <param name="speed">翻转动画的速度倍数，默认为1</param>
+        /// <param name="immediate">是否立即翻转而不使用动画过渡，默认为false</param>
+        /// <returns>控制翻转动画的协程对象</returns>
+        public Coroutine FaceLeft(float speed = 1, bool immediate = false)
+        {
+            if (isFlipping)
+                characterManager.StopCoroutine(co_flipping);
+            
+            isFacingLeft = true;
+            co_flipping = characterManager.StartCoroutine(FaceDirection(isFacingLeft, speed, immediate));
+            
+            return co_flipping;
+        }
+
+        /// <summary>
+        /// 使角色面向右侧
+        /// </summary>
+        /// <param name="speed">翻转动画的速度倍数，默认为1</param>
+        /// <param name="immediate">是否立即翻转而不使用动画过渡，默认为false</param>
+        /// <returns>控制翻转动画的协程对象</returns>
+        public Coroutine FaceRight(float speed = 1, bool immediate = false)
+        {
+            if (isFlipping)
+                characterManager.StopCoroutine(co_flipping);
+            
+            isFacingLeft = false;
+            co_flipping = characterManager.StartCoroutine(FaceDirection(isFacingLeft, speed, immediate));
+            
+            return co_flipping;
+        }
+        
+        /// <summary>
+        /// 翻转具体Sprite的面向方向
+        /// </summary>
+        /// <param name="speed">翻转动画的速度倍数，默认为1</param>
+        /// <param name="immediate">是否立即翻转而不使用动画过渡，默认为false</param>
+        /// <returns>控制翻转动画的协程对象</returns>
+        public Coroutine Flip(float speed = 1, bool immediate = false)
+        {
+            if (isFacingLeft)
+                return FaceRight(speed, immediate);
+            else
+                return FaceLeft(speed, immediate);
+        }
+        
+        /// <summary>
+        /// 使角色面向指定方向的协程函数
+        /// </summary>
+        /// <param name="faceLeft">是否面向左侧，true表示向左，false表示向右</param>
+        /// <param name="speedMultiplier">过渡速度倍数，用于控制翻转动画的速度</param>
+        /// <param name="immediate">是否立即翻转，true表示立即翻转不带动画过渡，false表示带动画过渡</param>
+        /// <returns>IEnumerator枚举器，用于协程执行</returns>
+        private IEnumerator FaceDirection(bool faceLeft, float speedMultiplier, bool immediate)
+        {
+            // 计算新的缩放值以实现角色翻转
+            Vector3 currentScale = renderer.transform.localScale;
+            float currentX = System.Math.Abs(currentScale.x);
+            float xScale = faceLeft ? currentX : -currentX;
+            Vector3 newScale = new Vector3(xScale, currentScale.y, currentScale.z);
+
+            if (!immediate)
+            {
+                // 创建新的渲染器并进行动画过渡
+                Image newRenderer = CreateRenderer(renderer.transform.parent);
+                newRenderer.transform.localScale = newScale;
+        
+                transitionSpeedMultiplier = speedMultiplier;
+                TryStartLevelingAlphas();
+
+                // 等待动画过渡完成
+                while (isLevelingAlpha)
+                    yield return null;
+            }
+            else
+            {
+                // 立即设置新的缩放值
+                renderer.transform.localScale = newScale;
+            }
+
+            co_flipping = null;
         }
     }
 }
