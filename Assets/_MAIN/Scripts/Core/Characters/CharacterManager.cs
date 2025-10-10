@@ -58,11 +58,33 @@ namespace CHARACTERS
         /// </summary>
         [SerializeField]
         private RectTransform _characterpanel = null;
+        
+        /// <summary>
+        /// 序列化字段，用于引用Live2D角色面板的RectTransform组件
+        /// </summary>
+        [SerializeField]
+        private RectTransform _characterpanel_live2D = null;
+        
+        /// <summary>
+        /// 序列化字段，用于引用3D模型角色面板的RectTransform组件
+        /// </summary>
+        [SerializeField]
+        private RectTransform _characterpanel_model3D = null;
 
         /// <summary>
         /// 获取角色面板RectTransform的公共属性
         /// </summary>
         public RectTransform characterPanel => _characterpanel;
+        
+        /// <summary>
+        /// 获取角色面板Live2D的RectTransform引用
+        /// </summary>
+        public RectTransform characterPanelLive2D => _characterpanel_live2D;
+        
+        /// <summary>
+        /// 获取角色面板3D模型的RectTransform引用
+        /// </summary>
+        public RectTransform characterPanelModel3D => _characterpanel_model3D;
         
         /// <summary>
         /// 初始化单例实例

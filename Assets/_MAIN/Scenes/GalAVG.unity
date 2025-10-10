@@ -86467,6 +86467,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterpanel: {fileID: 1832920806}
+  _characterpanel_live2D: {fileID: 1948864983}
+  _characterpanel_model3D: {fileID: 0}
 --- !u!1 &1513035366
 GameObject:
   m_ObjectHideFlags: 0
@@ -108183,7 +108185,7 @@ GameObject:
   - component: {fileID: 1948864983}
   - component: {fileID: 1948864984}
   m_Layer: 6
-  m_Name: Characters
+  m_Name: Characters - Live2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121238,6 +121240,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 'Character - [Koharu]'
       objectReference: {fileID: 0}
+    - target: {fileID: 5485939598755904664, guid: f7a453e8110b20144a2306802d378249, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -121498,6 +121504,10 @@ PrefabInstance:
     - target: {fileID: 2309739473404480574, guid: 5b808892108fb7442bda5466621b79c3, type: 3}
       propertyPath: m_Name
       value: 'Character - [Mao]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309739473404480574, guid: 5b808892108fb7442bda5466621b79c3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2415219507018221201, guid: 5b808892108fb7442bda5466621b79c3, type: 3}
       propertyPath: m_Mesh
@@ -122969,6 +122979,10 @@ PrefabInstance:
     - target: {fileID: 4334087604067184028, guid: ffe714d0221cca349aa529c6b785946d, type: 3}
       propertyPath: m_Name
       value: 'Character - [Natori]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4334087604067184028, guid: ffe714d0221cca349aa529c6b785946d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5274280429381437326, guid: ffe714d0221cca349aa529c6b785946d, type: 3}
       propertyPath: m_Mesh
@@ -124487,6 +124501,10 @@ PrefabInstance:
     - target: {fileID: 9086697851474829492, guid: d196ccc719460614c8e056f024d5832c, type: 3}
       propertyPath: m_Name
       value: 'Character - [Rice]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 9086697851474829492, guid: d196ccc719460614c8e056f024d5832c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

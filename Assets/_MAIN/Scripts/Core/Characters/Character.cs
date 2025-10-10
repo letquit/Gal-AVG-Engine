@@ -196,8 +196,24 @@ namespace CHARACTERS
 
             if (prefab != null)
             {
+                // 根据角色类型确定父面板
+                RectTransform parentPanel = null;
+                switch (config.characterType)
+                {
+                    case CharacterType.Sprite:
+                    case CharacterType.SpriteSheet:
+                        parentPanel = characterManager.characterPanel;
+                        break;
+                    case CharacterType.Live2D:
+                        parentPanel = characterManager.characterPanelLive2D;
+                        break;
+                    case CharacterType.Model3D:
+                        parentPanel = characterManager.characterPanelModel3D;
+                        break;
+                }
+                
                 // 实例化角色预制体，并设置其父节点为角色面板
-                GameObject ob = Object.Instantiate(prefab, characterManager.characterPanel);
+                GameObject ob = Object.Instantiate(prefab, parentPanel);
                 // 设置角色名称
                 ob.name = characterManager.FormatCharacterPath(characterManager.characterPrefabNameFormat, name);
                 ob.SetActive(true);
