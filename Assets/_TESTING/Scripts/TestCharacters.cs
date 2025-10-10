@@ -39,6 +39,15 @@ namespace TESTING
             Raelin.SetPosition(new Vector2(0, 0));
             Mao.SetPosition(new Vector2(1, 0));
             
+            yield return new WaitForSeconds(1);
+            
+            Mao.SetMotion("Healing Heart");
+            yield return new WaitForSeconds(3);
+            
+            Mao.SetMotion("Pleased");
+            yield return new WaitForSeconds(2);
+            
+            Mao.SetMotion("Bounce");
             yield return null;
         }
     }
