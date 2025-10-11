@@ -41,13 +41,9 @@ namespace TESTING
             
             yield return new WaitForSeconds(1);
             
-            Mao.SetMotion("Healing Heart");
-            yield return new WaitForSeconds(3);
-            
-            Mao.SetMotion("Pleased");
-            yield return new WaitForSeconds(2);
-            
+            Mao.SetExpression(5);
             Mao.SetMotion("Bounce");
+            
             yield return null;
         }
     }
