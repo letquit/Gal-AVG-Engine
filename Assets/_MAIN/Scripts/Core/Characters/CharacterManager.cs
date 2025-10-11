@@ -291,13 +291,16 @@ namespace CHARACTERS
         /// <param name="charactersSortingOrder">按排序顺序排列的角色列表</param>
         private void SortCharacters(List<Character> charactersSortingOrder)
         {
+            // 按顺序设置每个角色的层级索引和排序优先级
             int i = 0;
             foreach (Character character in charactersSortingOrder)
             {
-                Debug.Log($"{character.name} priority is {character.priority}");
+                // Debug.Log($"{character.name} priority is {character.priority}");
                 character.root.SetSiblingIndex(i++);
+                character.OnSort(i);
             }
         }
+
         
         /// <summary>
         /// 内部结构体，用于存储角色的基本信息

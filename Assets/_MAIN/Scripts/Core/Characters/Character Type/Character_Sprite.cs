@@ -70,7 +70,7 @@ namespace CHARACTERS
             GetLayers();
 
             // Show();
-            Debug.Log($"Created Sprite Character: '{name}'");
+            // Debug.Log($"Created Sprite Character: '{name}'");
         }
 
         /// <summary>

@@ -639,6 +639,15 @@ namespace CHARACTERS
             animator.SetBool(animation, state);
             animator.SetTrigger(ANIMATION_REFRESH_TRIGGER);
         }
+
+        /// <summary>
+        /// 当执行排序操作时触发的虚方法，可在派生类中重写以实现自定义排序逻辑
+        /// </summary>
+        /// <param name="sortingIndex">排序索引，用于指定排序的列或字段</param>
+        public virtual void OnSort(int sortingIndex)
+        {
+            return;
+        }
         
         /// <summary>
         /// 角色类型枚举，定义了支持的不同角色表现形式
