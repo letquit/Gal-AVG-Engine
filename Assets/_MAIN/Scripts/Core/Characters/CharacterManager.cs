@@ -66,10 +66,10 @@ namespace CHARACTERS
         private RectTransform _characterpanel_live2D = null;
         
         /// <summary>
-        /// 序列化字段，用于引用3D模型角色面板的RectTransform组件
+        /// 序列化字段，用于引用3D模型角色面板的Transform组件
         /// </summary>
         [SerializeField]
-        private RectTransform _characterpanel_model3D = null;
+        private Transform _characterpanel_model3D = null;
 
         /// <summary>
         /// 获取角色面板RectTransform的公共属性
@@ -82,9 +82,9 @@ namespace CHARACTERS
         public RectTransform characterPanelLive2D => _characterpanel_live2D;
         
         /// <summary>
-        /// 获取角色面板3D模型的RectTransform引用
+        /// 获取角色面板3D模型的Transform引用
         /// </summary>
-        public RectTransform characterPanelModel3D => _characterpanel_model3D;
+        public Transform characterPanelModel3D => _characterpanel_model3D;
         
         /// <summary>
         /// 初始化单例实例
@@ -299,6 +299,24 @@ namespace CHARACTERS
                 character.root.SetSiblingIndex(i++);
                 character.OnSort(i);
             }
+        }
+
+        /// <summary>
+        /// 根据角色类型获取对应角色的数量
+        /// </summary>
+        /// <param name="charType">要统计的角色类型</param>
+        /// <returns>指定类型的角色数量</returns>
+        public int GetCharacterCountFromCharacterType(Character.CharacterType charType)
+        {
+            int count = 0;
+            // 遍历所有角色，统计指定类型的数量
+            foreach (var c in characters.Values)
+            {
+                if (c.config.characterType == charType)
+                    count++;
+            }
+            
+            return count;
         }
 
         

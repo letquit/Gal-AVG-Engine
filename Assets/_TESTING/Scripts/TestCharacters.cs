@@ -22,8 +22,8 @@ namespace TESTING
             {
                 audioManager = FindFirstObjectByType<AudioManager>();
             }
-            
-            StartCoroutine(Test());
+            // StartCoroutine(Test());
+            StartCoroutine(Test1());
         }
         
         private IEnumerator Test()
@@ -70,6 +70,22 @@ namespace TESTING
             Mao.SetPriority(5);
             
             yield return null;
+        }
+
+        private IEnumerator Test1()
+        {
+            Character_Model3D PunChan = CreateCharacter("PunChan") as Character_Model3D;
+            Character_Model3D PunChan2 = CreateCharacter("PunChan2 as PunChan") as Character_Model3D;
+
+            yield return new WaitForSeconds(1f);
+
+            PunChan2.MoveToPosition(Vector2.zero);
+            yield return PunChan.MoveToPosition(new Vector2(1, 0));
+             
+            PunChan.SetMotion("Wave");
+            
+            yield return new WaitForSeconds(1f);
+            PunChan2.SetMotion("Wave");
         }
     }
 }

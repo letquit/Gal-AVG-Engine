@@ -93,3 +93,11 @@ MonoBehaviour:
     nameFont: {fileID: 11400000, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}
     dialogueFont: {fileID: 11400000, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}
     characterPrefab: {fileID: 9086697851474829492, guid: d196ccc719460614c8e056f024d5832c, type: 3}
+  - name: PunChan
+    alias: pun
+    characterType: 4
+    nameColor: {r: 1, g: 1, b: 1, a: 1}
+    dialogueColor: {r: 1, g: 1, b: 1, a: 1}
+    nameFont: {fileID: 11400000, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}
+    dialogueFont: {fileID: 11400000, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}
+    characterPrefab: {fileID: 2786817942002833739, guid: 8199a8f65fce3684095be5338196a85c, type: 3}

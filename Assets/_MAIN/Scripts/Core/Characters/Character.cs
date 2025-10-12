@@ -197,7 +197,9 @@ namespace CHARACTERS
             if (prefab != null)
             {
                 // 根据角色类型确定父面板
-                RectTransform parentPanel = null;
+                // Transform parentPanel = (config.characterType == CharacterType.Live2D ? characterManager.characterPanelLive2D : characterManager.characterPanel);
+                Transform parentPanel = null;
+                
                 switch (config.characterType)
                 {
                     case CharacterType.Sprite:
@@ -419,8 +421,6 @@ namespace CHARACTERS
                 }
             }
     
-            // 移动完成日志输出
-            Debug.Log("Done moving.");
             co_moving = null;
         }
 
