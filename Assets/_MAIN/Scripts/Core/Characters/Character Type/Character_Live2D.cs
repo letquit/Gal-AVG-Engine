@@ -31,11 +31,14 @@ namespace CHARACTERS
         private float xScale;
 
         /// <summary>
-        /// 获取或设置角色是否可见。当正在显示或隐藏过程中，或者透明度为1时返回true。
+        /// 获取或设置对象的可见状态
         /// </summary>
+        /// <remarks>
+        /// 可见性由两个条件决定：是否正在显示(isRevealing) 或者 渲染控制器的不透明度大于0
+        /// </remarks>
         public override bool isVisible
         {
-            get => isRevealing || renderController.Opacity == 1;
+            get => isRevealing || renderController.Opacity > 0;
             set => renderController.Opacity = value ? 1 : 0;
         }
         
@@ -138,56 +141,64 @@ namespace CHARACTERS
         }
 
         /// <summary>
-        /// 改变角色颜色的协程方法
+        /// 改变模型颜色的协程方法
         /// </summary>
-        /// <param name="color">目标颜色</param>
-        /// <param name="speed">颜色变化的速度倍数</param>
-        /// <returns>IEnumerator类型的协程迭代器</returns>
-        public override IEnumerator ChangingColor(Color color, float speed)
+        /// <param name="speed">颜色变换速度</param>
+        /// <returns>IEnumerator协程迭代器</returns>
+        public override IEnumerator ChangingColor(float speed)
         {
-            yield return ChangingColorL2D(color, speed);
+            // 调用底层颜色变换逻辑
+            yield return ChangingColorL2D(speed);
             
+            // 清空颜色变换协程引用
             co_changingColor = null;
         }
-
+        
         /// <summary>
-        /// 高亮角色颜色的协程方法
+        /// 高亮显示的协程方法
         /// </summary>
-        /// <param name="highlight">是否启用高亮</param>
-        /// <param name="speedMultiplier">颜色变化速度倍数</param>
-        /// <returns>IEnumerator类型的协程迭代器</returns>
-        public override IEnumerator Highlighting(bool highlight, float speedMultiplier)
+        /// <param name="speedMultiplier">速度倍数</param>
+        /// <returns>IEnumerator协程迭代器</returns>
+        public override IEnumerator Highlighting(float speedMultiplier)
         {
-            Color targetColor = displayColor;
-
-            yield return ChangingColorL2D(targetColor, speedMultiplier);
+            // 如果当前没有进行颜色变换，则执行颜色变换
+            if (!isChangingColor)
+                yield return ChangingColorL2D(speedMultiplier);
             
+            // 清空高亮协程引用
             co_highlighting = null;
         }
-
+        
         /// <summary>
-        /// 实际执行颜色变化逻辑的内部协程方法
+        /// Live2D模型颜色变换的核心实现逻辑
         /// </summary>
-        /// <param name="targetColor">目标颜色</param>
-        /// <param name="speed">颜色变化速度倍数</param>
-        /// <returns>IEnumerator类型的协程迭代器</returns>
-        private IEnumerator ChangingColorL2D(Color targetColor, float speed)
+        /// <param name="speed">变换速度</param>
+        /// <returns>IEnumerator协程迭代器</returns>
+        private IEnumerator ChangingColorL2D(float speed)
         {
+            // 获取所有渲染器组件
             CubismRenderer[] renderers = renderController.Renderers;
+            // 记录起始颜色
             Color startColor = renderers[0].Color;
             
+            // 颜色变换进度百分比
             float colorPrecent = 0;
 
+            // 执行颜色渐变动画
             while (colorPrecent != 1)
             {
+                // 根据时间和速度计算当前进度
                 colorPrecent = Mathf.Clamp01(colorPrecent + (DEFAULT_TRANSITION_SPEED * speed * Time.deltaTime));
-                Color currentColor = Color.Lerp(startColor, targetColor, colorPrecent);
+                // 计算当前帧的颜色值
+                Color currentColor = Color.Lerp(startColor, displayColor, colorPrecent);
 
+                // 将计算出的颜色应用到所有渲染器
                 foreach (CubismRenderer renderer in renderController.Renderers)
                 {
                     renderer.Color = currentColor;
                 }
                 
+                // 等待下一帧继续执行
                 yield return null;
             }
         }

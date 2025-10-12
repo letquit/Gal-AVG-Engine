@@ -470,7 +470,7 @@ namespace CHARACTERS
                 characterManager.StopCoroutine(co_changingColor);
             
             // 启动新的变色协程
-            co_changingColor = characterManager.StartCoroutine(ChangingColor(displayColor, speed));
+            co_changingColor = characterManager.StartCoroutine(ChangingColor(speed));
             
             return co_changingColor;
         }
@@ -478,10 +478,9 @@ namespace CHARACTERS
         /// <summary>
         /// 颜色变化协程
         /// </summary>
-        /// <param name="color">目标颜色</param>
         /// <param name="speed">变化速度</param>
         /// <returns>枚举器</returns>
-        public virtual IEnumerator ChangingColor(Color color, float speed)
+        public virtual IEnumerator ChangingColor(float speed)
         {
             Debug.Log("Color changing is not applicable on this character type!");
             yield return null;
@@ -503,7 +502,7 @@ namespace CHARACTERS
                 characterManager.StopCoroutine(co_highlighting);
 
             highlighted = true;
-            co_highlighting = characterManager.StartCoroutine(Highlighting(highlighted, speed));
+            co_highlighting = characterManager.StartCoroutine(Highlighting(speed));
             
             return co_highlighting;
         }
@@ -524,7 +523,7 @@ namespace CHARACTERS
                 characterManager.StopCoroutine(co_highlighting);
 
             highlighted = false;
-            co_highlighting = characterManager.StartCoroutine(Highlighting(highlighted, speed));
+            co_highlighting = characterManager.StartCoroutine(Highlighting(speed));
             
             return co_highlighting;
         }
@@ -532,10 +531,9 @@ namespace CHARACTERS
         /// <summary>
         /// 高亮效果的核心实现协程（虚方法，需要子类重写具体实现）
         /// </summary>
-        /// <param name="highlight">是否启用高亮效果</param>
         /// <param name="speedMultiplier">速度倍数</param>
         /// <returns>协程迭代器</returns>
-        public virtual IEnumerator Highlighting(bool highlight, float speedMultiplier)
+        public virtual IEnumerator Highlighting(float speedMultiplier)
         {
             Debug.Log("Highlighting is not available on this character type!");
             yield return null;

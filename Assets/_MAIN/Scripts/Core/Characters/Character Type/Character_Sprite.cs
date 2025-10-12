@@ -46,11 +46,15 @@ namespace CHARACTERS
         private string artAssetsDirectory = "";
 
         /// <summary>
-        /// 获取或设置角色是否可见。当正在显示或透明度为1时认为可见。
+        /// 获取或设置控件的可见状态
         /// </summary>
+        /// <remarks>
+        /// 可见性由两个条件决定：是否正在显示(isRevealing)或根CanvasGroup的透明度是否大于0
+        /// 设置可见性时，会直接控制根CanvasGroup的alpha值(1表示完全不透明，0表示完全透明)
+        /// </remarks>
         public override bool isVisible
         {
-            get { return isRevealing || rootCG.alpha == 1f; }
+            get { return isRevealing || rootCG.alpha > 0; }
             set { rootCG.alpha = value ? 1f : 0f;}
         }
         
@@ -206,14 +210,13 @@ namespace CHARACTERS
         /// <summary>
         /// 异步改变角色精灵的颜色
         /// </summary>
-        /// <param name="color">目标颜色</param>
         /// <param name="speed">颜色变换速度</param>
         /// <returns>用于协程的IEnumerator对象</returns>
-        public override IEnumerator ChangingColor(Color color, float speed)
+        public override IEnumerator ChangingColor(float speed)
         {
             // 启动所有图层的颜色过渡动画
             foreach (CharacterSpriteLayer layer in layers)
-                layer.TransitionColor(color, speed);
+                layer.TransitionColor(displayColor, speed);
 
             yield return null;
 
@@ -227,10 +230,9 @@ namespace CHARACTERS
         /// <summary>
         /// 高亮显示字符精灵的协程函数
         /// </summary>
-        /// <param name="highlight">是否启用高亮显示（注意：根据代码实现，此参数未被使用）</param>
         /// <param name="speedMultiplier">颜色变换的速度倍数</param>
         /// <returns>返回一个迭代器对象，用于协程执行</returns>
-        public override IEnumerator Highlighting(bool highlight, float speedMultiplier)
+        public override IEnumerator Highlighting(float speedMultiplier)
         {
             Color targetColor = displayColor;
 
