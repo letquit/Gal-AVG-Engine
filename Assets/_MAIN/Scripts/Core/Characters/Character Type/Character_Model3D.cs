@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +26,11 @@ namespace CHARACTERS
         /// 角色在场景中的堆叠深度间隔，用于防止模型重叠。
         /// </summary>
         public const int CHARACTER_STACKING_DEPTH = 15;
+
+        /// <summary>
+        /// 表达式过渡速度常量，用于控制表情或状态切换的动画速度
+        /// </summary>
+        public const float EXPRESSION_TRANSITION_SPEED = 100f;
         
         private GameObject renderGroup;
         private Camera camera;
@@ -32,6 +39,8 @@ namespace CHARACTERS
         private SkinnedMeshRenderer modelExpressionController;
 
         private RawImage renderer;
+        
+        private Dictionary<string, Coroutine> expressionCoroutines = new Dictionary<string, Coroutine>();
         
         /// <summary>
         /// 构造函数，初始化3D角色对象。
@@ -153,6 +162,74 @@ namespace CHARACTERS
             {
                 modelAnimator.Play(motionName);
             }
+        }
+
+        /// <summary>
+        /// 设置角色表情的混合形状权重，支持平滑过渡动画
+        /// </summary>
+        /// <param name="blendShapeName">混合形状的名称</param>
+        /// <param name="weight">目标权重值，范围通常在0-100之间</param>
+        /// <param name="speedMultiplier">过渡速度倍数，默认为1，值越大过渡越快</param>
+        /// <param name="immediate">是否立即设置权重，true表示立即设置，false表示平滑过渡</param>
+        public void SetExpression(string blendShapeName, float weight, float speedMultiplier = 1,
+            bool immediate = false)
+        {
+            // 检查表情控制器是否存在
+            if (modelExpressionController == null)
+            {
+                Debug.LogWarning($"Character {name} does not have an expression controller. Blend Shapes may be null. [{modelExpressionController.name}]");
+                return;
+            }
+            
+            // 如果该混合形状正在执行过渡动画，则停止之前的协程
+            if(expressionCoroutines.ContainsKey(blendShapeName)) 
+            {
+                characterManager.StopCoroutine(expressionCoroutines[blendShapeName]);
+                expressionCoroutines.Remove(blendShapeName);
+            }
+
+            // 启动新的表情过渡协程
+            Coroutine expressionCoroutine = characterManager.StartCoroutine(ExpressionCoroutine(blendShapeName, weight, speedMultiplier, immediate));
+            expressionCoroutines[blendShapeName] = expressionCoroutine;
+        }
+
+        /// <summary>
+        /// 执行表情混合形状权重过渡的协程
+        /// </summary>
+        /// <param name="blendShapeName">混合形状名称</param>
+        /// <param name="weight">目标权重值</param>
+        /// <param name="speedMultiplier">过渡速度倍数</param>
+        /// <param name="immediate">是否立即设置</param>
+        /// <returns>IEnumerator协程对象</returns>
+        private IEnumerator ExpressionCoroutine(string blendShapeName, float weight, float speedMultiplier = 1,
+            bool immediate = false)
+        {
+            // 获取混合形状的索引
+            int blendShapeIndex = modelExpressionController.sharedMesh.GetBlendShapeIndex(blendShapeName);
+            if (blendShapeIndex == -1)
+            {
+                Debug.LogWarning($"Character {name} does not have a blend shape by the name of '{blendShapeName}' [{modelExpressionController.name}]");
+                yield break; 
+            }
+            
+            // 根据immediate参数决定是立即设置还是平滑过渡
+            if (immediate)
+                modelExpressionController.SetBlendShapeWeight(blendShapeIndex, weight);
+            else
+            {
+                float currentValue = modelExpressionController.GetBlendShapeWeight(blendShapeIndex);
+                // 使用MoveTowards方法逐步接近目标值，实现平滑过渡效果
+                while (currentValue != weight)
+                {
+                    currentValue = Mathf.MoveTowards(currentValue, weight,
+                        Time.deltaTime * EXPRESSION_TRANSITION_SPEED * speedMultiplier);
+                    modelExpressionController.SetBlendShapeWeight(blendShapeIndex, currentValue);
+                    yield return null;
+                }
+            }
+
+            // 过渡完成后从字典中移除该混合形状的协程记录
+            expressionCoroutines.Remove(blendShapeName);
         }
     }
 }
