@@ -20,7 +20,7 @@ namespace DIALOGUE
         /// <summary>
         /// 获取显示名称：如果设置了castName则使用castName，否则使用name
         /// </summary>
-        public string displayname => (castName != string.Empty ? castName : name);
+        public string displayname => (isCastingName ? castName : name);
 
         /// <summary>
         /// 发言者在场景中的坐标位置
@@ -32,6 +32,26 @@ namespace DIALOGUE
         /// </summary>
         public List<(int layer, string expression)> CastExpressions { get; set; }
 
+        /// <summary>
+        /// 判断是否设置了别名（castName不为空）
+        /// </summary>
+        public bool isCastingName => castName != string.Empty;
+
+        /// <summary>
+        /// 是否指定了发言者的位置
+        /// </summary>
+        public bool isCastingPosition = false;
+
+        /// <summary>
+        /// 判断是否有指定的表情表达式
+        /// </summary>
+        public bool isCastingExpressions => CastExpressions.Count > 0;
+        
+        /// <summary>
+        /// 指示该角色是否需要进入场景（由关键字"enter"触发）
+        /// </summary>
+        public bool makeCharacterEnter = false;
+        
         // 常量定义用于解析输入字符串的不同部分标识符
         private const string NAMECAST_ID = " as ";
         private const string POSITIONCAST_ID = " at ";
@@ -39,6 +59,23 @@ namespace DIALOGUE
         private const char AXISDELIMITER = ':';
         private const char EXPRESSIONLAYER_JOINER = ',';
         private const char EXPRESSIONLAYER_DELIMITER = ':';
+        
+        private const string ENTER_KEYWORD = "enter ";
+
+        /// <summary>
+        /// 处理可能存在的关键字前缀，如"enter "
+        /// </summary>
+        /// <param name="rawSpeaker">原始发言者字符串</param>
+        /// <returns>去除关键字后的字符串</returns>
+        private string ProcessKeywords(string rawSpeaker)
+        {
+            if (rawSpeaker.StartsWith(ENTER_KEYWORD))
+            {
+                rawSpeaker = rawSpeaker.Substring(ENTER_KEYWORD.Length);
+                makeCharacterEnter = true;
+            }
+            return rawSpeaker;
+        }
 
         /// <summary>
         /// 根据给定的原始发言者字符串初始化DL_SPEAKER_DATA实例。
@@ -51,6 +88,8 @@ namespace DIALOGUE
         /// <param name="rawSpeaker">包含所有发言者设置的原始字符串</param>
         public DL_SPEAKER_DATA(string rawSpeaker)
         {
+            rawSpeaker = ProcessKeywords(rawSpeaker);
+            
             // 构造正则表达式匹配三种关键字段标识符
             string pattern =
                 @$"{NAMECAST_ID}|{POSITIONCAST_ID}|{EXPRESSIONCAST_ID.Insert(EXPRESSIONCAST_ID.Length - 1, @"\")}";
@@ -87,6 +126,8 @@ namespace DIALOGUE
                 }
                 else if (match.Value == POSITIONCAST_ID)
                 {
+                    isCastingPosition = true;
+                    
                     // 处理位置字段内容，并分割x/y轴数值
                     startIndex = match.Index + POSITIONCAST_ID.Length;
                     endIndex = (i < matches.Count - 1) ? matches[i + 1].Index : rawSpeaker.Length;
@@ -110,7 +151,11 @@ namespace DIALOGUE
                         .Select(x =>
                         {
                             var parts = x.Trim().Split(EXPRESSIONLAYER_DELIMITER);
-                            return (int.Parse(parts[0]), parts[1]);
+                            
+                            if (parts.Length == 2)
+                                return (int.Parse(parts[0]), parts[1]);
+                            else
+                                return (0, parts[0]);
                         }).ToList();
                 }
             }

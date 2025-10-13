@@ -14,7 +14,7 @@ namespace CHARACTERS
         /// <summary>
         /// 启动时是否启用的常量配置
         /// </summary>
-        public const bool ENABLE_ON_START = true;
+        public const bool ENABLE_ON_START = false;
 
         /// <summary>
         /// 未高亮状态下的暗化强度常量值
@@ -643,6 +643,16 @@ namespace CHARACTERS
         /// </summary>
         /// <param name="sortingIndex">排序索引，用于指定排序的列或字段</param>
         public virtual void OnSort(int sortingIndex)
+        {
+            return;
+        }
+
+        /// <summary>
+        /// 当接收到投射表达式时触发的回调方法
+        /// </summary>
+        /// <param name="layer">投射表达式所在的层级</param>
+        /// <param name="expression">投射表达式的字符串内容</param>
+        public virtual void OnReceiveCastingExpression(int layer, string expression)
         {
             return;
         }

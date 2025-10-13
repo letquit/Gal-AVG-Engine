@@ -124,8 +124,9 @@ namespace CHARACTERS
         /// 创建指定名称的角色实例
         /// </summary>
         /// <param name="characterName">要创建的角色名称</param>
+        /// <param name="revealAfterCreation">创建后是否显示角色，默认为false</param>
         /// <returns>创建成功的角色实例，如果角色已存在则返回null</returns>
-        public Character CreateCharacter(string characterName)
+        public Character CreateCharacter(string characterName, bool revealAfterCreation = false)
         {
             // 检查角色是否已存在
             if (characters.ContainsKey(characterName.ToLower()))
@@ -141,6 +142,10 @@ namespace CHARACTERS
             
             // 添加角色实例到字典中
             characters.Add(info.name.ToLower(), character);
+            
+            // 如果需要创建后显示角色，则调用Show方法
+            if (revealAfterCreation)
+                character.Show();
             
             return character;
         }

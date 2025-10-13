@@ -2710,7 +2710,7 @@ GameObject:
   - component: {fileID: 1468261260}
   - component: {fileID: 1468261261}
   m_Layer: 0
-  m_Name: Character Testing
+  m_Name: Dialogue Testing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2740,11 +2740,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1468261259}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5d221c1c449d4546ad5c258a5ad59be, type: 3}
+  m_Script: {fileID: 11500000, guid: dcb16b6fcc05ab94d8036bcd2f42e121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tempFont: {fileID: 11400000, guid: 0340f504be5db4a41bbbd7d8c1ed52f6, type: 2}
-  audioManager: {fileID: 1968318519}
+  fileToRead: {fileID: 4900000, guid: 5bb35e2a51461d0469c7b2be5178df58, type: 3}
 --- !u!1 &1470743510
 GameObject:
   m_ObjectHideFlags: 0

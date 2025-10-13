@@ -476,5 +476,15 @@ namespace CHARACTERS
 
             co_flipping = null;
         }
+
+        /// <summary>
+        /// 当接收到表情表达式时触发的回调方法
+        /// </summary>
+        /// <param name="layer">表情图层索引</param>
+        /// <param name="expression">表情表达式字符串</param>
+        public override void OnReceiveCastingExpression(int layer, string expression)
+        {
+            SetExpression(expression, 100);
+        }
     }
 }

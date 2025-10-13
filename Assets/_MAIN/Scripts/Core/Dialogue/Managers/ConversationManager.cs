@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using CHARACTERS;
 using COMMANDS;
 using UnityEngine;
 
@@ -120,14 +121,50 @@ namespace DIALOGUE
         IEnumerator Line_RunDialogue(DIALOGUE_LINE line)
         {
             // 显示说话者名称（如果存在）
+            // if (line.hasSpeaker)
+            //     dialogueSystem.ShowSpeakerName(line.speakerData.displayname);
+            // else if (!string.IsNullOrEmpty(dialogueSystem.dialogueContainer.nameContainer.nameText.text))
+            //     // 如果当前已有名称显示，保持显示状态
+            //     dialogueSystem.dialogueContainer.nameContainer.Show();
             if (line.hasSpeaker)
-                dialogueSystem.ShowSpeakerName(line.speakerData.displayname);
-            else if (!string.IsNullOrEmpty(dialogueSystem.dialogueContainer.nameContainer.nameText.text))
-                // 如果当前已有名称显示，保持显示状态
-                dialogueSystem.dialogueContainer.nameContainer.Show();
+                HandleSpeakerLogic(line.speakerData);
 
             // 构建并显示对话段落
             yield return BuildLineSegments(line.dialogueData);
+        }
+
+        /// <summary>
+        /// 处理说话者的逻辑，包括角色创建、显示、位置设置和表情设置
+        /// </summary>
+        /// <param name="speakerData">包含说话者相关信息的数据对象</param>
+        private void HandleSpeakerLogic(DL_SPEAKER_DATA speakerData)
+        {
+            // 判断是否需要创建角色的条件：角色进入、设置位置或设置表情
+            bool characterMustBeCreated = (speakerData.makeCharacterEnter || speakerData.isCastingPosition ||
+                                           speakerData.isCastingExpressions);
+            
+            Character character =
+                CharacterManager.instance.GetCharacter(speakerData.name, createIfDoesNotExist: characterMustBeCreated);
+
+            // 如果需要角色进入且角色当前不可见且不在显示过程中，则显示角色
+            if (speakerData.makeCharacterEnter && (!character.isVisible && !character.isRevealing))
+                character.Show();
+                
+            dialogueSystem.ShowSpeakerName(speakerData.displayname);
+                
+            DialogueSystem.instance.ApplySpeakerDataToDialogueContainer(speakerData.name);
+
+            // 如果需要设置角色位置，则移动到指定位置
+            if (speakerData.isCastingPosition)
+                // character.SetPosition(speakerData.castPosition);
+                character.MoveToPosition(speakerData.castPosition);
+
+            // 如果需要设置角色表情，则应用所有指定的表情设置
+            if (speakerData.isCastingExpressions)
+            {
+                foreach (var ce in speakerData.CastExpressions)
+                    character.OnReceiveCastingExpression(ce.layer, ce.expression);
+            }
         }
         
         /// <summary>

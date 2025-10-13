@@ -275,5 +275,26 @@ namespace CHARACTERS
             
             co_flipping = null;
         }
+
+        /// <summary>
+        /// 当接收到角色表情变换表达式时的回调处理函数
+        /// </summary>
+        /// <param name="layer">表情图层索引，用于区分不同层次的表情显示</param>
+        /// <param name="expression">表情表达式字符串，用于标识具体要显示的表情</param>
+        public override void OnReceiveCastingExpression(int layer, string expression)
+        {
+            // 根据表达式获取对应的表情精灵图片
+            Sprite sprite = GetSprite(expression);
+
+            // 检查获取到的精灵图片是否有效
+            if (sprite == null)
+            {
+                Debug.LogWarning($"Sprite '{expression}' could not be found for character '{name}'");
+                return;
+            }
+
+            // 执行表情精灵的切换过渡动画
+            TransitionSprite(sprite, layer);
+        }
     }
 }
