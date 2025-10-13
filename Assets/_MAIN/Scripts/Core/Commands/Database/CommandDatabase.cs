@@ -25,6 +25,9 @@ namespace COMMANDS
         /// <param name="command">命令对应的委托</param>
         public void AddCommand(string commandName, Delegate command)
         {
+            // 转换命令名称为小写
+            commandName = commandName.ToLower();
+            
             // 检查命令是否已存在
             if (!database.ContainsKey(commandName))
             {
@@ -41,6 +44,9 @@ namespace COMMANDS
         /// <returns>返回对应的命令委托，如果命令不存在则返回null</returns>
         public Delegate GetCommand(string commandName)
         {
+            // 转换命令名称为小写
+            commandName = commandName.ToLower();
+            
             // 验证命令是否存在
             if (!database.ContainsKey(commandName))
             {

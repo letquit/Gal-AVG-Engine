@@ -1,4 +1,17 @@
 
+wait(1), CreateCharacter(Stella -e true), CreateCharacter(Raelin), CreateCharacter("Guard1 as Generic" -e true -i true)
+
+MoveCharacter(Stella 1 -2.5 0.75)
+
+wait(1000)
+
+Move(Stella 0 1.2 false)
+MoveCharacter(Stella -x 0 -spd 0.75 -sm false -i true)
+
+Show(Stella Realin Guard1 -immediate false)
+
+Narrator "Showing characters."
+
 enter Female Student 2 [blush] "I'm lacking anything of substance to say."
 
 enter Stella as ??? at 1 [0:1, 1:default 1] "How is everyone doing today?"

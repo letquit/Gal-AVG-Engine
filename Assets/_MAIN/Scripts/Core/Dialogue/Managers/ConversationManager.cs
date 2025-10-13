@@ -174,11 +174,14 @@ namespace DIALOGUE
         /// <returns>IEnumerator 用于协程执行。</returns>
         IEnumerator Line_RunCommands(DIALOGUE_LINE line)
         {
+            // 获取对话行中的所有命令
             List<DL_COMMAND_DATA.Command> commands = line.commandData.commands;
 
+            // 遍历并执行每个命令
             foreach (DL_COMMAND_DATA.Command command in commands)
             {
-                if (command.waitForCompletion)
+                // 根据命令是否需要等待完成来决定执行方式
+                if (command.waitForCompletion || command.name == "wait")
                     yield return CommandManager.instance.Execute(command.name, command.arguments);
                 else
                     CommandManager.instance.Execute(command.name, command.arguments);
