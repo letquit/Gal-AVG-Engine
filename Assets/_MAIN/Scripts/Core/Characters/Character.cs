@@ -284,16 +284,20 @@ namespace CHARACTERS
         /// <summary>
         /// 显示角色
         /// </summary>
+        /// <param name="speedMultiplier">显示速度的倍数，默认值为1f</param>
         /// <returns>返回表示显示操作的协程</returns>
-        public virtual Coroutine Show()
+        public virtual Coroutine Show(float speedMultiplier = 1f)
         {
+            // 如果正在显示中，则直接返回当前显示协程
             if (isRevealing)
                 return co_revealing;
             
+            // 如果正在隐藏中，则停止隐藏协程
             if (isHiding)
                 characterManager.StopCoroutine(co_hiding);
             
-            co_revealing = characterManager.StartCoroutine(ShowingOrHiding(true));
+            // 启动显示协程并保存引用
+            co_revealing = characterManager.StartCoroutine(ShowingOrHiding(true, speedMultiplier));
             
             return co_revealing;
         }
@@ -301,27 +305,33 @@ namespace CHARACTERS
         /// <summary>
         /// 隐藏角色
         /// </summary>
+        /// <param name="speedMultiplier">隐藏速度的倍数，默认为1f</param>
         /// <returns>返回表示隐藏操作的协程</returns>
-        public virtual Coroutine Hide()
+        public virtual Coroutine Hide(float speedMultiplier = 1f)
         {
+            // 如果正在隐藏，则直接返回当前隐藏协程
             if (isHiding)
                 return co_hiding;
             
+            // 如果正在显示，则停止显示协程
             if (isRevealing)
                 characterManager.StopCoroutine(co_revealing);
             
-            co_hiding = characterManager.StartCoroutine(ShowingOrHiding(false));
+            // 启动隐藏协程并保存引用
+            co_hiding = characterManager.StartCoroutine(ShowingOrHiding(false, speedMultiplier));
             
             return co_hiding;
         }
 
         /// <summary>
-        /// 控制角色显示或隐藏的核心协程方法，需由派生类实现具体逻辑
+        /// 控制角色显示或隐藏的核心协程方法，需由派生类实现具体逻辑 
         /// </summary>
         /// <param name="show">true 表示显示角色；false 表示隐藏角色</param>
+        /// <param name="speedMultiplier">速度倍数，用于控制显示/隐藏动画的速度</param>
         /// <returns>IEnumerator 类型，供协程使用</returns>
-        public virtual IEnumerator ShowingOrHiding(bool show)
+        public virtual IEnumerator ShowingOrHiding(bool show, float speedMultiplier = 1f)
         {
+            // 记录基础角色类型无法执行显示/隐藏操作的日志信息
             Debug.Log("Show/Hide cannot be called from a base character type.");
             yield return null;
         }

@@ -1,10 +1,13 @@
+using System.Collections.Generic;
+using UnityEngine.Events;
+using System;
+using System.Collections;
+using UnityEngine;
+using System.Reflection;
+using System.Linq;
+
 namespace COMMANDS
 {
-    using System;
-    using System.Collections;
-    using UnityEngine;
-    using System.Reflection;
-    using System.Linq;
 
     /// <summary>
     /// 命令管理器，用于执行注册的命令。该类继承自MonoBehaviour，作为Unity组件使用。
@@ -18,19 +21,20 @@ namespace COMMANDS
         public static CommandManager instance { get; private set; }
 
         /// <summary>
-        /// 当前正在运行的协程进程
-        /// </summary>
-        private static Coroutine process = null;
-
-        /// <summary>
-        /// 判断当前是否有命令正在执行
-        /// </summary>
-        public static bool isRunningProcess => process != null;
-
-        /// <summary>
         /// 命令数据库，存储所有可用的命令
         /// </summary>
         private CommandDatabase database;
+        
+        /// <summary>
+        /// 存储当前活动的命令处理进程列表
+        /// </summary>
+        private List<CommandProcess> activeProcesses = new List<CommandProcess>();
+
+        /// <summary>
+        /// 获取当前顶层的命令处理进程
+        /// </summary>
+        /// <returns>返回活动进程列表中的最后一个进程，即顶层进程</returns>
+        private CommandProcess topProcess => activeProcesses.Last();
 
         /// <summary>
         /// Unity生命周期函数，在对象启用时调用。
@@ -67,13 +71,16 @@ namespace COMMANDS
         /// <param name="commandName">要执行的命令名称</param>
         /// <param name="args">传递给命令的参数数组</param>
         /// <returns>返回启动的协程，如果命令不存在则返回null</returns>
-        public Coroutine Execute(string commandName, params string[] args)
+        public CoroutineWrapper Execute(string commandName, params string[] args)
         {
+            // 从数据库中获取指定名称的命令
             Delegate command = database.GetCommand(commandName);
 
+            // 如果命令不存在，直接返回null
             if (command == null)
                 return null;
 
+            // 启动命令执行进程并返回协程包装器
             return StartProcess(commandName, command, args);
         }
 
@@ -84,24 +91,55 @@ namespace COMMANDS
         /// <param name="command">要执行的命令委托</param>
         /// <param name="args">传递给命令的参数数组</param>
         /// <returns>返回新启动的协程</returns>
-        private Coroutine StartProcess(string commandName, Delegate command, string[] args)
+        private CoroutineWrapper StartProcess(string commandName, Delegate command, string[] args)
         {
-            StopCurrentProcess();
+            // 生成唯一的进程ID
+            Guid processID = Guid.NewGuid();
+            
+            // 创建命令进程对象
+            CommandProcess cmd = new CommandProcess(processID, commandName, command, null, args, null);
+            
+            // 将命令进程添加到活跃进程列表中
+            activeProcesses.Add(cmd);
 
-            process = StartCoroutine(RunningProcess(command, args));
+            // 启动协程执行命令进程
+            Coroutine co = StartCoroutine(RunningProcess(cmd));
+            
+            // 创建协程包装器并赋值给命令进程
+            cmd.runningProgress = new CoroutineWrapper(this, co);
 
-            return process;
+            // 返回协程包装器
+            return cmd.runningProgress;
         }
 
         /// <summary>
         /// 停止当前正在运行的命令进程
         /// </summary>
-        private void StopCurrentProcess()
+        public void StopCurrentProcess()
         {
-            if (process != null)
-                StopCoroutine(process);
+            // 如果存在正在运行的顶级进程，则终止该进程
+            if (topProcess != null)
+                KillProcess(topProcess);
+        }
 
-            process = null;
+        /// <summary>
+        /// 停止所有正在运行的进程
+        /// </summary>
+        public void StopAllProcesses()
+        {
+            // 遍历所有活动进程并终止它们
+            foreach (var c in activeProcesses)
+            {
+                // 如果进程有正在运行的进度且未完成，则停止进度
+                if (c.runningProgress != null && !c.runningProgress.IsDone)
+                    c.runningProgress.Stop();
+                
+                // 执行进程终止时的回调动作
+                c.onTerminateAction?.Invoke();
+            }
+            
+            // 清空所有活动进程列表
+            activeProcesses.Clear();
         }
 
         /// <summary>
@@ -110,11 +148,30 @@ namespace COMMANDS
         /// <param name="command">要执行的命令委托</param>
         /// <param name="args">传递给命令的参数数组</param>
         /// <returns>返回一个IEnumerator用于协程控制</returns>
-        private IEnumerator RunningProcess(Delegate command, string[] args)
+        private IEnumerator RunningProcess(CommandProcess process)
         {
-            yield return WaitingForProcessToComplete(command, args);
+            // 等待进程执行完成
+            yield return WaitingForProcessToComplete(process.command, process.args);
 
-            process = null;
+            // 进程完成后终止该进程
+            KillProcess(process);
+        }
+
+        /// <summary>
+        /// 终止指定的命令进程
+        /// </summary>
+        /// <param name="cmd">要终止的命令进程对象</param>
+        public void KillProcess(CommandProcess cmd)
+        {
+            // 从活动进程列表中移除该进程
+            activeProcesses.Remove(cmd);
+
+            // 如果进程有正在运行的进度且未完成，则停止进度
+            if (cmd.runningProgress != null && !cmd.runningProgress.IsDone)
+                cmd.runningProgress.Stop();
+            
+            // 执行进程终止时的回调动作
+            cmd.onTerminateAction?.Invoke();
         }
 
         /// <summary>
@@ -144,6 +201,23 @@ namespace COMMANDS
             else if (command is Func<string[], IEnumerator>)
                 yield return ((Func<string[], IEnumerator>)command)(args);
         }
-    }
 
+        /// <summary>
+        /// 为当前进程添加终止时执行的动作
+        /// </summary>
+        /// <param name="action">进程终止时要执行的UnityAction回调函数</param>
+        public void AddTerminationActionToCurrentProcess(UnityAction action)
+        {
+            // 获取当前顶层进程
+            CommandProcess process = topProcess;
+            
+            // 如果当前没有进程则直接返回
+            if (process == null)
+                return;
+
+            // 为进程创建终止事件并添加回调动作
+            process.onTerminateAction = new UnityEvent();
+            process.onTerminateAction.AddListener(action);
+        }
+    }
 }

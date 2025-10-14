@@ -111,14 +111,14 @@ namespace CHARACTERS
         /// </summary>
         /// <param name="show">true表示显示角色，false表示隐藏角色</param>
         /// <returns>IEnumerator类型的协程迭代器</returns>
-        public override IEnumerator ShowingOrHiding(bool show)
+        public override IEnumerator ShowingOrHiding(bool show, float speedMultiplier = 1f)
         {
             float targetAlpha = show ? 1 : 0;
 
             while (renderController.Opacity != targetAlpha)
             {
                 renderController.Opacity = Mathf.MoveTowards(renderController.Opacity, targetAlpha,
-                    DEFAULT_TRANSITION_SPEED * Time.deltaTime);
+                    DEFAULT_TRANSITION_SPEED * Time.deltaTime * speedMultiplier);
                 yield return null;
             }
             

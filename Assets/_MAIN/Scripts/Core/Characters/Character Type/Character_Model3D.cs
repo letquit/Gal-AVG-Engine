@@ -303,7 +303,7 @@ namespace CHARACTERS
         /// </summary>
         /// <param name="show">是否显示（true为显示，false为隐藏）</param>
         /// <returns>IEnumerator，用于协程执行</returns>
-        public override IEnumerator ShowingOrHiding(bool show)
+        public override IEnumerator ShowingOrHiding(bool show, float speedMultiplier = 1f)
         {
             // 计算目标透明度值
             float targetAlpha = show ? 1f : 0;
@@ -312,7 +312,7 @@ namespace CHARACTERS
             // 使用MoveTowards方法平滑过渡透明度直到达到目标值
             while (self.alpha != targetAlpha)
             {
-                self.alpha = Mathf.MoveTowards(self.alpha, targetAlpha, Time.deltaTime * 3f);
+                self.alpha = Mathf.MoveTowards(self.alpha, targetAlpha, Time.deltaTime * 3f * speedMultiplier);
                 yield return null;
             }
             

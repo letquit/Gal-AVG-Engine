@@ -85,17 +85,21 @@ namespace COMMANDS
         /// <returns>协程迭代器对象，用于异步处理移动过程。</returns>
         private static IEnumerator MoveCharacter(string[] data)
         {
+            // 获取目标角色名称并查找对应的角色对象
             string characterName = data[0];
             Character character = CharacterManager.instance.GetCharacter(characterName);
             
+            // 如果未找到对应角色，则直接结束协程
             if (character == null)
                 yield break;
             
+            // 初始化移动参数默认值
             float x = 0, y = 0;
             float speed = 1;
             bool smooth = false;
             bool immediate = false;
 
+            // 解析命令参数
             var parameters = ConvertDataToParameters(data);
 
             parameters.TryGetValue(PARAM_XPOS, out x);
@@ -106,10 +110,16 @@ namespace COMMANDS
             
             Vector2 position = new Vector2(x, y);
 
+            // 根据是否立即移动执行不同的移动逻辑
             if (immediate)
                 character.SetPosition(position);
             else
+            {
+                // 添加终止动作以确保在命令被中断时仍能设置最终位置
+                CommandManager.instance.AddTerminationActionToCurrentProcess(() => { character?.SetPosition(position); });
+                // 执行带过渡效果的移动并等待完成
                 yield return character.MoveToPosition(position, speed, smooth);
+            }
         }
         
         /// <summary>
@@ -124,6 +134,7 @@ namespace COMMANDS
         {
             List<Character> characters = new List<Character>();
             bool immediate = false;
+            float speed = 1f;
             
             // 获取所有有效的角色引用并加入列表
             foreach (string s in data)
@@ -139,6 +150,7 @@ namespace COMMANDS
             var parameters = ConvertDataToParameters(data);
 
             parameters.TryGetValue(PARAM_IMMEDIATE, out immediate, defaultValue: false);
+            parameters.TryGetValue(PARAM_SPEED, out speed, defaultValue: 1f);
 
             // 根据参数选择立即或渐进式显示角色
             foreach (Character character in characters)
@@ -146,12 +158,18 @@ namespace COMMANDS
                 if (immediate)
                     character.isVisible = true;
                 else
-                    character.Show();
+                    character.Show(speed);
             }
 
             // 如果不是立即模式，则等待所有角色完成显示动画
             if (!immediate)
             {
+                CommandManager.instance.AddTerminationActionToCurrentProcess(() =>
+                {
+                    foreach (Character character in characters)
+                        character.isVisible = true;
+                });
+                
                 while (characters.Any(c => c.isRevealing))
                     yield return null;
             }
@@ -169,6 +187,7 @@ namespace COMMANDS
         {
             List<Character> characters = new List<Character>();
             bool immediate = false;
+            float speed = 1f;
             
             // 获取所有有效的角色引用并加入列表
             foreach (string s in data)
@@ -184,6 +203,7 @@ namespace COMMANDS
             var parameters = ConvertDataToParameters(data);
 
             parameters.TryGetValue(PARAM_IMMEDIATE, out immediate, defaultValue: false);
+            parameters.TryGetValue(PARAM_SPEED, out speed, defaultValue: 1f);
 
             // 根据参数选择立即或渐进式隐藏角色
             foreach (Character character in characters)
@@ -191,12 +211,18 @@ namespace COMMANDS
                 if (immediate)
                     character.isVisible = false;
                 else
-                    character.Hide();
+                    character.Hide(speed);
             }
 
             // 如果不是立即模式，则等待所有角色完成隐藏动画
             if (!immediate)
             {
+                CommandManager.instance.AddTerminationActionToCurrentProcess(() =>
+                {
+                    foreach (Character character in characters)
+                        character.isVisible = false;
+                });
+                
                 while (characters.Any(c => c.isHiding))
                     yield return null;
             }

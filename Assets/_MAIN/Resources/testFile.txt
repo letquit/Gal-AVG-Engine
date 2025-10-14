@@ -1,19 +1,18 @@
 
-wait(1), CreateCharacter(Stella -e true), CreateCharacter(Raelin), CreateCharacter("Guard1 as Generic" -e true -i true)
+wait(5), CreateCharacter(Stella 1 -e true), CreateCharacter(Raelin -e true), CreateCharacter("Guard1 as Generic" -e true -i true)
 
-MoveCharacter(Stella 1 -2.5 0.75)
+[wait]MoveCharacter(Stella 1 -2.5 -spd 0.1)
 
-wait(1000)
+Hide(Stella Guard1 Realin -spd 0.1)
 
-Move(Stella 0 1.2 false)
-MoveCharacter(Stella -x 0 -spd 0.75 -sm false -i true)
+Stella "Now we are invisible."
 
-Show(Stella Realin Guard1 -immediate false)
+Show(Stella Guard1 Realin -spd 0.1)
 
-Narrator "Showing characters."
+Stella "Thank you for joining me!{c}I'm looking forward to writing some commands with you!"
 
-enter Female Student 2 [blush] "I'm lacking anything of substance to say."
+MoveCharacter(Guard1 0 -spd 0.5), MoveCharacter(Raelin 0.1 -spd 0.5), Hide(Stella)
 
-enter Stella as ??? at 1 [0:1, 1:default 1] "How is everyone doing today?"
+Guard1 "Where did she go?"
 
-enter Raelin as ??? at 0.5 [0:B2, 1:B_Happy] "Fine.{wa 0.5} Couldn't be better."
+Raelin "I don't know!"

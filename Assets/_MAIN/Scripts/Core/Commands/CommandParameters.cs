@@ -118,6 +118,7 @@ namespace COMMANDS
             else if (typeof(T) == typeof(float))
             {
                 //TODO: if (float.TryParse(parameterValue, NumberStyles.Float, CultureInfo.InvariantCulture, out float floatValue))
+                // if (float.TryParse(parameterValue, NumberStyles.Any, CultureInfo.InvariantCulture, out float floatValue))
                 if (float.TryParse(parameterValue, out float floatValue))
                 {
                     value = (T)(object)floatValue;

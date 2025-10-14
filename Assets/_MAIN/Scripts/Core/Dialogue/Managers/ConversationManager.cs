@@ -107,9 +107,14 @@ namespace DIALOGUE
                 // 如果有命令内容，则执行命令逻辑
                 if (line.hasCommands)
                     yield return Line_RunCommands(line);
+                
                 // 如果当前行包含对话内容，则等待用户输入后继续执行
                 if (line.hasDialogue)
+                {
                     yield return WaitForUserInput();
+                    
+                    CommandManager.instance.StopAllProcesses();
+                }
             }
         }
 
@@ -182,9 +187,25 @@ namespace DIALOGUE
             {
                 // 根据命令是否需要等待完成来决定执行方式
                 if (command.waitForCompletion || command.name == "wait")
-                    yield return CommandManager.instance.Execute(command.name, command.arguments);
+                {
+                    // 执行需要等待完成的命令，直到命令执行完毕或用户中断
+                    CoroutineWrapper cw = CommandManager.instance.Execute(command.name, command.arguments);
+                    while (!cw.IsDone)
+                    {
+                        // 检查用户是否发出提示信号，如果是则停止当前进程
+                        if (userPrompt)
+                        {
+                            CommandManager.instance.StopCurrentProcess();
+                            userPrompt = false;
+                        }
+                        yield return null;
+                    }
+                }
                 else
+                {
+                    // 执行不需要等待完成的命令
                     CommandManager.instance.Execute(command.name, command.arguments);
+                }
             }
             
             yield return null;
