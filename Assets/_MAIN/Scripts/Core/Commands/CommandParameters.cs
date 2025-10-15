@@ -19,11 +19,13 @@ namespace COMMANDS
         /// 初始化 CommandParameters 实例并解析传入的参数数组。
         /// </summary>
         /// <param name="parameterArray">原始字符串参数数组</param>
-        public CommandParameters(string[] parameterArray)
+        /// <param name="startingIndex">开始解析的索引，默认为 0</param>
+        public CommandParameters(string[] parameterArray, int startingIndex = 0)
         {
-            for (int i = 0; i < parameterArray.Length; i++)
+            for (int i = startingIndex; i < parameterArray.Length; i++)
             {
-                //TODO: if (parameterArray[i].StartsWith(PARAMETER_IDENTIFIER) && !float.TryParse(parameterArray[i], NumberStyles.Float, CultureInfo.InvariantCulture, out _)) 
+                // 判断当前项是否是参数标识符并且不是一个浮点数（防止负数被误判）
+                // TODO: if (parameterArray[i].StartsWith(PARAMETER_IDENTIFIER) && !float.TryParse(parameterArray[i], NumberStyles.Float, CultureInfo.InvariantCulture, out _)) 
                 if (parameterArray[i].StartsWith(PARAMETER_IDENTIFIER) && !float.TryParse(parameterArray[i], out _))
                 {
                     string pName = parameterArray[i];
@@ -117,7 +119,7 @@ namespace COMMANDS
             }
             else if (typeof(T) == typeof(float))
             {
-                //TODO: if (float.TryParse(parameterValue, NumberStyles.Float, CultureInfo.InvariantCulture, out float floatValue))
+                // TODO: if (float.TryParse(parameterValue, NumberStyles.Float, CultureInfo.InvariantCulture, out float floatValue))
                 // if (float.TryParse(parameterValue, NumberStyles.Any, CultureInfo.InvariantCulture, out float floatValue))
                 if (float.TryParse(parameterValue, out float floatValue))
                 {

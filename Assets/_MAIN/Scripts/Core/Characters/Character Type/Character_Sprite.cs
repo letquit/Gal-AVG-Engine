@@ -231,14 +231,20 @@ namespace CHARACTERS
         /// 高亮显示字符精灵的协程函数
         /// </summary>
         /// <param name="speedMultiplier">颜色变换的速度倍数</param>
+        /// <param name="immediate">是否立即设置颜色而不使用过渡动画</param>
         /// <returns>返回一个迭代器对象，用于协程执行</returns>
-        public override IEnumerator Highlighting(float speedMultiplier)
+        public override IEnumerator Highlighting(float speedMultiplier, bool immediate = false)
         {
             Color targetColor = displayColor;
 
             // 为所有图层启动颜色过渡动画
             foreach (CharacterSpriteLayer layer in layers)
-                layer.TransitionColor(targetColor, speedMultiplier);
+            {
+                if (immediate)
+                    layer.SetColor(displayColor);
+                else
+                    layer.TransitionColor(targetColor, speedMultiplier);
+            }
             
             yield return null;
             

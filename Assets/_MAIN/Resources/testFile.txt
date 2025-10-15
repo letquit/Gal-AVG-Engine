@@ -1,10 +1,21 @@
 
-wait(5), CreateCharacter(Stella 1 -e true), CreateCharacter(Raelin -e true), CreateCharacter("Guard1 as Generic" -e true -i true)
+CreateCharacter(Stella 1 -e true -i true), CreateCharacter(Raelin -e true -i true), CreateCharacter("Guard1 as Generic" -e false)
 
-[wait]MoveCharacter(Stella 1 -2.5 -spd 0.1)
+Raelin.SetPosition(1), Stella.SetPosition(0)
+
+wait(1)
+
+Raelin.SetSprite(A2 -l 0 -spd 0.75), Raelin.SetSprite(A_Scared -l 1 -spd 0.75)
+
+wait(1)
+
+[wait]MoveCharacter(Stella 1 -2.5 -spd 0.5)
+
+[wait]Stella.Hide(), [wait]Stella.Show()
+
+[wait]Stella.Move(0 1 -spd 0.5)
 
 Hide(Stella Guard1 Realin -spd 0.1)
-
 Stella "Now we are invisible."
 
 Show(Stella Guard1 Realin -spd 0.1)

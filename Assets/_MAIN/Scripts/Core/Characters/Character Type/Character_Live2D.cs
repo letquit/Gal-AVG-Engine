@@ -157,13 +157,29 @@ namespace CHARACTERS
         /// <summary>
         /// 高亮显示的协程方法
         /// </summary>
-        /// <param name="speedMultiplier">速度倍数</param>
+        /// <param name="speedMultiplier">速度倍数，控制颜色变换的执行速度</param>
+        /// <param name="immediate">是否立即执行高亮，true时直接设置颜色，false时执行渐变动画</param>
         /// <returns>IEnumerator协程迭代器</returns>
-        public override IEnumerator Highlighting(float speedMultiplier)
+        public override IEnumerator Highlighting(float speedMultiplier, bool immediate = false)
         {
             // 如果当前没有进行颜色变换，则执行颜色变换
             if (!isChangingColor)
-                yield return ChangingColorL2D(speedMultiplier);
+            {
+                // 根据immediate参数决定是立即设置颜色还是执行渐变动画
+                if (immediate)
+                {
+                    // 立即设置所有渲染器的颜色为显示颜色
+                    foreach (var renderer in renderController.Renderers)
+                    {
+                        renderer.Color = displayColor;
+                    }
+                }
+                else
+                {
+                    // 执行颜色变换协程
+                    yield return ChangingColorL2D(speedMultiplier);
+                }
+            }
             
             // 清空高亮协程引用
             co_highlighting = null;

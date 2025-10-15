@@ -350,13 +350,36 @@ namespace CHARACTERS
         /// 高亮显示的协程方法。如果当前未在改变颜色，则执行颜色变化。
         /// </summary>
         /// <param name="speedMultiplier">速度倍数，控制高亮变化的速度</param>
+        /// <param name="immediate">是否立即应用颜色，true时直接设置颜色，false时通过协程渐变</param>
         /// <returns>IEnumerator，用于协程执行</returns>
-        public override IEnumerator Highlighting(float speedMultiplier)
+        public override IEnumerator Highlighting(float speedMultiplier, bool immediate = false)
         {
+            // 如果当前没有在改变颜色，则执行高亮逻辑
             if (!isChangingColor)
-                yield return ChangingRendererColor(speedMultiplier);
+            {
+                if (immediate)
+                    // 立即应用指定颜色到所有渲染器
+                    ApplyColorToRenderers(displayColor);
+                else
+                    // 通过协程方式渐变改变渲染器颜色
+                    yield return ChangingRendererColor(speedMultiplier);
+            }
             
+            // 清空高亮协程引用
             co_highlighting = null;
+        }
+
+        /// <summary>
+        /// 将指定颜色应用到所有渲染器组件
+        /// </summary>
+        /// <param name="c">要应用的颜色值</param>
+        private void ApplyColorToRenderers(Color c)
+        {
+            renderer.color = c;
+
+            // 遍历并设置旧渲染器的颜色
+            foreach (var or in oldRenderers)
+                or.oldImage.color = c;
         }
 
         /// <summary>

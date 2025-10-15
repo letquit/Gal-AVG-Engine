@@ -16,7 +16,7 @@ namespace COMMANDS
         /// </summary>
         /// <param name="commandName">要检查的命令名称</param>
         /// <returns>如果命令存在则返回true，否则返回false</returns>
-        public bool HasCommand(string commandName) => database.ContainsKey(commandName);
+        public bool HasCommand(string commandName) => database.ContainsKey(commandName.ToLower());
 
         /// <summary>
         /// 向数据库中添加新的命令

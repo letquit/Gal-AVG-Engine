@@ -17,8 +17,8 @@ namespace COMMANDS
         /// 将字符串数组数据转换为命令参数对象
         /// </summary>
         /// <param name="data">要转换的字符串数组数据</param>
+        /// <param name="startingIndex">开始转换的索引位置，默认从0开始</param>
         /// <returns>转换后的命令参数对象</returns>
-        protected static CommandParameters ConvertDataToParameters(string[] data) => new CommandParameters(data);
+        protected static CommandParameters ConvertDataToParameters(string[] data, int startingIndex = 0) => new CommandParameters(data, startingIndex);
     }
 }
-

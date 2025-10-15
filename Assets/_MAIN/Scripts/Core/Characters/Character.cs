@@ -500,8 +500,9 @@ namespace CHARACTERS
         /// 启动高亮显示效果的协程
         /// </summary>
         /// <param name="speed">高亮变化的速度倍数，默认为1f</param>
+        /// <param name="immediate">是否立即执行高亮效果，默认为false</param>
         /// <returns>返回正在执行的高亮协程对象</returns>
-        public Coroutine Highlight(float speed = 1f)
+        public Coroutine Highlight(float speed = 1f, bool immediate = false)
         {
             // 如果正在高亮过程中，则直接返回当前协程
             if (isHighlighting)
@@ -511,8 +512,9 @@ namespace CHARACTERS
             if (isUnHighlighting)
                 characterManager.StopCoroutine(co_highlighting);
 
+            // 设置高亮状态并启动高亮协程
             highlighted = true;
-            co_highlighting = characterManager.StartCoroutine(Highlighting(speed));
+            co_highlighting = characterManager.StartCoroutine(Highlighting(speed, immediate));
             
             return co_highlighting;
         }
@@ -521,8 +523,9 @@ namespace CHARACTERS
         /// 启动取消高亮显示效果的协程
         /// </summary>
         /// <param name="speed">取消高亮变化的速度倍数，默认为1f</param>
+        /// <param name="immediate">是否立即取消高亮效果，默认为false</param>
         /// <returns>返回正在执行的取消高亮协程对象</returns>
-        public Coroutine UnHighlight(float speed = 1f)
+        public Coroutine UnHighlight(float speed = 1f, bool immediate = false)
         {
             // 如果正在取消高亮过程中，则直接返回当前协程
             if (isUnHighlighting)
@@ -533,7 +536,7 @@ namespace CHARACTERS
                 characterManager.StopCoroutine(co_highlighting);
 
             highlighted = false;
-            co_highlighting = characterManager.StartCoroutine(Highlighting(speed));
+            co_highlighting = characterManager.StartCoroutine(Highlighting(speed, immediate));
             
             return co_highlighting;
         }
@@ -542,10 +545,13 @@ namespace CHARACTERS
         /// 高亮效果的核心实现协程（虚方法，需要子类重写具体实现）
         /// </summary>
         /// <param name="speedMultiplier">速度倍数</param>
+        /// <param name="immediate">是否立即执行</param>
         /// <returns>协程迭代器</returns>
-        public virtual IEnumerator Highlighting(float speedMultiplier)
+        public virtual IEnumerator Highlighting(float speedMultiplier, bool immediate = false)
         {
+            // 输出警告信息，提示当前角色类型不支持高亮效果
             Debug.Log("Highlighting is not available on this character type!");
+            // 返回空的协程迭代器
             yield return null;
         }
         

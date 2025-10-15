@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine;
 using System.Reflection;
 using System.Linq;
+using CHARACTERS;
 
 namespace COMMANDS
 {
@@ -16,6 +17,31 @@ namespace COMMANDS
     public class CommandManager : MonoBehaviour
     {
         /// <summary>
+        /// 子命令标识符，用于分隔命令层级的常量字符
+        /// </summary>
+        private const char SUB_COMMAN_IDENTIFIER = '.';
+
+        /// <summary>
+        /// 数据库角色基础信息表名称常量
+        /// </summary>
+        public const string DATABASE_CHARACTERS_BASE = "characters";
+
+        /// <summary>
+        /// 数据库角色精灵图片表名称常量
+        /// </summary>
+        public const string DATABASE_CHARACTERS_SPRITE = "characters_sprite";
+
+        /// <summary>
+        /// 数据库角色Live2D模型表名称常量
+        /// </summary>
+        public const string DATABASE_CHARACTERS_LIVE2D = "characters_live2D";
+
+        /// <summary>
+        /// 数据库角色3D模型表名称常量
+        /// </summary>
+        public const string DATABASE_CHARACTERS_MODEL3D = "characters_model3D";
+        
+        /// <summary>
         /// 获取单例实例
         /// </summary>
         public static CommandManager instance { get; private set; }
@@ -24,6 +50,14 @@ namespace COMMANDS
         /// 命令数据库，存储所有可用的命令
         /// </summary>
         private CommandDatabase database;
+        
+        /// <summary>
+        /// 存储子数据库的字典，用于管理多个命令数据库实例
+        /// </summary>
+        /// <remarks>
+        /// 键为数据库名称，值为对应的CommandDatabase实例
+        /// </remarks>
+        private Dictionary<string, CommandDatabase> subDatabases = new Dictionary<string, CommandDatabase>();
         
         /// <summary>
         /// 存储当前活动的命令处理进程列表
@@ -73,6 +107,10 @@ namespace COMMANDS
         /// <returns>返回启动的协程，如果命令不存在则返回null</returns>
         public CoroutineWrapper Execute(string commandName, params string[] args)
         {
+            // 检查是否为子命令并执行
+            if (commandName.Contains(SUB_COMMAN_IDENTIFIER))
+                return ExecuteSubCommand(commandName, args);
+            
             // 从数据库中获取指定名称的命令
             Delegate command = database.GetCommand(commandName);
 
@@ -82,6 +120,96 @@ namespace COMMANDS
 
             // 启动命令执行进程并返回协程包装器
             return StartProcess(commandName, command, args);
+        }
+
+        /// <summary>
+        /// 执行一个子命令。该方法会解析命令名称中的数据库部分与具体子命令，并根据类型调用对应的处理逻辑。
+        /// 支持两种模式：基于子数据库的命令执行和基于角色的命令执行。
+        /// </summary>
+        /// <param name="commandName">完整的命令名称，格式通常为 "database.subCommand"。</param>
+        /// <param name="args">传递给命令的参数数组。</param>
+        /// <returns>如果成功启动了命令处理流程则返回对应的协程包装器；否则返回 null。</returns>
+        private CoroutineWrapper ExecuteSubCommand(string commandName, string[] args)
+        {
+            // 解析出数据库名和子命令名
+            string[] parts = commandName.Split(SUB_COMMAN_IDENTIFIER);
+            string databaseName = string.Join(SUB_COMMAN_IDENTIFIER, parts.Take(parts.Length - 1));
+            string subCommandName = parts.Last();
+
+            // 尝试在子数据库中查找并执行命令
+            if (subDatabases.ContainsKey(databaseName))
+            {
+                Delegate command = subDatabases[databaseName].GetCommand(subCommandName);
+                if (command != null)
+                {
+                    return StartProcess(commandName, command, args);
+                }
+                else
+                {
+                    Debug.LogError($"No command called '{subCommandName}' was found in sub database '{databaseName}'");
+                    return null;
+                }
+            }
+
+            // 若未找到对应数据库，则尝试作为角色命令进行处理
+            string characterName = databaseName;
+            if (CharacterManager.instance.HasCharacter(databaseName))
+            {
+                // 在参数列表最前插入角色名以供后续使用
+                List<string> newArgs = new List<string>(args);
+                newArgs.Insert(0, characterName);
+                args = newArgs.ToArray();
+
+                return ExecuteCharacterCommand(subCommandName, args);
+            }
+            
+            Debug.LogError($"No sub database called '{databaseName}' exists! Command '{subCommandName}' could not be run.");
+            return null;
+        }
+        
+        /// <summary>
+        /// 执行针对特定角色类型的命令。首先尝试从基础角色数据库获取命令，
+        /// 如果失败，则依据角色配置信息选择合适的专用数据库再次尝试执行。
+        /// </summary>
+        /// <param name="commandName">要执行的角色相关命令名称。</param>
+        /// <param name="args">传递给命令的参数数组，其中第一个元素应为角色名称。</param>
+        /// <returns>如果成功启动了命令处理流程则返回对应的协程包装器；否则返回 null。</returns>
+        private CoroutineWrapper ExecuteCharacterCommand(string commandName, params string[] args)
+        {
+            Delegate command = null;
+
+            // 先尝试从基础角色数据库查找命令
+            CommandDatabase db = subDatabases[DATABASE_CHARACTERS_BASE];
+            if (db.HasCommand(commandName))
+            {
+                command = db.GetCommand(commandName);
+                return StartProcess(commandName, command, args);
+            }
+
+            // 根据角色类型切换到相应的专用数据库
+            CharacterConfigData characterConfigData = CharacterManager.instance.GetCharacterConfig(args[0]);
+            switch (characterConfigData.characterType)
+            {
+                case Character.CharacterType.Sprite:
+                case Character.CharacterType.SpriteSheet:
+                    db = subDatabases[DATABASE_CHARACTERS_SPRITE];
+                    break;
+                case Character.CharacterType.Live2D:
+                    db = subDatabases[DATABASE_CHARACTERS_LIVE2D];
+                    break;
+                case Character.CharacterType.Model3D:
+                    db = subDatabases[DATABASE_CHARACTERS_MODEL3D];
+                    break;
+            }
+            
+            command = db.GetCommand(commandName);
+            
+            // 最终尝试执行命令
+            if (command != null)
+                return StartProcess(commandName, command, args);
+            
+            Debug.LogError($"Command Manager was unable to execute command '{commandName}' on character '{args[0]}'. The character name or command may be invalid.");
+            return null;
         }
 
         /// <summary>
@@ -218,6 +346,22 @@ namespace COMMANDS
             // 为进程创建终止事件并添加回调动作
             process.onTerminateAction = new UnityEvent();
             process.onTerminateAction.AddListener(action);
+        }
+
+        public CommandDatabase CreateSubDatabase(string name)
+        {
+            name = name.ToLower();
+
+            if (subDatabases.TryGetValue(name, out CommandDatabase db))
+            {
+                Debug.LogWarning($"A database by the name of '{name}' already exists!");
+                return db;
+            }
+            
+            CommandDatabase newDatabase = new CommandDatabase();
+            subDatabases.Add(name, newDatabase);
+            
+            return newDatabase;
         }
     }
 }

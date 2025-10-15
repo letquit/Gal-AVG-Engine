@@ -18,6 +18,12 @@ namespace CHARACTERS
         public static CharacterManager instance { get; private set; }
         
         /// <summary>
+        /// 获取所有角色的数组副本
+        /// </summary>
+        /// <returns>包含所有角色的Character数组</returns>
+        public Character[] allCharacters => characters.Values.ToArray();
+        
+        /// <summary>
         /// 存储已创建角色的字典，键为角色名（小写），值为角色实例
         /// </summary>
         private Dictionary<string, Character> characters = new Dictionary<string, Character>();
@@ -119,6 +125,13 @@ namespace CHARACTERS
             
             return null;
         }
+
+        /// <summary>
+        /// 检查指定名称的角色是否存在
+        /// </summary>
+        /// <param name="characterName">要检查的角色名称</param>
+        /// <returns>如果角色存在则返回true，否则返回false</returns>
+        public bool HasCharacter(string characterName) => characters.ContainsKey(characterName.ToLower());
 
         /// <summary>
         /// 创建指定名称的角色实例
