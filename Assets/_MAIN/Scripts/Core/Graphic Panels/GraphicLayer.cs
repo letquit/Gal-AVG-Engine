@@ -142,14 +142,27 @@ public class GraphicLayer
     /// <summary>
     /// 清除当前和旧的图形对象，应用淡出效果
     /// </summary>
-    public void Clear()
+    /// <param name="transitionSpeed">过渡速度，值越大淡出越快，默认为1f</param>
+    /// <param name="blendTexture">混合纹理，用于淡出效果的纹理，默认为null</param>
+    /// <param name="immediate">是否立即销毁，如果为true则直接销毁不应用淡出效果，默认为false</param>
+    public void Clear(float transitionSpeed = 1f, Texture blendTexture = null, bool immediate = false)
     {
         // 对当前图形对象应用淡出效果
         if (currentGraphic != null)
-            currentGraphic.FadeOut();
+        {
+            if (!immediate)
+                currentGraphic.FadeOut(transitionSpeed, blendTexture);
+            else
+                currentGraphic.Destroy();
+        }
 
         // 对所有旧图形对象应用淡出效果
         foreach (var g in oldGraphics)
-            g.FadeOut();
+        {
+            if (!immediate)
+                g.FadeOut(transitionSpeed, blendTexture);
+            else
+                g.Destroy();
+        }
     }
 }

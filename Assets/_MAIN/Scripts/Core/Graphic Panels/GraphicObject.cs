@@ -233,7 +233,7 @@ public class GraphicObject
     /// <summary>
     /// 销毁当前渲染器关联的游戏对象，并清理图层中的当前图形引用
     /// </summary>
-    private void Destroy()
+    public void Destroy()
     {
         // 如果图层的当前图形使用的是当前渲染器，则将图层的当前图形引用置空
         if (layer.currentGraphic != null && layer.currentGraphic.renderer == renderer)

@@ -76,12 +76,15 @@ public class GraphicPanel
     /// <summary>
     /// 清除所有图层的内容
     /// </summary>
-    public void Clear()
+    /// <param name="transitionSpeed">过渡速度，默认值为1f</param>
+    /// <param name="blendTexture">混合纹理，默认值为null</param>
+    /// <param name="immediate">是否立即清除，默认值为false</param>
+    public void Clear(float transitionSpeed = 1f, Texture blendTexture = null, bool immediate = false)
     {
         // 遍历所有图层并清除每个图层的内容
         foreach (var layer in layers)
         {
-            layer.Clear();
+            layer.Clear(transitionSpeed, blendTexture, immediate);
         }
     }
 }
