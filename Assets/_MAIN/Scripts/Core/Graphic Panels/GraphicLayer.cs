@@ -21,7 +21,9 @@ public class GraphicLayer
     /// <param name="filePath">资源文件路径（相对于Resources文件夹）</param>
     /// <param name="transitionSpeed">过渡速度，默认为1f</param>
     /// <param name="blendingTexture">混合纹理，默认为null</param>
-    public void SetTexture(string filePath, float transitionSpeed = 1f, Texture blendingTexture = null)
+    /// <param name="immediate">是否立即显示，不使用过渡效果，默认为false</param>
+    /// <returns>用于控制过渡动画的协程</returns>
+    public Coroutine SetTexture(string filePath, float transitionSpeed = 1f, Texture blendingTexture = null, bool immediate = false)
     {
         // 从Resources加载纹理资源
         Texture tex = Resources.Load<Texture2D>(filePath);
@@ -29,10 +31,10 @@ public class GraphicLayer
         if (tex == null)
         {
             Debug.LogError($"Could not load graphic texture from path '{filePath}'. Please ensure it exits within Resources!");
-            return;
+            return null;
         }
         
-        SetTexture(tex, transitionSpeed, blendingTexture, filePath);
+        return SetTexture(tex, transitionSpeed, blendingTexture, filePath);
     }
     
     /// <summary>
@@ -42,10 +44,12 @@ public class GraphicLayer
     /// <param name="transitionSpeed">过渡速度，默认为1f</param>
     /// <param name="blendingTexture">混合纹理，默认为null</param>
     /// <param name="filepath">文件路径，用于标识纹理来源，默认为空字符串</param>
-    public void SetTexture(Texture tex, float transitionSpeed = 1f, Texture blendingTexture = null,
-        string filepath = "")
+    /// <param name="immediate">是否立即显示，不使用过渡效果，默认为false</param>
+    /// <returns>用于控制过渡动画的协程</returns>
+    public Coroutine SetTexture(Texture tex, float transitionSpeed = 1f, Texture blendingTexture = null,
+        string filepath = "", bool immediate = false)
     {
-        CreateGraphic(tex, transitionSpeed, filepath, blendingTexture: blendingTexture);
+        return CreateGraphic(tex, transitionSpeed, filepath, blendingTexture: blendingTexture, immediate: immediate);
     }
 
     /// <summary>
@@ -55,8 +59,10 @@ public class GraphicLayer
     /// <param name="transitionSpeed">过渡速度，默认为1f</param>
     /// <param name="useAudio">是否启用音频播放，默认为true</param>
     /// <param name="blendingTexture">混合纹理，默认为null</param>
-    public void SetVideo(string filePath, float transitionSpeed = 1f, bool useAudio = true,
-        Texture blendingTexture = null)
+    /// <param name="immediate">是否立即显示，不使用过渡效果，默认为false</param>
+    /// <returns>用于控制过渡动画的协程</returns>
+    public Coroutine SetVideo(string filePath, float transitionSpeed = 1f, bool useAudio = true,
+        Texture blendingTexture = null, bool immediate = false)
     {
         // 从Resources加载视频资源
         VideoClip clip = Resources.Load<VideoClip>(filePath);
@@ -64,10 +70,10 @@ public class GraphicLayer
         if (clip == null)
         {
             Debug.LogError($"Could not load graphic video from path '{filePath}'. Please ensure it exits within Resources!");
-            return;
+            return null;
         }
         
-        SetVideo(clip, transitionSpeed, useAudio, blendingTexture, filePath);
+        return SetVideo(clip, transitionSpeed, useAudio, blendingTexture, filePath);
     }
     
     /// <summary>
@@ -78,10 +84,12 @@ public class GraphicLayer
     /// <param name="useAudio">是否启用音频播放，默认为true</param>
     /// <param name="blendingTexture">混合纹理，默认为null</param>
     /// <param name="filepath">文件路径，用于标识视频来源，默认为空字符串</param>
-    public void SetVideo(VideoClip video, float transitionSpeed = 1f, bool useAudio = true,
-        Texture blendingTexture = null, string filepath = "")
+    /// <param name="immediate">是否立即显示，不使用过渡效果，默认为false</param>
+    /// <returns>用于控制过渡动画的协程</returns>
+    public Coroutine SetVideo(VideoClip video, float transitionSpeed = 1f, bool useAudio = true,
+        Texture blendingTexture = null, string filepath = "", bool immediate = false)
     {
-        CreateGraphic(video, transitionSpeed, filepath, useAudio, blendingTexture);
+        return CreateGraphic(video, transitionSpeed, filepath, useAudio, blendingTexture, immediate);
     }
 
     /// <summary>
@@ -93,16 +101,18 @@ public class GraphicLayer
     /// <param name="filePath">文件路径</param>
     /// <param name="useAudioForVideo">是否为视频使用音频，默认为true</param>
     /// <param name="blendingTexture">混合纹理，默认为null</param>
-    private void CreateGraphic<T>(T graphicData, float transitionSpeed, string filePath, bool useAudioForVideo = true,
-        Texture blendingTexture = null)
+    /// <param name="immediate">是否立即显示，不使用过渡效果，默认为false</param>
+    /// <returns>用于控制过渡动画的协程</returns>
+    private Coroutine CreateGraphic<T>(T graphicData, float transitionSpeed, string filePath, bool useAudioForVideo = true,
+        Texture blendingTexture = null, bool immediate = false)
     {
         GraphicObject newGraphic = null;
         
         // 根据图形数据类型创建相应的图形对象
         if (graphicData is Texture)
-            newGraphic = new GraphicObject(this, filePath, graphicData as Texture);
+            newGraphic = new GraphicObject(this, filePath, graphicData as Texture, immediate);
         else if (graphicData is VideoClip)
-            newGraphic = new GraphicObject(this, filePath, graphicData as VideoClip, useAudioForVideo);
+            newGraphic = new GraphicObject(this, filePath, graphicData as VideoClip, useAudioForVideo, immediate);
         
         if (currentGraphic != null && !oldGraphics.Contains(currentGraphic))
             oldGraphics.Add(currentGraphic);
@@ -110,7 +120,11 @@ public class GraphicLayer
         currentGraphic = newGraphic;
 
         // 应用淡入效果
-        currentGraphic.FadeIn(transitionSpeed, blendingTexture);
+        if (!immediate)
+            return currentGraphic.FadeIn(transitionSpeed, blendingTexture);
+
+        DestroyOldGraphics();
+        return null;
     }
 
     /// <summary>

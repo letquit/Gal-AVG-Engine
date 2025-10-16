@@ -46,7 +46,8 @@ public class GraphicObject
     /// <param name="layer">所属图层面板。</param>
     /// <param name="graphicPath">图形资源路径。</param>
     /// <param name="tex">要显示的纹理资源。</param>
-    public GraphicObject(GraphicLayer layer, string graphicPath, Texture tex)
+    /// <param name="immediate">是否立即显示该图形对象。</param>
+    public GraphicObject(GraphicLayer layer, string graphicPath, Texture tex, bool immediate)
     {
         this.graphicPath = graphicPath;
         this.layer = layer;
@@ -57,7 +58,7 @@ public class GraphicObject
 
         graphicName = tex.name;
 
-        InitGraphic();
+        InitGraphic(immediate);
         
         renderer.name = string.Format(NAME_FORMAT, graphicName);
         renderer.material.SetTexture(MATERIAL_FIELD_MAINTEX, tex);
@@ -70,7 +71,8 @@ public class GraphicObject
     /// <param name="graphicPath">图形资源的路径</param>
     /// <param name="clip">要播放的视频剪辑</param>
     /// <param name="useAudio">是否启用音频播放</param>
-    public GraphicObject(GraphicLayer layer, string graphicPath, VideoClip clip, bool useAudio)
+    /// <param name="immediate">是否立即显示该图形对象</param>
+    public GraphicObject(GraphicLayer layer, string graphicPath, VideoClip clip, bool useAudio, bool immediate)
     {
         this.graphicPath = graphicPath;
         this.layer = layer;
@@ -83,7 +85,7 @@ public class GraphicObject
         graphicName = clip.name;
         renderer.name = string.Format(NAME_FORMAT, graphicName);
 
-        InitGraphic();
+        InitGraphic(immediate);
 
         // 创建渲染纹理并设置材质
         RenderTexture tex = new RenderTexture(Mathf.RoundToInt(clip.width), Mathf.RoundToInt(clip.height), 0);
@@ -91,7 +93,7 @@ public class GraphicObject
         
         // 初始化音频组件
         audio = renderer.gameObject.AddComponent<AudioSource>();
-        audio.volume = 0;
+        audio.volume = immediate ? 1 : 0;
         if (!useAudio)
             audio.mute = true;
         
@@ -113,7 +115,8 @@ public class GraphicObject
     /// <summary>
     /// 初始化图形渲染相关参数：位置缩放、锚点偏移、加载过渡材质等。
     /// </summary>
-    private void InitGraphic()
+    /// <param name="immediate">是否立即显示该图形对象</param>
+    private void InitGraphic(bool immediate)
     {
         renderer.transform.localPosition = Vector3.zero;
         renderer.transform.localScale = Vector3.one;
@@ -126,8 +129,9 @@ public class GraphicObject
         
         renderer.material = GetTransitionMaterial();
         
-        renderer.material.SetFloat(MATERIAL_FIELD_BLEND, 0);
-        renderer.material.SetFloat(MATERIAL_FIELD_ALPHA, 0);
+        float startingOpacity = immediate ? 1f : 0f;
+        renderer.material.SetFloat(MATERIAL_FIELD_BLEND, startingOpacity);
+        renderer.material.SetFloat(MATERIAL_FIELD_ALPHA, startingOpacity);
     }
 
     /// <summary>

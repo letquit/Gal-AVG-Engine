@@ -1,5 +1,17 @@
 
-CreateCharacter(Stella 1 -e true -i true), CreateCharacter(Raelin -e true -i true), CreateCharacter("Guard1 as Generic" -e false)
+wait(1)
+
+SetLayerMedia(background "Fantasy Landscape" -aud true -spd 0.7 -blend hurricane -i true)
+
+CreateCharacter(Stella -e true -i true)
+
+Stella "Welcome to the Space!"
+
+SetLayerMedia(cinematic -m "~/Graphics/Gallery/flower")
+
+Stella "Have a look at the Cinematic Layer, huh?"
+
+CreateCharacter(Raelin -e true -i true), CreateCharacter("Guard1 as Generic" -e false)
 
 Raelin.SetPosition(1), Stella.SetPosition(0)
 
