@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Video;
 
 /// <summary>
 /// 图形层类，用于管理图形对象的显示和过渡效果
@@ -20,7 +21,7 @@ public class GraphicLayer
     public void SetTexture(string filePath, float transitionSpeed = 1f, Texture blendingTexture = null)
     {
         // 从Resources加载纹理资源
-        Texture tex = Resources.Load<Texture>(filePath);
+        Texture tex = Resources.Load<Texture2D>(filePath);
 
         if (tex == null)
         {
@@ -45,9 +46,45 @@ public class GraphicLayer
     }
 
     /// <summary>
+    /// 通过文件路径加载视频剪辑并设置为当前图形内容
+    /// </summary>
+    /// <param name="filePath">资源文件路径（相对于Resources文件夹）</param>
+    /// <param name="transitionSpeed">过渡速度，默认为1f</param>
+    /// <param name="useAudio">是否启用音频播放，默认为true</param>
+    /// <param name="blendingTexture">混合纹理，默认为null</param>
+    public void SetVideo(string filePath, float transitionSpeed = 1f, bool useAudio = true,
+        Texture blendingTexture = null)
+    {
+        // 从Resources加载视频资源
+        VideoClip clip = Resources.Load<VideoClip>(filePath);
+
+        if (clip == null)
+        {
+            Debug.LogError($"Could not load graphic video from path '{filePath}'. Please ensure it exits within Resources!");
+            return;
+        }
+        
+        SetVideo(clip, transitionSpeed, useAudio, blendingTexture, filePath);
+    }
+    
+    /// <summary>
+    /// 直接设置视频剪辑对象，并可选地应用过渡效果
+    /// </summary>
+    /// <param name="video">要设置的视频剪辑对象</param>
+    /// <param name="transitionSpeed">过渡速度，默认为1f</param>
+    /// <param name="useAudio">是否启用音频播放，默认为true</param>
+    /// <param name="blendingTexture">混合纹理，默认为null</param>
+    /// <param name="filepath">文件路径，用于标识视频来源，默认为空字符串</param>
+    public void SetVideo(VideoClip video, float transitionSpeed = 1f, bool useAudio = true,
+        Texture blendingTexture = null, string filepath = "")
+    {
+        CreateGraphic(video, transitionSpeed, filepath, useAudio, blendingTexture);
+    }
+
+    /// <summary>
     /// 创建图形对象并应用淡入效果
     /// </summary>
-    /// <typeparam name="T">图形数据类型</typeparam>
+    /// <typeparam name="T">图形数据类型，支持Texture或VideoClip</typeparam>
     /// <param name="graphicData">图形数据对象</param>
     /// <param name="transitionSpeed">过渡速度</param>
     /// <param name="filePath">文件路径</param>
@@ -61,6 +98,8 @@ public class GraphicLayer
         // 根据图形数据类型创建相应的图形对象
         if (graphicData is Texture)
             newGraphic = new GraphicObject(this, filePath, graphicData as Texture);
+        else if (graphicData is VideoClip)
+            newGraphic = new GraphicObject(this, filePath, graphicData as VideoClip, useAudioForVideo);
         
         currentGraphic = newGraphic;
 
@@ -68,4 +107,3 @@ public class GraphicLayer
         currentGraphic.FadeIn(transitionSpeed, blendingTexture);
     }
 }
-

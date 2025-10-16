@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -57,6 +58,52 @@ public class GraphicObject
         
         renderer.name = string.Format(NAME_FORMAT, graphicName);
         renderer.material.SetTexture(MATERIAL_FIELD_MAINTEX, tex);
+    }
+    
+    /// <summary>
+    /// GraphicObject构造函数，用于创建一个图形对象并初始化相关的视频播放组件
+    /// </summary>
+    /// <param name="layer">图形对象所属的图形层</param>
+    /// <param name="graphicPath">图形资源的路径</param>
+    /// <param name="clip">要播放的视频剪辑</param>
+    /// <param name="useAudio">是否启用音频播放</param>
+    public GraphicObject(GraphicLayer layer, string graphicPath, VideoClip clip, bool useAudio)
+    {
+        this.graphicPath = graphicPath;
+
+        // 创建游戏对象并设置父级容器
+        GameObject ob = new GameObject();
+        ob.transform.SetParent(layer.panel);
+        renderer = ob.AddComponent<RawImage>();
+
+        graphicName = clip.name;
+        renderer.name = string.Format(NAME_FORMAT, graphicName);
+
+        InitGraphic();
+
+        // 创建渲染纹理并设置材质
+        RenderTexture tex = new RenderTexture(Mathf.RoundToInt(clip.width), Mathf.RoundToInt(clip.height), 0);
+        renderer.material.SetTexture(MATERIAL_FIELD_MAINTEX, tex);
+        
+        // 初始化音频组件
+        audio = renderer.gameObject.AddComponent<AudioSource>();
+        audio.volume = 0;
+        if (!useAudio)
+            audio.mute = true;
+        
+        // 初始化视频播放器组件并配置相关参数
+        video = renderer.gameObject.AddComponent<VideoPlayer>();
+        video.playOnAwake = true;
+        video.source = VideoSource.VideoClip;
+        video.clip = clip;
+        video.renderMode = VideoRenderMode.RenderTexture;
+        video.targetTexture = tex;
+        video.isLooping = true;
+        video.audioOutputMode = VideoAudioOutputMode.AudioSource;
+        video.SetTargetAudioSource(0, audio);
+        video.frame = 0;
+        video.Prepare();
+        video.Play();
     }
 
     /// <summary>
@@ -158,6 +205,10 @@ public class GraphicObject
         {
             float opacity = Mathf.MoveTowards(renderer.material.GetFloat(opacityParam), target, speed * Time.deltaTime * GraphicPanelManager.DEFAULT_TRANSITION_SPEED);
             renderer.material.SetFloat(opacityParam, opacity);
+            
+            if (isVideo)
+                audio.volume = opacity;
+            
             yield return null;
         }
 
