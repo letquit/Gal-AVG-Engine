@@ -72,5 +72,17 @@ public class GraphicPanel
         
         return layer;
     }
+
+    /// <summary>
+    /// 清除所有图层的内容
+    /// </summary>
+    public void Clear()
+    {
+        // 遍历所有图层并清除每个图层的内容
+        foreach (var layer in layers)
+        {
+            layer.Clear();
+        }
+    }
 }
 

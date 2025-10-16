@@ -19,6 +19,8 @@ public class GraphicObject
     private const string MATERIAL_FIELD_ALPHA = "_Alpha";
     public RawImage renderer;
 
+    private GraphicLayer layer;
+    
     /// <summary>
     /// 判断当前图形是否是视频类型。
     /// </summary>
@@ -47,6 +49,7 @@ public class GraphicObject
     public GraphicObject(GraphicLayer layer, string graphicPath, Texture tex)
     {
         this.graphicPath = graphicPath;
+        this.layer = layer;
 
         GameObject ob = new GameObject();
         ob.transform.SetParent(layer.panel);
@@ -70,6 +73,7 @@ public class GraphicObject
     public GraphicObject(GraphicLayer layer, string graphicPath, VideoClip clip, bool useAudio)
     {
         this.graphicPath = graphicPath;
+        this.layer = layer;
 
         // 创建游戏对象并设置父级容器
         GameObject ob = new GameObject();
@@ -146,10 +150,10 @@ public class GraphicObject
     /// <summary>
     /// 启动图形淡入协程。如果正在执行淡出操作，则先停止它。
     /// </summary>
-    /// <param name="speed">过渡速度系数。</param>
+    /// <param name="speed">过渡速度系数，默认为 1。</param>
     /// <param name="blend">用于混合过渡的纹理，默认为 null。</param>
     /// <returns>启动的协程引用。</returns>
-    public Coroutine FadeIn(float speed, Texture blend = null)
+    public Coroutine FadeIn(float speed = 1f, Texture blend = null)
     {
         if (co_fadingOut != null)
             pandManager.StopCoroutine(co_fadingOut);
@@ -165,10 +169,10 @@ public class GraphicObject
     /// <summary>
     /// 启动图形淡出协程。如果正在执行淡入操作，则先停止它。
     /// </summary>
-    /// <param name="speed">过渡速度系数。</param>
+    /// <param name="speed">过渡速度系数，默认为 1。</param>
     /// <param name="blend">用于混合过渡的纹理，默认为 null。</param>
     /// <returns>启动的协程引用。</returns>
-    public Coroutine FadeOut(float speed, Texture blend = null)
+    public Coroutine FadeOut(float speed = 1f, Texture blend = null)
     {
         if (co_fadingIn != null)
             pandManager.StopCoroutine(co_fadingIn);
@@ -215,5 +219,30 @@ public class GraphicObject
         // 清除协程引用以避免重复调用问题
         co_fadingIn = null;
         co_fadingOut = null;
+
+        if (target == 0)
+            Destroy();
+        else
+            DestroyBackgroundGraphicsOnLayer();
+    }
+
+    /// <summary>
+    /// 销毁当前渲染器关联的游戏对象，并清理图层中的当前图形引用
+    /// </summary>
+    private void Destroy()
+    {
+        // 如果图层的当前图形使用的是当前渲染器，则将图层的当前图形引用置空
+        if (layer.currentGraphic != null && layer.currentGraphic.renderer == renderer)
+            layer.currentGraphic = null;
+        
+        Object.Destroy(renderer.gameObject);
+    }
+
+    /// <summary>
+    /// 销毁图层上的背景图形
+    /// </summary>
+    private void DestroyBackgroundGraphicsOnLayer()
+    {
+        layer.DestroyOldGraphics();
     }
 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -10,7 +12,8 @@ public class GraphicLayer
     public int layerDepth = 0;
     public Transform panel;
     
-    public GraphicObject currentGraphic { get; private set; } = null;
+    public GraphicObject currentGraphic = null;
+    private List<GraphicObject> oldGraphics = new List<GraphicObject>();
 
     /// <summary>
     /// 通过文件路径设置纹理，并可选地应用过渡效果
@@ -101,9 +104,38 @@ public class GraphicLayer
         else if (graphicData is VideoClip)
             newGraphic = new GraphicObject(this, filePath, graphicData as VideoClip, useAudioForVideo);
         
+        if (currentGraphic != null && !oldGraphics.Contains(currentGraphic))
+            oldGraphics.Add(currentGraphic);
+        
         currentGraphic = newGraphic;
 
         // 应用淡入效果
         currentGraphic.FadeIn(transitionSpeed, blendingTexture);
+    }
+
+    /// <summary>
+    /// 销毁旧的图形对象
+    /// </summary>
+    public void DestroyOldGraphics()
+    {
+        // 遍历并销毁所有旧图形对象的游戏对象
+        foreach (var g in oldGraphics)
+            Object.Destroy(g.renderer.gameObject);
+        
+        oldGraphics.Clear();
+    }
+
+    /// <summary>
+    /// 清除当前和旧的图形对象，应用淡出效果
+    /// </summary>
+    public void Clear()
+    {
+        // 对当前图形对象应用淡出效果
+        if (currentGraphic != null)
+            currentGraphic.FadeOut();
+
+        // 对所有旧图形对象应用淡出效果
+        foreach (var g in oldGraphics)
+            g.FadeOut();
     }
 }
