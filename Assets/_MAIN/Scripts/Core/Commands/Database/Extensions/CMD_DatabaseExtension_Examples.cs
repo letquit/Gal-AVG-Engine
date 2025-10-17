@@ -1,6 +1,6 @@
 using COMMANDS;
 
-namespace TESTING
+namespace COMMANDS
 {
     using System;
     using System.Collections;

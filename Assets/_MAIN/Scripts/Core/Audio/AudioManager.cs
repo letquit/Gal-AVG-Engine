@@ -273,6 +273,26 @@ public class AudioManager : MonoBehaviour
         // 停止该通道的音频播放
         c.StopTrack();
     }
+    
+    /// <summary>
+    /// 停止指定名称的音轨播放
+    /// </summary>
+    /// <param name="trackName">要停止的音轨名称</param>
+    public void StopTrack(string trackName)
+    {
+        // 将音轨名称转换为小写以便进行不区分大小写的比较
+        trackName = trackName.ToLower();
+
+        // 遍历所有通道，查找并停止匹配的音轨
+        foreach (var channel in channels.Values)
+        {
+            if (channel.activeTrack != null && channel.activeTrack.name.ToLower() == trackName)
+            {
+                channel.StopTrack();
+                return;
+            }
+        }
+    }
 
     /// <summary>
     /// 尝试获取指定编号的音频通道

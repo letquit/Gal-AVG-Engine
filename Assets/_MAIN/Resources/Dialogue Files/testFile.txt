@@ -1,49 +1,9 @@
+wait(0.1)
 
-wait(1)
+PlayAmbience(RainyMood)
+PlaySong("223AM")
+PlayVoice(Stella/Yes2)
+enter Stella "Yes! It worked!"
 
-SetLayerMedia(background Nebula), SetLayerMedia(background 1 SpaceshipInterior)
-
-CreateCharacter(Stella -e true -i true)
-
-Stella "Welcome!"
-
-ClearLayerMedia(background 1 -blend hypno)
-
-Stella "Did we clear the background?"
-
-SetLayerMedia(cinematic -m "~/Graphics/Gallery/flower")
-
-Stella "Have a look at the Cinematic Layer, huh?"
-
-ClearLayerMedia(cinematic -i true)
-
-Stella "The cinematic layer should be cleared!"
-
-CreateCharacter(Stella 1 -e true -i true), CreateCharacter(Raelin -e true -i true), CreateCharacter("Guard1 as Generic" -e false)
-
-Raelin.SetPosition(1), Stella.SetPosition(0)
-
-wait(1)
-
-Raelin.SetSprite(A2 -l 0 -spd 0.75), Raelin.SetSprite(A_Scared -l 1 -spd 0.75)
-
-wait(1)
-
-[wait]MoveCharacter(Stella 1 -2.5 -spd 0.5)
-
-[wait]Stella.Hide(), [wait]Stella.Show()
-
-[wait]Stella.Move(0 1 -spd 0.5)
-
-Hide(Stella Guard1 Realin -spd 0.1)
-Stella "Now we are invisible."
-
-Show(Stella Guard1 Realin -spd 0.1)
-
-Stella "Thank you for joining me!{c}I'm looking forward to writing some commands with you!"
-
-MoveCharacter(Guard1 0 -spd 0.5), MoveCharacter(Raelin 0.1 -spd 0.5), Hide(Stella)
-
-Guard1 "Where did she go?"
-
-Raelin "I don't know!"
+StopSong()
+StopAmbience()

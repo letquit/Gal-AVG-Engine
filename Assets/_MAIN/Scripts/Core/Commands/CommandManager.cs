@@ -311,20 +311,22 @@ namespace COMMANDS
         /// <returns>返回一个IEnumerator用于协程控制</returns>
         private IEnumerator WaitingForProcessToComplete(Delegate command, string[] args)
         {
+            // 根据委托类型执行相应的调用逻辑
             if (command is Action)
                 command.DynamicInvoke();
 
             else if (command is Action<string>)
-                command.DynamicInvoke(args[0]);
+                command.DynamicInvoke(args.Length == 0 ? string.Empty : args[0]);
 
             else if (command is Action<string[]>)
                 command.DynamicInvoke((object)args);
 
+            // 处理返回IEnumerator的委托类型，支持协程等待
             else if (command is Func<IEnumerator>)
                 yield return ((Func<IEnumerator>)command)();
 
             else if (command is Func<string, IEnumerator>)
-                yield return ((Func<string, IEnumerator>)command)(args[0]);
+                yield return ((Func<string, IEnumerator>)command)(args.Length == 0 ? string.Empty : args[0]);
 
             else if (command is Func<string[], IEnumerator>)
                 yield return ((Func<string[], IEnumerator>)command)(args);
