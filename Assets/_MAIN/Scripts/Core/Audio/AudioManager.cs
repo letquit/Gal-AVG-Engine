@@ -10,7 +10,10 @@ public class AudioManager : MonoBehaviour
 {
     private const string SFX_PARENT_NAME = "SFX";
     private const string SFX_NAME_FORMAT = "SFX - [{0}]";
+    public const float TRACK_TRANSITION_SPEED = 1f;
     public static AudioManager instance { get; private set; }
+    
+    public Dictionary<int, AudioChannel> channels = new Dictionary<int, AudioChannel>();
     
     public AudioMixerGroup musicMixer;
     public AudioMixerGroup sfxMixer;
@@ -210,6 +213,73 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 播放指定路径的音频文件
+    /// </summary>
+    /// <param name="filePath">音频文件在Resources目录下的相对路径</param>
+    /// <param name="channel">音频通道编号，默认为0</param>
+    /// <param name="loop">是否循环播放，默认为true</param>
+    /// <param name="startingVolume">起始音量，默认为0</param>
+    /// <param name="volumeCap">音量上限，默认为1</param>
+    /// <returns>创建的AudioTrack对象，如果加载失败则返回null</returns>
+    public AudioTrack PlayTrack(string filePath, int channel = 0, bool loop = true, float startingVolume = 0f,
+        float volumeCap = 1f)
+    {
+        AudioClip clip = Resources.Load<AudioClip>(filePath);
+
+        // 尝试从Resources目录加载音频剪辑
+        if (clip == null)
+        {
+            Debug.LogError($"Could not load audio file '{filePath}'. Please make sure this exists in the Resources directory!");
+            return null;
+        }
+        
+        return PlayTrack(clip, channel, loop, startingVolume, volumeCap, filePath);
+    }
+    
+    /// <summary>
+    /// 播放指定的音频剪辑
+    /// </summary>
+    /// <param name="clip">要播放的AudioClip对象</param>
+    /// <param name="channel">音频通道编号，默认为0</param>
+    /// <param name="loop">是否循环播放，默认为true</param>
+    /// <param name="startingVolume">起始音量，默认为0</param>
+    /// <param name="volumeCap">音量上限，默认为1</param>
+    /// <param name="filePath">音频文件路径，用于标识音频资源</param>
+    /// <returns>创建的AudioTrack对象</returns>
+    public AudioTrack PlayTrack(AudioClip clip, int channel = 0, bool loop = true, float startingVolume = 0f,
+        float volumeCap = 1f, string filePath = "")
+    {
+        // 获取或创建指定的音频通道
+        AudioChannel audioChannel = TryGetChannel(channel, createIfDoesNotExist: true);
+        AudioTrack track = audioChannel.PlayTrack(clip, loop, startingVolume, volumeCap, filePath);
+        return track;
+    }
+
+    /// <summary>
+    /// 尝试获取指定编号的音频通道
+    /// </summary>
+    /// <param name="channelNumber">通道编号</param>
+    /// <param name="createIfDoesNotExist">如果通道不存在是否创建新通道，默认为false</param>
+    /// <returns>找到或创建的AudioChannel对象，如果找不到且不创建则返回null</returns>
+    public AudioChannel TryGetChannel(int channelNumber, bool createIfDoesNotExist = false)
+    {
+        AudioChannel channel = null;
+
+        // 尝试从现有通道中查找指定编号的通道
+        if (channels.TryGetValue(channelNumber, out channel))
+        {
+            return channel;
+        }
+        else if (createIfDoesNotExist)
+        {
+            // 如果找不到且允许创建，则创建新的音频通道
+            return new AudioChannel(channelNumber);
+        }
+        
+        return null;
+    }
+    
     /// <summary>
     /// 注册文本架构师事件监听器。
     /// </summary>
