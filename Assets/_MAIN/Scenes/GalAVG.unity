@@ -2761,6 +2761,7 @@ GameObject:
   - component: {fileID: 1468261260}
   - component: {fileID: 1468261261}
   - component: {fileID: 1468261262}
+  - component: {fileID: 1468261263}
   m_Layer: 0
   m_Name: Dialogue Testing
   m_TagString: Untagged
@@ -2790,7 +2791,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468261259}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dcb16b6fcc05ab94d8036bcd2f42e121, type: 3}
   m_Name: 
@@ -2806,6 +2807,18 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c94d85ac1e8719940aebdffae4f5bb7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1468261263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468261259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87e6604f7163ac4439a04930cab1c591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1470743510
@@ -3803,6 +3816,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 752071a69fd6a10498e74653363dff7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  musicMixer: {fileID: 1825240535851760470, guid: 7e97208eb7bac744a9aa944d81b4cfaf, type: 2}
+  sfxMixer: {fileID: 7120268046932712993, guid: 7e97208eb7bac744a9aa944d81b4cfaf, type: 2}
+  voicesMixer: {fileID: 7744062515296325364, guid: 7e97208eb7bac744a9aa944d81b4cfaf, type: 2}
   audioSets:
   - setName: Stella
     typingSounds:

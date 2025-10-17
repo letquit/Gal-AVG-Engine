@@ -8,11 +8,15 @@ using UnityEngine.Audio;
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
+    private const string SFX_PARENT_NAME = "SFX";
+    private const string SFX_NAME_FORMAT = "SFX - [{0}]";
     public static AudioManager instance { get; private set; }
     
     public AudioMixerGroup musicMixer;
     public AudioMixerGroup sfxMixer;
     public AudioMixerGroup voicesMixer;
+
+    private Transform sfxRoot;
     
     [Header("打字机音效设置")]
     [SerializeField] private List<AudioSet> audioSets = new List<AudioSet>();
@@ -65,6 +69,10 @@ public class AudioManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             return;
         }
+        
+        // 创建音效根节点对象
+        sfxRoot = new GameObject(SFX_PARENT_NAME).transform;
+        sfxRoot.SetParent(transform);
 
         // 初始化字符与声音的映射关系
         InitializeSoundMappings();
@@ -86,6 +94,92 @@ public class AudioManager : MonoBehaviour
                     if (!soundMappingDict.ContainsKey(c))
                         soundMappingDict.Add(c, mapping.sound);
                 }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 播放指定路径的音效文件
+    /// </summary>
+    /// <param name="filePath">音效文件在Resources文件夹中的路径</param>
+    /// <param name="mixer">音频混音器组，默认为null时使用默认SFX混音器</param>
+    /// <param name="volume">音量大小，范围0-1，默认为1</param>
+    /// <param name="pitch">音调，正常为1，小于1降低音调，大于1提高音调，默认为1</param>
+    /// <param name="loop">是否循环播放，默认为false</param>
+    /// <returns>创建的AudioSource组件，如果加载失败则返回null</returns>
+    public AudioSource PlaySoundEffect(string filePath, AudioMixerGroup mixer = null, float volume = 1, float pitch = 1, bool loop = false)
+    {
+        AudioClip clip = Resources.Load<AudioClip>(filePath);
+        
+        // 检查音频剪辑是否成功加载
+        if (clip == null)
+        {
+            Debug.LogError(
+                $"Could not load audio file '{filePath}'. Please make sure this exists in a 'Resources' folder.");
+            return null;
+        }
+
+        return PlaySoundEffect(clip, mixer, volume, pitch, loop);
+    }
+
+    /// <summary>
+    /// 播放指定的音频剪辑
+    /// </summary>
+    /// <param name="clip">要播放的AudioClip对象</param>
+    /// <param name="mixer">音频混音器组，默认为null时使用默认SFX混音器</param>
+    /// <param name="volume">音量大小，范围0-1，默认为1</param>
+    /// <param name="pitch">音调，正常为1，小于1降低音调，大于1提高音调，默认为1</param>
+    /// <param name="loop">是否循环播放，默认为false</param>
+    /// <returns>创建的AudioSource组件</returns>
+    public AudioSource PlaySoundEffect(AudioClip clip, AudioMixerGroup mixer = null, float volume = 1, float pitch = 1, bool loop = false)
+    {
+        // 创建新的游戏对象并添加AudioSource组件用于播放音效
+        AudioSource effectSource = new GameObject(string.Format(SFX_NAME_FORMAT, clip.name)).AddComponent<AudioSource>();
+        effectSource.transform.SetParent(sfxRoot);
+        effectSource.transform.position = sfxRoot.position;
+        
+        effectSource.clip = clip;
+        
+        // 如果未指定混音器，则使用默认的SFX混音器
+        if (mixer == null)
+            mixer = sfxMixer;
+        
+        effectSource.outputAudioMixerGroup = mixer;
+        effectSource.volume = volume;
+        effectSource.spatialBlend = 0;
+        effectSource.pitch = pitch;
+        effectSource.loop = loop;
+        
+        effectSource.Play();
+        
+        // 对于非循环音效，播放完成后自动销毁游戏对象
+        if (!loop)
+            Destroy(effectSource.gameObject, (clip.length / pitch) + 1);
+        
+        return effectSource;
+    }
+
+    /// <summary>
+    /// 停止播放指定名称的音效
+    /// </summary>
+    /// <param name="clip">要停止播放的AudioClip对象</param>
+    public void StopSoundEffect(AudioClip clip) => StopSoundEffect(clip.name);
+    
+    /// <summary>
+    /// 停止播放指定名称的音效
+    /// </summary>
+    /// <param name="soundName">要停止播放的音效名称</param>
+    public void StopSoundEffect(string soundName)
+    {
+        soundName = soundName.ToLower();
+        // 获取所有子级的AudioSource组件并查找匹配的音效
+        AudioSource[] sources = sfxRoot.GetComponentsInChildren<AudioSource>();
+        foreach (var source in sources)
+        {
+            if (source.clip.name.ToLower() == soundName)
+            {
+                Destroy(source.gameObject);
+                return;
             }
         }
     }
