@@ -223,7 +223,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="volumeCap">音量上限，默认为1</param>
     /// <returns>创建的AudioTrack对象，如果加载失败则返回null</returns>
     public AudioTrack PlayTrack(string filePath, int channel = 0, bool loop = true, float startingVolume = 0f,
-        float volumeCap = 1f)
+        float volumeCap = 1f, float pitch = 1f)
     {
         AudioClip clip = Resources.Load<AudioClip>(filePath);
 
@@ -234,7 +234,7 @@ public class AudioManager : MonoBehaviour
             return null;
         }
         
-        return PlayTrack(clip, channel, loop, startingVolume, volumeCap, filePath);
+        return PlayTrack(clip, channel, loop, startingVolume, volumeCap, pitch, filePath);
     }
     
     /// <summary>
@@ -245,15 +245,33 @@ public class AudioManager : MonoBehaviour
     /// <param name="loop">是否循环播放，默认为true</param>
     /// <param name="startingVolume">起始音量，默认为0</param>
     /// <param name="volumeCap">音量上限，默认为1</param>
+    /// <param name="pitch">音调，默认为1</param>
     /// <param name="filePath">音频文件路径，用于标识音频资源</param>
     /// <returns>创建的AudioTrack对象</returns>
     public AudioTrack PlayTrack(AudioClip clip, int channel = 0, bool loop = true, float startingVolume = 0f,
-        float volumeCap = 1f, string filePath = "")
+        float volumeCap = 1f, float pitch = 1f, string filePath = "")
     {
         // 获取或创建指定的音频通道
         AudioChannel audioChannel = TryGetChannel(channel, createIfDoesNotExist: true);
-        AudioTrack track = audioChannel.PlayTrack(clip, loop, startingVolume, volumeCap, filePath);
+        AudioTrack track = audioChannel.PlayTrack(clip, loop, startingVolume, volumeCap, pitch, filePath);
         return track;
+    }
+
+    /// <summary>
+    /// 停止指定通道的音频播放
+    /// </summary>
+    /// <param name="channel">要停止的音频通道编号</param>
+    public void StopTrack(int channel)
+    {
+        // 尝试获取指定通道，如果不存在则不创建
+        AudioChannel c = TryGetChannel(channel, createIfDoesNotExist: false);
+        
+        // 如果通道不存在则直接返回
+        if (c == null)
+            return;
+        
+        // 停止该通道的音频播放
+        c.StopTrack();
     }
 
     /// <summary>
@@ -274,7 +292,9 @@ public class AudioManager : MonoBehaviour
         else if (createIfDoesNotExist)
         {
             // 如果找不到且允许创建，则创建新的音频通道
-            return new AudioChannel(channelNumber);
+            channel = new AudioChannel(channelNumber);
+            channels.Add(channelNumber, channel);
+            return channel;
         }
         
         return null;
