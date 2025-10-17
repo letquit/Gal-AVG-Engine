@@ -15,8 +15,8 @@ namespace TESTING
 
         IEnumerator Running()
         {
-            Character_Sprite Stella = CreateCharacter("Stella") as Character_Sprite;
-            Stella.Show();
+            // Character_Sprite Stella = CreateCharacter("Stella") as Character_Sprite;
+            // Stella.Show();
 
             // yield return new WaitForSeconds(0.5f);
             //
@@ -28,13 +28,18 @@ namespace TESTING
             // Stella.TransitionSprite(Stella.GetSprite("shy 1"), 1);
             // Stella.Say("Yikes!");
             
+            Character_Sprite Stella = CreateCharacter("Stella") as Character_Sprite;
+            Character Me = CreateCharacter("Me");
+            Stella.Show();
+            
             AudioManager.instance.PlaySoundEffect("Audio/SFX/RadioStatic", loop: true);
 
-            yield return Stella.Say("I'm going to turn off the radio.");
+            yield return Me.Say("Please turn off the radio.");
             
             AudioManager.instance.StopSoundEffect("RadioStatic");
+            AudioManager.instance.PlayVoice("Audio/Voices/Stella/OhOk");
             
-            Stella.Say("It's off now!");
+            Stella.Say("Okay!");
         }
     }
 }

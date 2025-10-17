@@ -160,6 +160,32 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 播放语音音频文件
+    /// </summary>
+    /// <param name="filePath">音频文件路径</param>
+    /// <param name="volume">音量大小，范围0-1，默认值为1</param>
+    /// <param name="pitch">音调，范围0.1-3，默认值为1</param>
+    /// <param name="loop">是否循环播放，默认值为false</param>
+    /// <returns>返回创建的AudioSource组件实例</returns>
+    public AudioSource PlayVoice(string filePath, float volume = 1, float pitch = 1, bool loop = false)
+    {
+        return PlaySoundEffect(filePath, voicesMixer, volume, pitch, loop);
+    }
+    
+    /// <summary>
+    /// 播放语音音频剪辑
+    /// </summary>
+    /// <param name="clip">音频剪辑对象</param>
+    /// <param name="volume">音量大小，范围0-1，默认值为1</param>
+    /// <param name="pitch">音调，范围0.1-3，默认值为1</param>
+    /// <param name="loop">是否循环播放，默认值为false</param>
+    /// <returns>返回创建的AudioSource组件实例</returns>
+    public AudioSource PlayVoice(AudioClip clip, float volume = 1, float pitch = 1, bool loop = false)
+    {
+        return PlaySoundEffect(clip, voicesMixer, volume, pitch, loop);
+    }
+    
+    /// <summary>
     /// 停止播放指定名称的音效
     /// </summary>
     /// <param name="clip">要停止播放的AudioClip对象</param>
