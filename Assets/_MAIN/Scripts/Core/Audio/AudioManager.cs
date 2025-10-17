@@ -1,12 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 /// <summary>
 /// 音频管理器，用于控制打字机音效的播放和音频集的切换。
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
+    public static AudioManager instance { get; private set; }
+    
+    public AudioMixerGroup musicMixer;
+    public AudioMixerGroup sfxMixer;
+    public AudioMixerGroup voicesMixer;
+    
     [Header("打字机音效设置")]
     [SerializeField] private List<AudioSet> audioSets = new List<AudioSet>();
     [SerializeField] private AudioSource typingSource;
@@ -41,10 +48,35 @@ public class AudioManager : MonoBehaviour
     private Dictionary<char, AudioClip> soundMappingDict = new Dictionary<char, AudioClip>();
 
     /// <summary>
-    /// 初始化字符到音效的映射字典。
+    /// Unity生命周期函数，在对象启用时执行初始化操作
+    /// 主要用于确保当前对象作为单例存在，并初始化声音映射配置
     /// </summary>
     private void Awake()
     {
+        // 检查是否已存在实例，确保单例模式
+        if (instance == null)
+        {
+            transform.SetParent(null);
+            DontDestroyOnLoad(gameObject);
+            instance = this;
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
+            return;
+        }
+
+        // 初始化字符与声音的映射关系
+        InitializeSoundMappings();
+    }
+    
+    /// <summary>
+    /// 初始化字符与声音的映射字典
+    /// 将字符声音映射配置转换为字典形式，便于快速查找
+    /// </summary>
+    private void InitializeSoundMappings()
+    {
+        // 构建字符到声音的映射字典
         if (characterSoundMappings != null)
         {
             foreach (var mapping in characterSoundMappings)
