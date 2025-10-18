@@ -49,16 +49,21 @@ namespace DIALOGUE
         /// <param name="font">要设置的字体资源</param>
         public void SetNameFont(TMP_FontAsset font) => nameText.font = font;
         
+        /// <summary>
+        /// 设置名称文本的字体大小
+        /// </summary>
+        /// <param name="size">要设置的字体大小</param>
+        public void SetNameFontSize(float size) => nameText.fontSize = size;
         
         /// <summary>
         /// 根据角色配置数据设置名称显示样式
         /// </summary>
-        /// <param name="config">包含名称颜色和字体配置的数据对象</param>
+        /// <param name="config">包含名称颜色、字体和字体大小配置的数据对象</param>
         public void SetConfig(CharacterConfigData config)
         {
             SetNameColor(config.nameColor);
             SetNameFont(config.nameFont);
+            SetNameFontSize(config.nameFontSize);
         }
     }
 }
-

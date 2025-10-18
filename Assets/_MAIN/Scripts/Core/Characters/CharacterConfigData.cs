@@ -20,6 +20,10 @@ namespace CHARACTERS
 
         public TMP_FontAsset nameFont;
         public TMP_FontAsset dialogueFont;
+
+        public float dialogueFontScale;
+        public float nameFontSize;
+        public float dialogueFontSize;
         
         /// <summary>
         /// 可选的角色预制体引用，用于直接指定角色预制体资源
@@ -44,6 +48,10 @@ namespace CHARACTERS
             // 创建颜色的深拷贝，避免引用相同颜色对象
             result.nameColor = new Color(nameColor.r, nameColor.g, nameColor.b, nameColor.a);
             result.dialogueColor = new Color(dialogueColor.r, dialogueColor.g, dialogueColor.b, dialogueColor.a);
+            
+            result.nameFontSize = nameFontSize;
+            result.dialogueFontSize = dialogueFontSize;
+            result.dialogueFontScale = dialogueFontScale;
             
             return result;
         }
@@ -78,7 +86,11 @@ namespace CHARACTERS
                 // 使用默认颜色初始化名称和对话颜色
                 result.nameColor = new Color(defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a);
                 result.dialogueColor = new Color(defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a);
-            
+
+                result.nameFontSize = DialogueSystem.instance.config.defaultNameFontSize;
+                result.dialogueFontSize = DialogueSystem.instance.config.defaultDialogueFontSize;
+                result.dialogueFontScale = DialogueSystem.instance.config.dialogueFontScale;
+                
                 return result;
             }
         }

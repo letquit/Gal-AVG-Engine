@@ -40,14 +40,25 @@ namespace DIALOGUE
         public void SetDialogueFont(TMP_FontAsset font) => dialogueText.font = font;
         
         /// <summary>
+        /// 设置对话文本的字体大小
+        /// </summary>
+        /// <param name="size">要设置的字体大小</param>
+        public void SetDialogueFontSize(float size) => dialogueText.fontSize = size;
+        
+        /// <summary>
         /// 根据角色配置数据设置对话文本的样式
         /// </summary>
         /// <param name="config">包含对话文本颜色和字体配置的角色配置数据</param>
         public void SetConfig(CharacterConfigData config)
         {
+            // 应用角色配置中的对话文本颜色
             SetDialogueColor(config.dialogueColor);
+            
+            // 应用角色配置中的对话文本字体
             SetDialogueFont(config.dialogueFont);
+            
+            // 应用角色配置中的对话文本字体大小，并考虑缩放因子
+            SetDialogueFontSize(config.dialogueFontSize * config.dialogueFontScale);
         }
     }
 }
-
