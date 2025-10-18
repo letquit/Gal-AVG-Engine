@@ -11,6 +11,7 @@ using UnityEngine.Video;
 public class GraphicObject
 {
     private const string NAME_FORMAT = "Graphic - [{0}]";
+    private const string DEFAULT_UI_MATERIAL = "Default UI Material";
     private const string MATERIAL_PATH = "Materials/layerTransitionMaterial";
     private const string MATERIAL_FIELD_COLOR = "_Color";
     private const string MATERIAL_FIELD_MAINTEX = "_MainTex";
@@ -200,6 +201,14 @@ public class GraphicObject
     {
         bool isBlending = blend != null;
         bool fadingIn = target > 0;
+
+        // 如果当前材质是默认的UI材质，则创建过渡材质
+        if (renderer.material.name == DEFAULT_UI_MATERIAL)
+        {
+            Texture tex = renderer.material.GetTexture(MATERIAL_FIELD_MAINTEX);
+            renderer.material = GetTransitionMaterial();
+            renderer.material.SetTexture(MATERIAL_FIELD_MAINTEX, tex);
+        }
         
         // 设置混合纹理和初始透明度状态
         renderer.material.SetTexture(MATERIAL_FIELD_BLENDTEX, blend);
@@ -224,10 +233,15 @@ public class GraphicObject
         co_fadingIn = null;
         co_fadingOut = null;
 
+        // 如果目标透明度为0，则销毁该对象; 否则清理背景
         if (target == 0)
             Destroy();
         else
+        {
             DestroyBackgroundGraphicsOnLayer();
+            renderer.texture = renderer.material.GetTexture(MATERIAL_FIELD_MAINTEX);
+            renderer.material = null;
+        }
     }
 
     /// <summary>

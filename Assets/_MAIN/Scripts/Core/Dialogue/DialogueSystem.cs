@@ -39,6 +39,11 @@ namespace DIALOGUE
         private TextArchitect architect;
 
         /// <summary>
+        /// 序列化字段，用于引用主画布组组件
+        /// </summary>
+        [SerializeField] private CanvasGroup mainCanvas;
+
+        /// <summary>
         /// 对话系统的单例实例
         /// </summary>
         public static DialogueSystem instance { get; private set; }
@@ -62,6 +67,11 @@ namespace DIALOGUE
         /// 对话继续提示控件
         /// </summary>
         public DialogueContinuePrompt prompt;
+        
+        /// <summary>
+        /// CanvasGroup控制器实例，用于管理CanvasGroup组件的显示状态和交互控制
+        /// </summary>
+        private CanvasGroupController cgController;
 
         /// <summary>
         /// Unity生命周期函数，在对象创建时调用
@@ -104,6 +114,10 @@ namespace DIALOGUE
             
             // 创建对话管理器实例
             conversationManager = new ConversationManager(architect);
+            
+            // 初始化对话容器
+            cgController = new CanvasGroupController(this, mainCanvas);
+            dialogueContainer.Initialize();
             
             // 如果音频管理器存在，则注册文本构建器
             if (audioManager != null)
@@ -187,5 +201,26 @@ namespace DIALOGUE
         {
             return conversationManager.StarConversation(conversation);
         }
+
+        /// <summary>
+        /// 获取当前对象是否可见的状态
+        /// </summary>
+        public bool isVisible => cgController.isVisible;
+
+        /// <summary>
+        /// 显示当前对象
+        /// </summary>
+        /// <param name="speed">显示速度，默认值为1f</param>
+        /// <param name="immediate">是否立即显示，默认值为false</param>
+        /// <returns>返回协程对象，用于控制动画执行</returns>
+        public Coroutine Show(float speed = 1f, bool immediate = false) => cgController.Show(speed, immediate);
+        
+        /// <summary>
+        /// 隐藏当前对象
+        /// </summary>
+        /// <param name="speed">隐藏速度，默认值为1f</param>
+        /// <param name="immediate">是否立即隐藏，默认值为false</param>
+        /// <returns>返回协程对象，用于控制动画执行</returns>
+        public Coroutine Hide(float speed = 1f, bool immediate = false) => cgController.Hide(speed, immediate);
     }
 }
