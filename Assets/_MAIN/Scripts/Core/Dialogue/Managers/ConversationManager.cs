@@ -134,6 +134,10 @@ namespace DIALOGUE
             if (line.hasSpeaker)
                 HandleSpeakerLogic(line.speakerData);
 
+            // 说话前如果隐藏了对话框则显示对话框
+            if (!dialogueSystem.dialogueContainer.isVisible)
+                dialogueSystem.dialogueContainer.Show();
+            
             // 构建并显示对话段落
             yield return BuildLineSegments(line.dialogueData);
         }

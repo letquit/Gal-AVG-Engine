@@ -51,6 +51,11 @@ namespace COMMANDS
             baseCommands.AddCommand("setcolor", new Func<string[], IEnumerator>(SetColor));
             baseCommands.AddCommand("highlight", new Func<string[], IEnumerator>(Highlight));
             baseCommands.AddCommand("unhighlight", new Func<string[], IEnumerator>(Unhighlight));
+            
+            baseCommands.AddCommand("animate", new Action<string[]>(Animate));
+            baseCommands.AddCommand("faceright", new Action<string[]>(FaceRight));
+            baseCommands.AddCommand("faceleft", new Action<string[]>(FaceLeft));
+
 
             CommandDatabase spriteCommands =
                 CommandManager.instance.CreateSubDatabase(CommandManager.DATABASE_CHARACTERS_SPRITE);
@@ -413,6 +418,50 @@ namespace COMMANDS
             character.SetPriority(priority);
         }
 
+        /// <summary>
+        /// 角色执行动画
+        /// </summary>
+        /// <param name="data">命令数据数组，第一个元素为角色名，后续为动画参数</param>
+        public static void Animate(string[] data)
+        {
+            if (data.Length < 2) return;
+    
+            string characterName = data[0];
+            string animationName = data[1];
+    
+            Character character = CharacterManager.instance.GetCharacter(characterName);
+            if (character == null) return;
+    
+            // 调用角色的动画方法
+            character.Animate(animationName);
+        }
+
+        /// <summary>
+        /// 设置角色面朝右侧
+        /// </summary>
+        /// <param name="data">命令数据数组，第一个元素为角色名</param>
+        public static void FaceRight(string[] data)
+        {
+            string characterName = data[0];
+            Character character = CharacterManager.instance.GetCharacter(characterName);
+            if (character == null) return;
+    
+            character.FaceRight();
+        }
+
+        /// <summary>
+        /// 设置角色面朝左侧
+        /// </summary>
+        /// <param name="data">命令数据数组，第一个元素为角色名</param>
+        public static void FaceLeft(string[] data)
+        {
+            string characterName = data[0];
+            Character character = CharacterManager.instance.GetCharacter(characterName);
+            if (character == null) return;
+    
+            character.FaceLeft();
+        }
+        
         /// <summary>
         /// 设置角色的颜色。
         /// </summary>
