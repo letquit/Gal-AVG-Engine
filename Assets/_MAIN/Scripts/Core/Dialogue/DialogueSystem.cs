@@ -59,6 +59,11 @@ namespace DIALOGUE
         public bool isRunningConversation => conversationManager.isRunning;
 
         /// <summary>
+        /// 对话继续提示控件
+        /// </summary>
+        public DialogueContinuePrompt prompt;
+
+        /// <summary>
         /// Unity生命周期函数，在对象创建时调用
         /// 用于初始化对话系统实例，实现单例模式
         /// 如果当前没有实例，则将当前对象设为实例

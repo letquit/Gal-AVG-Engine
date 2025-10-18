@@ -293,8 +293,15 @@ namespace DIALOGUE
         /// <returns>IEnumerator 用于协程执行。</returns>
         IEnumerator WaitForUserInput()
         {
+            // 显示对话系统提示
+            dialogueSystem.prompt.Show();
+            
+            // 等待用户输入完成
             while (!userPrompt)
                 yield return null;
+            
+            // 隐藏对话系统提示并重置用户输入状态
+            dialogueSystem.prompt.Hide();
             
             userPrompt = false;
         }
