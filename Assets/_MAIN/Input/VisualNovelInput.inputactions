@@ -1,0 +1,46 @@
+{
+    "version": 1,
+    "name": "VisualNovelInput",
+    "maps": [
+        {
+            "name": "General",
+            "id": "7bae69a3-25e9-4008-8e8a-79a82db58132",
+            "actions": [
+                {
+                    "name": "Next",
+                    "type": "Button",
+                    "id": "d6e1536a-d932-4baa-8cca-89270f5959ba",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "66dc6f44-d1d2-448e-a23e-5aa11c917dcc",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "80cb7135-46df-458e-a697-36006ee46fda",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
