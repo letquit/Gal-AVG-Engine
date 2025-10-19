@@ -272,9 +272,13 @@ namespace CHARACTERS
         public void SetDialogueFont(TMP_FontAsset font) => config.dialogueFont = font;
         
         /// <summary>
-        /// 重置当前角色的配置数据为默认配置
+        /// 重置配置数据，将当前配置恢复为原始配置
         /// </summary>
-        public void ResetConfigurationData() => config = CharacterManager.instance.GetCharacterConfig(name);
+        /// <remarks>
+        /// 通过角色管理器获取指定名称的原始角色配置，并将其赋值给当前配置对象
+        /// </remarks>
+        public void ResetConfigurationData() => config = CharacterManager.instance.GetCharacterConfig(name, getOriginal: true);
+
         
         /// <summary>
         /// 更新屏幕上当前角色的文本自定义样式

@@ -22,8 +22,8 @@ namespace TESTING
             {
                 audioManager = FindFirstObjectByType<AudioManager>();
             }
-            StartCoroutine(Test());
-            // StartCoroutine(Test2());
+            // StartCoroutine(Test());
+            StartCoroutine(Test2());
         }
         
         private IEnumerator Test()
@@ -101,6 +101,21 @@ namespace TESTING
             // yield return PunChan.Hide();
             
             PunChan.SetColor(Color.red);
+        }
+        
+        private IEnumerator Test2()
+        { 
+            Character Monk = CreateCharacter("Monk as Generic");
+            yield return Monk.Say("Normal dialogue configuration");
+
+            Monk.SetDialogueColor(Color.red);
+            Monk.SetNameColor(Color.blue);
+
+            yield return Monk.Say("Customized dialogue here");
+
+            Monk.ResetConfigurationData();
+
+            yield return Monk.Say("I should be back to normal");
         }
     }
 }

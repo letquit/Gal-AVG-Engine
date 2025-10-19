@@ -101,12 +101,22 @@ namespace CHARACTERS
         }
 
         /// <summary>
-        /// 根据角色名称获取角色配置数据
+        /// 获取指定角色的配置数据
         /// </summary>
-        /// <param name="characterName">要查询的角色名称</param>
-        /// <returns>对应的角色配置数据，如果未找到则返回null</returns>
-        public CharacterConfigData GetCharacterConfig(string characterName)
+        /// <param name="characterName">角色名称</param>
+        /// <param name="getOriginal">是否获取原始配置数据，默认为false。如果为true，则直接从配置中获取；如果为false，则优先从已加载的角色对象中获取</param>
+        /// <returns>返回角色的配置数据，如果未找到则返回null</returns>
+        public CharacterConfigData GetCharacterConfig(string characterName, bool getOriginal = false)
         {
+            // 如果不需要获取原始配置，则尝试从已加载的角色对象中获取
+            if (!getOriginal)
+            {
+                Character character = GetCharacter(characterName);
+                if (character != null)
+                    return character.config;
+            }
+            
+            // 获取原始配置数据
             return config.GetConfig(characterName);
         }
 
