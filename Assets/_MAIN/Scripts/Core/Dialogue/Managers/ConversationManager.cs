@@ -37,13 +37,21 @@ namespace DIALOGUE
         private bool userPrompt = false;
 
         /// <summary>
-        /// 构造函数，初始化对话管理器并绑定用户输入事件。
+        /// TagManager类型的私有字段，用于管理标签相关的操作
         /// </summary>
-        /// <param name="architect">用于构建对话文本的文本构建器。</param>
+        private TagManager tagManager;
+        
+        /// <summary>
+        /// 初始化对话管理器实例
+        /// </summary>
+        /// <param name="architect">文本架构师实例，用于处理文本显示和格式化</param>
         public ConversationManager(TextArchitect architect)
         {
             this.architect = architect;
+            // 订阅用户提示下一个事件
             dialogueSystem.onUserPrompt_Next += OnUserPrompt_Next;
+            
+            tagManager = new TagManager();
         }
         
         /// <summary>
@@ -159,7 +167,7 @@ namespace DIALOGUE
             if (speakerData.makeCharacterEnter && (!character.isVisible && !character.isRevealing))
                 character.Show();
                 
-            dialogueSystem.ShowSpeakerName(speakerData.displayname);
+            dialogueSystem.ShowSpeakerName(tagManager.Inject(speakerData.displayname));
                 
             DialogueSystem.instance.ApplySpeakerDataToDialogueContainer(speakerData.name);
 
@@ -267,6 +275,9 @@ namespace DIALOGUE
         /// <returns>IEnumerator 用于协程执行。</returns>
         IEnumerator BuildDialogue(string dialogue, bool append = false)
         {
+            // 注入标签内容
+            dialogue = tagManager.Inject(dialogue);
+            
             // 根据是否追加决定构建方式
             if (!append)
                 architect.Build(dialogue);

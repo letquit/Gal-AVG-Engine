@@ -13,6 +13,17 @@ MonoBehaviour:
   m_Name: Character Configuration Asset
   m_EditorClassIdentifier: 
   characters:
+  - name: <mainChar>
+    alias: mc
+    characterType: 0
+    nameColor: {r: 0.8000001, g: 0.5372549, b: 0.9921569, a: 1}
+    dialogueColor: {r: 0.5568628, g: 0.8196079, b: 1, a: 1}
+    nameFont: {fileID: 11400000, guid: 6a888d69a87eec245b2ce096aa58c7b4, type: 2}
+    dialogueFont: {fileID: 11400000, guid: ffa5a4cc46a31cf41b8c4ae60b57f04f, type: 2}
+    dialogueFontScale: 1.2
+    nameFontSize: 70
+    dialogueFontSize: 31
+    characterPrefab: {fileID: 0}
   - name: Stella
     alias: s
     characterType: 1
