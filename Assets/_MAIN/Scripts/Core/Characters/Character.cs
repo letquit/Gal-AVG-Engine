@@ -292,9 +292,9 @@ namespace CHARACTERS
         /// <returns>返回表示显示操作的协程</returns>
         public virtual Coroutine Show(float speedMultiplier = 1f)
         {
-            // 如果正在显示中，则直接返回当前显示协程
+            // 如果正在显示中，则停止显示协程
             if (isRevealing)
-                return co_revealing;
+                characterManager.StopCoroutine(co_revealing);
             
             // 如果正在隐藏中，则停止隐藏协程
             if (isHiding)
@@ -313,9 +313,9 @@ namespace CHARACTERS
         /// <returns>返回表示隐藏操作的协程</returns>
         public virtual Coroutine Hide(float speedMultiplier = 1f)
         {
-            // 如果正在隐藏，则直接返回当前隐藏协程
+            // 如果正在隐藏，则停止隐藏协程
             if (isHiding)
-                return co_hiding;
+                characterManager.StopCoroutine(co_hiding);
             
             // 如果正在显示，则停止显示协程
             if (isRevealing)
@@ -508,12 +508,8 @@ namespace CHARACTERS
         /// <returns>返回正在执行的高亮协程对象</returns>
         public Coroutine Highlight(float speed = 1f, bool immediate = false)
         {
-            // 如果正在高亮过程中，则直接返回当前协程
-            if (isHighlighting)
-                return co_highlighting;
-            
-            // 如果正在取消高亮，则停止当前协程
-            if (isUnHighlighting)
+            // 如果正在高亮或取消高亮过程中，则停止当前协程
+            if (isHighlighting || isUnHighlighting)
                 characterManager.StopCoroutine(co_highlighting);
 
             // 设置高亮状态并启动高亮协程
@@ -531,12 +527,8 @@ namespace CHARACTERS
         /// <returns>返回正在执行的取消高亮协程对象</returns>
         public Coroutine UnHighlight(float speed = 1f, bool immediate = false)
         {
-            // 如果正在取消高亮过程中，则直接返回当前协程
-            if (isUnHighlighting)
-                return co_highlighting;
-            
-            // 如果正在高亮，则停止当前协程
-            if (isHighlighting)
+            // 如果正在高亮或取消高亮过程中，则停止当前协程
+            if (isHighlighting || isUnHighlighting)
                 characterManager.StopCoroutine(co_highlighting);
 
             highlighted = false;

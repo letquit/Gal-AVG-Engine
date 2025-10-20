@@ -13,7 +13,7 @@ public class GraphicLayer
     public Transform panel;
     
     public GraphicObject currentGraphic = null;
-    private List<GraphicObject> oldGraphics = new List<GraphicObject>();
+    public List<GraphicObject> oldGraphics = new List<GraphicObject>();
 
     /// <summary>
     /// 通过文件路径设置纹理，并可选地应用过渡效果

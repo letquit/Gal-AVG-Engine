@@ -180,8 +180,9 @@ namespace CHARACTERS
         /// <returns>已存在的或新启动的协程引用。</returns>
         private Coroutine TryStartLevelingAlphas()
         {
+            // 如果已有透明度调整协程运行中，则停止它
             if (isLevelingAlpha)
-                return co_levelingAlpha;
+                characterManager.StopCoroutine(co_levelingAlpha);
             
             co_levelingAlpha = characterManager.StartCoroutine(RunAlphaLeveling());
             
@@ -296,9 +297,14 @@ namespace CHARACTERS
                 
                 renderer.color = Color.Lerp(oldColor, color, colorPercent);
 
-                foreach (Image oldImage in oldImages)
+                // 遍历旧渲染器的图片并更新颜色, 并移除已销毁的图片
+                for (int i = oldImages.Count - 1; i >= 0; i--)
                 {
-                    oldImage.color = renderer.color;
+                    Image image = oldImages[i];
+                    if (image != null)
+                        image.color = renderer.color;
+                    else 
+                        oldImages.RemoveAt(i);
                 }
                 
                 yield return null;

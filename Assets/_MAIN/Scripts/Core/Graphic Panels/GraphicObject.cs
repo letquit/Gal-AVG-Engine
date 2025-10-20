@@ -253,6 +253,10 @@ public class GraphicObject
         if (layer.currentGraphic != null && layer.currentGraphic.renderer == renderer)
             layer.currentGraphic = null;
         
+        // 如果当前图形对象在图层中的旧图形列表中，则将其从列表中移除
+        if (layer.oldGraphics.Contains(this))
+            layer.oldGraphics.Remove(this);
+        
         Object.Destroy(renderer.gameObject);
     }
 
