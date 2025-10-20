@@ -29,7 +29,7 @@ namespace DIALOGUE
         /// <summary>
         /// 文本构建器，用于逐字显示对话文本。
         /// </summary>
-        private TextArchitect architect = null;
+        public TextArchitect architect = null;
 
         /// <summary>
         /// 用户是否已触发下一步操作（如点击）。
@@ -244,6 +244,11 @@ namespace DIALOGUE
         }
 
         /// <summary>
+        /// 获取或设置一个值，该值指示当前是否正在等待自动计时器触发
+        /// </summary>
+        public bool isWaitingOnAutoTimer { get; private set; } = false;
+        
+        /// <summary>
         /// 等待特定对话段落的开始信号被触发。
         /// </summary>
         /// <param name="segment">当前处理的对话段落。</param>
@@ -259,8 +264,12 @@ namespace DIALOGUE
                     break;
                 case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.WC:
                 case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.WA:
+                    // 启用自动计时器
+                    isWaitingOnAutoTimer = true;
                     // 等待指定延迟时间
                     yield return new WaitForSeconds(segment.signalDelay);
+                    // 禁用自动计时器
+                    isWaitingOnAutoTimer = false;
                     break;
                 default:
                     break;

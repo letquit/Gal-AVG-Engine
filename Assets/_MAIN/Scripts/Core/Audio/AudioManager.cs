@@ -54,6 +54,15 @@ public class AudioManager : MonoBehaviour
 
     private Dictionary<char, AudioClip> soundMappingDict = new Dictionary<char, AudioClip>();
 
+    private List<float> audioPlayTimes = new List<float>();
+    private float dialogueDuration = 0;
+    private int currentAudioIndex = 0;
+    private Coroutine audioPlaybackRoutine = null;
+    
+    // 添加节流控制相关变量
+    private float lastTypingSoundTime = 0f;
+    private float typingSoundCooldown = 0.075f; // 单个打字声音的最小间隔时间
+
     /// <summary>
     /// Unity生命周期函数，在对象启用时执行初始化操作
     /// 主要用于确保当前对象作为单例存在，并初始化声音映射配置
@@ -342,11 +351,6 @@ public class AudioManager : MonoBehaviour
         architect.OnDialogueStart -= PrepareDialogueAudio;
     }
 
-    private List<float> audioPlayTimes = new List<float>();
-    private float dialogueDuration = 0;
-    private int currentAudioIndex = 0;
-    private Coroutine audioPlaybackRoutine = null;
-
     /// <summary>
     /// 准备对话音频播放计划。
     /// </summary>
@@ -369,16 +373,22 @@ public class AudioManager : MonoBehaviour
         dialogueDuration = displayDuration;
         audioPlayTimes.Clear();
         
+        // 修改分配音效时间的逻辑，确保最后的音效不会挤压在一起
         if (soundsToPlay == 1)
         {
             audioPlayTimes.Add(0);
         }
         else
         {
-            float interval = displayDuration / soundsToPlay;
+            // 计算显示时间的 85%，留出余量避免末尾拥堵
+            float adjustedDuration = displayDuration * 0.85f;
+            float interval = adjustedDuration / (soundsToPlay - 1);
+            
             for (int i = 0; i < soundsToPlay; i++)
             {
-                audioPlayTimes.Add(i * interval);
+                // 确保第一个音效在开头，最后一个不超过调整后的持续时间
+                float timePoint = i * interval;
+                audioPlayTimes.Add(timePoint);
             }
         }
         
@@ -398,10 +408,19 @@ public class AudioManager : MonoBehaviour
         {
             elapsedTime = Time.time - startTime;
             
+            // 如果已经超过计划持续时间的 95%，停止后续音效播放
+            if (elapsedTime > dialogueDuration * 0.95f && currentAudioIndex > 0)
+            {
+                break;
+            }
+            
             if (elapsedTime >= audioPlayTimes[currentAudioIndex])
             {
                 PlayRandomTypingSound();
                 currentAudioIndex++;
+                
+                // 增加一个小延迟，防止音效过于密集
+                yield return new WaitForSeconds(0.05f);
             }
             
             yield return null;
@@ -500,15 +519,22 @@ public class AudioManager : MonoBehaviour
     /// <param name="character">要播放音效的字符。</param>
     public void PlayTypingSound(char character)
     {
+        // 如果有自动音效协程在运行，跳过手动触发的音效
         if (audioPlaybackRoutine != null)
             return;
+            
+        // 增加节流控制，防止短时间内触发太多音效
+        if (Time.time - lastTypingSoundTime < typingSoundCooldown)
+            return;
+            
+        lastTypingSoundTime = Time.time;
             
         if (typingSource == null) return;
 
         AudioClip clip = null;
         if (soundMappingDict.TryGetValue(character, out clip))
         {
-            
+            // 使用字符特定的音效
         }
         else
         {
@@ -550,9 +576,16 @@ public class AudioManager : MonoBehaviour
     /// <param name="charCount">字符数量。</param>
     public void PlayMultipleTypingSounds(int charCount)
     {
+        // 如果有自动音效协程在运行，跳过手动触发的音效
         if (audioPlaybackRoutine != null)
             return;
             
+        // 增加节流控制，防止短时间内触发太多音效
+        if (Time.time - lastTypingSoundTime < typingSoundCooldown)
+            return;
+            
+        lastTypingSoundTime = Time.time;
+        
         PlayRandomTypingSound();
     }
 }

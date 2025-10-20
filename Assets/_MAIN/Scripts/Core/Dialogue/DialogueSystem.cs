@@ -39,6 +39,11 @@ namespace DIALOGUE
         private TextArchitect architect;
 
         /// <summary>
+        /// 自动读取器实例，用于处理自动化数据读取操作
+        /// </summary>
+        private AutoReader autoReader;
+
+        /// <summary>
         /// 序列化字段，用于引用主画布组组件
         /// </summary>
         [SerializeField] private CanvasGroup mainCanvas;
@@ -119,6 +124,10 @@ namespace DIALOGUE
             cgController = new CanvasGroupController(this, mainCanvas);
             dialogueContainer.Initialize();
             
+            // 初始化自动读取
+            if (TryGetComponent(out autoReader))
+                autoReader.Initialize(conversationManager);
+            
             // 如果音频管理器存在，则注册文本构建器
             if (audioManager != null)
             {
@@ -128,13 +137,26 @@ namespace DIALOGUE
             // 标记初始化完成
             _initialized = true;
         }
-
         
         /// <summary>
-        /// 触发用户按下“下一句”按键的事件
+        /// 处理用户提示的下一步操作
         /// </summary>
         public void OnUserPrompt_Next()
         {
+            // 触发用户提示下一步事件
+            onUserPrompt_Next?.Invoke();
+            
+            // 如果自动阅读器处于开启状态，则禁用它
+            if (autoReader != null && autoReader.isOn)
+                autoReader.Disable();
+        }
+        
+        /// <summary>
+        /// 处理系统提示的下一步操作
+        /// </summary>
+        public void OnSystemPrompt_Next()
+        {
+            // 触发用户提示下一步事件
             onUserPrompt_Next?.Invoke();
         }
 
