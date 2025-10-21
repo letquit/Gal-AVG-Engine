@@ -2,7 +2,7 @@ Narrator "what is your name?"
 
 input "What is your Name, Burh"
 
-Narrator "Nice to meet you, <mainChar>!"
+Narrator "Nice to meet you, <input>!"
 
 PlayAmbience(RainyMood), wait(1)
 

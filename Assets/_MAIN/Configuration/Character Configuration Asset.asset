@@ -24,6 +24,17 @@ MonoBehaviour:
     nameFontSize: 70
     dialogueFontSize: 31
     characterPrefab: {fileID: 0}
+  - name: Narrator
+    alias: na
+    characterType: 0
+    nameColor: {r: 1, g: 1, b: 1, a: 1}
+    dialogueColor: {r: 1, g: 1, b: 1, a: 1}
+    nameFont: {fileID: 11400000, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}
+    dialogueFont: {fileID: 11400000, guid: 1ad9a2995a6efff42b462952411b9023, type: 2}
+    dialogueFontScale: 1
+    nameFontSize: 35
+    dialogueFontSize: 31
+    characterPrefab: {fileID: 0}
   - name: Stella
     alias: s
     characterType: 1

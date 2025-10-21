@@ -28,6 +28,7 @@ public class TagManager
         tags["<mainChar>"] = () => "Avira";
         tags["<time>"] = () => DateTime.Now.ToString("hh:mm tt", CultureInfo.InvariantCulture);
         tags["<playerLevel>"] = () => "15";
+        tags["<input>"] = () => InputPanel.instance.lastInput;
         tags["<tempval1>"] = () => "42";
     }
 
