@@ -8,6 +8,8 @@ namespace DIALOGUE
     /// </summary>
     public class DIALOGUE_LINE
     {
+        // 原始对话行数据
+        public string rawData { get; private set; } = string.Empty;
         public DL_SPEAKER_DATA speakerData;
         public DL_DIALOGUE_DATA dialogueData;
         public DL_COMMAND_DATA commandData;
@@ -33,8 +35,10 @@ namespace DIALOGUE
         /// <param name="speaker">说话者信息字符串</param>
         /// <param name="dialogue">对话内容字符串</param>
         /// <param name="commands">命令数据字符串</param>
-        public DIALOGUE_LINE(string speaker, string dialogue, string commands)
+        public DIALOGUE_LINE(string rawLine, string speaker, string dialogue, string commands)
         {
+            // 保存原始数据
+            rawData = rawLine;
             // 根据字符串是否为空白来决定是否创建相应的数据对象
             this.speakerData = (string.IsNullOrWhiteSpace(speaker) ? null : new DL_SPEAKER_DATA(speaker));
             this.dialogueData = (string.IsNullOrWhiteSpace(dialogue) ? null : new DL_DIALOGUE_DATA(dialogue));

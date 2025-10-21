@@ -12,6 +12,8 @@ namespace DIALOGUE
     /// </summary>
     public class DL_SPEAKER_DATA
     {
+        // 原始对话行数据
+        public string rawData { get; private set; } = string.Empty;
         /// <summary>
         /// 发言者的原始名称（未经过"as"替换的部分）
         /// </summary>
@@ -88,6 +90,8 @@ namespace DIALOGUE
         /// <param name="rawSpeaker">包含所有发言者设置的原始字符串</param>
         public DL_SPEAKER_DATA(string rawSpeaker)
         {
+            // 保存原始输入字符串
+            rawData = rawSpeaker;
             rawSpeaker = ProcessKeywords(rawSpeaker);
             
             // 构造正则表达式匹配三种关键字段标识符

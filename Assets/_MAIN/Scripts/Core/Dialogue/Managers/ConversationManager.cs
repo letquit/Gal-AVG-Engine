@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CHARACTERS;
 using COMMANDS;
+using DIALOGUE.LogicalLines;
 using UnityEngine;
 
 namespace DIALOGUE
@@ -42,6 +43,11 @@ namespace DIALOGUE
         private TagManager tagManager;
         
         /// <summary>
+        /// LogicalLineManager类型的私有字段，用于管理逻辑行逻辑
+        /// </summary>
+        private LogicalLineManager logicalLineManager;
+        
+        /// <summary>
         /// 初始化对话管理器实例
         /// </summary>
         /// <param name="architect">文本架构师实例，用于处理文本显示和格式化</param>
@@ -52,6 +58,7 @@ namespace DIALOGUE
             dialogueSystem.onUserPrompt_Next += OnUserPrompt_Next;
             
             tagManager = new TagManager();
+            logicalLineManager = new LogicalLineManager();
         }
         
         /// <summary>
@@ -108,20 +115,28 @@ namespace DIALOGUE
                 DIALOGUE_LINE line = DialogueParser.Parse(conversation[i]);
                 // Debug.Log($"Parsed line - Speaker: {line.hasSpeaker}, Dialogue: {line.hasDialogue}, Commands: {line.hasCommands}");
 
-                // 如果有对话内容，则执行对话逻辑
-                if (line.hasDialogue)
-                    yield return Line_RunDialogue(line);
-                
-                // 如果有命令内容，则执行命令逻辑
-                if (line.hasCommands)
-                    yield return Line_RunCommands(line);
-                
-                // 如果当前行包含对话内容，则等待用户输入后继续执行
-                if (line.hasDialogue)
+                // 检查并执行逻辑管理器中的自定义逻辑
+                if (logicalLineManager.TryGetLogic(line, out Coroutine logic))
                 {
-                    yield return WaitForUserInput();
+                    yield return logic;
+                }
+                else
+                {
+                    // 如果有对话内容，则执行对话逻辑
+                    if (line.hasDialogue)
+                        yield return Line_RunDialogue(line);
+                
+                    // 如果有命令内容，则执行命令逻辑
+                    if (line.hasCommands)
+                        yield return Line_RunCommands(line);
+                
+                    // 如果当前行包含对话内容，则等待用户输入后继续执行
+                    if (line.hasDialogue)
+                    {
+                        yield return WaitForUserInput();
                     
-                    CommandManager.instance.StopAllProcesses();
+                        CommandManager.instance.StopAllProcesses();
+                    }
                 }
             }
         }

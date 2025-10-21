@@ -9,6 +9,8 @@ using UnityEngine.UI;
 /// </summary>
 public class InputPanel : MonoBehaviour
 {
+    public static InputPanel instance { get; private set; } = null;
+    
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private Button acceptButton;
@@ -18,7 +20,12 @@ public class InputPanel : MonoBehaviour
 
     public string lastInput { get; private set; } = string.Empty;
     public bool isWaitingOnUserInput { get; private set; }
-    
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
     /// <summary>
     /// 初始化输入面板组件引用和事件监听器
     /// 设置初始状态为隐藏

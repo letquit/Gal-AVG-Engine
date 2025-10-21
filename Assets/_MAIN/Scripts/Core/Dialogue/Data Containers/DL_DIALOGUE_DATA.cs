@@ -11,6 +11,8 @@ namespace DIALOGUE
     /// </summary>
     public class DL_DIALOGUE_DATA
     {
+        // 原始对话行数据
+        public string rawData { get; private set; } = string.Empty;
         /// <summary>
         /// 存储解析后的对话段落列表。
         /// </summary>
@@ -27,6 +29,8 @@ namespace DIALOGUE
         /// <param name="rawDialogue">需要解析的原始对话字符串。</param>
         public DL_DIALOGUE_DATA(string rawDialogue)
         {
+            // 保存原始对话数据
+            this.rawData = rawDialogue;
             segments = RipSegments(rawDialogue);
         }
 
