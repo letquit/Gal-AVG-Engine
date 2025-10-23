@@ -35,7 +35,16 @@ public class CanvasGroupController
     /// 判断对话框当前是否可见（包括正在显示的状态）
     /// </summary>
     public bool isVisible => co_showing != null || rootCG.alpha > 0;
-    
+
+    /// <summary>
+    /// 获取或设置CanvasGroup的透明度(alpha)值
+    /// </summary>
+    public float alpha
+    {
+        get { return rootCG.alpha; }
+        set { rootCG.alpha = value; } 
+    }
+
     /// <summary>
     /// 初始化CanvasGroupController实例
     /// </summary>
@@ -114,5 +123,16 @@ public class CanvasGroupController
         // 清理协程引用
         co_showing = null;
         co_hiding = null;
+    }
+    
+
+    /// <summary>
+    /// 设置画布组的交互状态
+    /// </summary>
+    /// <param name="active">是否激活交互和射线检测</param>
+    public void SetInteractableState(bool active)
+    {
+        rootCG.interactable = active;
+        rootCG.blocksRaycasts = active;
     }
 }

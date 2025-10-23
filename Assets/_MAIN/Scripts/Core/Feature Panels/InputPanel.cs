@@ -9,6 +9,9 @@ using UnityEngine.UI;
 /// </summary>
 public class InputPanel : MonoBehaviour
 {
+    /// <summary>
+    /// 单例实例，提供全局访问点
+    /// </summary>
     public static InputPanel instance { get; private set; } = null;
     
     [SerializeField] private CanvasGroup canvasGroup;
@@ -18,9 +21,19 @@ public class InputPanel : MonoBehaviour
 
     private CanvasGroupController cg;
 
+    /// <summary>
+    /// 上一次用户输入的内容
+    /// </summary>
     public string lastInput { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// 标识当前是否正在等待用户输入
+    /// </summary>
     public bool isWaitingOnUserInput { get; private set; }
 
+    /// <summary>
+    /// 在Awake阶段初始化单例实例
+    /// </summary>
     private void Awake()
     {
         instance = this;
@@ -34,8 +47,8 @@ public class InputPanel : MonoBehaviour
     {
         cg = new CanvasGroupController(this, canvasGroup);
         
-        canvasGroup.alpha = 0;
-        SetCanvasState(active: false);
+        cg.alpha = 0;
+        cg.SetInteractableState(active: false);
         acceptButton.gameObject.SetActive(false);
         
         inputField.onValueChanged.AddListener(OnInputChanged);
@@ -51,7 +64,7 @@ public class InputPanel : MonoBehaviour
         titleText.text = title;
         inputField.text = string.Empty;
         cg.Show();
-        SetCanvasState(active: true);
+        cg.SetInteractableState(active: true);
         isWaitingOnUserInput = true;
     }
     
@@ -61,7 +74,7 @@ public class InputPanel : MonoBehaviour
     public void Hide()
     {
         cg.Hide();
-        SetCanvasState(active: false);
+        cg.SetInteractableState(active: false);
         isWaitingOnUserInput = false;
     }
 
@@ -77,16 +90,6 @@ public class InputPanel : MonoBehaviour
         
         lastInput = inputField.text;
         Hide();
-    }
-
-    /// <summary>
-    /// 设置画布组的交互状态
-    /// </summary>
-    /// <param name="active">是否激活交互和射线检测</param>
-    private void SetCanvasState(bool active)
-    {
-        canvasGroup.interactable = active;
-        canvasGroup.blocksRaycasts = active;
     }
 
     /// <summary>
@@ -108,4 +111,3 @@ public class InputPanel : MonoBehaviour
         return inputField.text != string.Empty;
     }
 }
-
