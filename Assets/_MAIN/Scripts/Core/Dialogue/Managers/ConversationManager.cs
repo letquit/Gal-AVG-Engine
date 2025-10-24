@@ -46,6 +46,18 @@ namespace DIALOGUE
         /// LogicalLineManager类型的私有字段，用于管理逻辑行逻辑
         /// </summary>
         private LogicalLineManager logicalLineManager;
+
+        /// <summary>
+        /// 获取当前对话队列中的顶部对话
+        /// </summary>
+        /// <returns>如果对话队列为空则返回null，否则返回队列顶部的Conversation对象</returns>
+        public Conversation conversation => (conversationQueue.IsEmpty() ? null : conversationQueue.top);
+
+        /// <summary>
+        /// 对话队列实例，用于管理多个对话的顺序执行
+        /// </summary>
+        private ConversationQueue conversationQueue;
+
         
         /// <summary>
         /// 初始化对话管理器实例
@@ -58,8 +70,23 @@ namespace DIALOGUE
             dialogueSystem.onUserPrompt_Next += OnUserPrompt_Next;
             
             tagManager = new TagManager();
+            // 初始化逻辑行管理器
             logicalLineManager = new LogicalLineManager();
+            // 创建对话队列实例
+            conversationQueue = new ConversationQueue();
         }
+        
+        /// <summary>
+        /// 将对话对象添加到队列的末尾
+        /// </summary>
+        /// <param name="conversation">要添加到队列的对话对象</param>
+        public void Enqueue(Conversation conversation) => conversationQueue.Enqueue(conversation);
+
+        /// <summary>
+        /// 将对话对象添加到队列的优先级位置
+        /// </summary>
+        /// <param name="conversation">要添加到队列的对话对象</param>
+        public void EnqueuePriority(Conversation conversation) => conversationQueue.EnqueuePriority(conversation);
         
         /// <summary>
         /// 用户触发下一步操作时调用，设置 userPrompt 标志为 true。
@@ -70,17 +97,20 @@ namespace DIALOGUE
         }
 
         /// <summary>
-        /// 启动一个新的对话流程。
+        /// 开始执行对话流程
         /// </summary>
-        /// <param name="conversation">包含对话内容的字符串列表。</param>
-        /// <returns>表示对话流程的协程对象。</returns>
-        public Coroutine StarConversation(List<string> conversation)
+        /// <param name="conversation">要执行的对话对象</param>
+        /// <returns>返回启动的协程对象，可用于控制对话流程的暂停、停止等操作</returns>
+        public Coroutine StartConversation(Conversation conversation)
         {
             // 停止当前正在进行的对话
             StopConversation();
             
-            // 启动新的对话协程并保存引用
-            process = dialogueSystem.StartCoroutine(RunningConversation(conversation));
+            // 将新的对话加入队列
+            Enqueue(conversation);
+            
+            // 启动对话执行协程
+            process = dialogueSystem.StartCoroutine(RunningConversation());
             
             return process;
         }
@@ -98,21 +128,25 @@ namespace DIALOGUE
         }
 
         /// <summary>
-        /// 执行对话内容的核心协程。
+        /// 运行对话流程的协程函数
         /// </summary>
-        /// <param name="conversation">包含对话内容的字符串列表。</param>
-        /// <returns>IEnumerator 用于协程执行。</returns>
-        IEnumerator RunningConversation(List<string> conversation)
+        /// <returns>IEnumerator迭代器对象，用于协程执行</returns>
+        IEnumerator RunningConversation()
         {
-            // 遍历所有对话行
-            for (int i = 0; i < conversation.Count; i++)
+            // 循环处理对话队列中的所有对话
+            while (!conversationQueue.IsEmpty())
             {
-                // 跳过空行
-                if (string.IsNullOrWhiteSpace(conversation[i]))
+                Conversation currentConversation = conversation;
+                string rawLine = currentConversation.CurrentLine();
+
+                // 如果当前行为空白行，则尝试推进到下一对话行并继续循环
+                if (string.IsNullOrWhiteSpace(rawLine))
+                {
+                    TryAdvanceConversation(currentConversation);
                     continue;
+                }
                 
-                // 解析当前行
-                DIALOGUE_LINE line = DialogueParser.Parse(conversation[i]);
+                DIALOGUE_LINE line = DialogueParser.Parse(rawLine);
                 // Debug.Log($"Parsed line - Speaker: {line.hasSpeaker}, Dialogue: {line.hasDialogue}, Commands: {line.hasCommands}");
 
                 // 检查并执行逻辑管理器中的自定义逻辑
@@ -138,7 +172,26 @@ namespace DIALOGUE
                         CommandManager.instance.StopAllProcesses();
                     }
                 }
+
+                // 尝试推进到下一对话行
+                TryAdvanceConversation(currentConversation);
             }
+
+            process = null;
+        }
+
+        /// <summary>
+        /// 尝试推进对话进度，如果对话已结束则从队列中移除
+        /// </summary>
+        /// <param name="conversation">要推进的对话对象</param>
+        private void TryAdvanceConversation(Conversation conversation)
+        {
+            // 推进对话进度
+            conversation.IncrementProgress();
+            
+            // 检查对话是否已到达末尾，如果是则从队列中移除
+            if (conversation.HasReachedEnd())
+                conversationQueue.Dequeue();
         }
 
         /// <summary>

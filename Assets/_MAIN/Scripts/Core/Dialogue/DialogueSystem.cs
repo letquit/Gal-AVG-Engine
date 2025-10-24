@@ -31,7 +31,7 @@ namespace DIALOGUE
         /// <summary>
         /// 对话管理器，用于控制对话流程的执行
         /// </summary>
-        private ConversationManager conversationManager;
+        public ConversationManager conversationManager { get; private set; }
         
         /// <summary>
         /// 文本构建器，用于逐字显示对话文本效果
@@ -212,16 +212,26 @@ namespace DIALOGUE
             List<string> conversation = new List<string>() { $"{speaker} \"{dialogue}\"" };
             return Say(conversation);
         }
+        
+        /// <summary>
+        /// 启动一个对话协程，通过传入的对话行列表创建新的对话对象
+        /// </summary>
+        /// <param name="line">包含对话内容的字符串列表</param>
+        /// <returns>返回启动的对话协程对象</returns>
+        public Coroutine Say(List<string> line)
+        {
+            Conversation conversation = new Conversation(line);
+            return conversationManager.StartConversation(conversation);
+        }
 
         /// <summary>
-        /// 开始播放一组对话
-        /// 调用对话管理器启动对话流程
+        /// 启动一个对话协程，直接使用传入的对话对象
         /// </summary>
-        /// <param name="conversation">对话内容列表，每条格式为 "角色名 \"对话内容\""</param>
-        /// <returns>返回一个协程对象，可用于控制对话播放过程</returns>
-        public Coroutine Say(List<string> conversation)
+        /// <param name="conversation">已经创建好的对话对象</param>
+        /// <returns>返回启动的对话协程对象</returns>
+        public Coroutine Say(Conversation conversation)
         {
-            return conversationManager.StarConversation(conversation);
+            return conversationManager.StartConversation(conversation);
         }
 
         /// <summary>
