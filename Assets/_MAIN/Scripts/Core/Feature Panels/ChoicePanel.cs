@@ -144,6 +144,8 @@ public class ChoicePanel : MonoBehaviour
     public void Hide()
     {
         cg.Hide();
+        // 设置交互状态为false
+        cg.SetInteractableState(false);
     }
 
     /// <summary>

@@ -54,6 +54,14 @@ namespace DIALOGUE
         public Conversation conversation => (conversationQueue.IsEmpty() ? null : conversationQueue.top);
 
         /// <summary>
+        /// 获取对话进度
+        /// </summary>
+        /// <returns>
+        /// 如果对话队列为空，返回-1；否则返回队列顶部对话的进度值
+        /// </returns>
+        public int conversationProgress => (conversationQueue.IsEmpty() ? -1 : conversationQueue.top.GetProgress());
+        
+        /// <summary>
         /// 对话队列实例，用于管理多个对话的顺序执行
         /// </summary>
         private ConversationQueue conversationQueue;
