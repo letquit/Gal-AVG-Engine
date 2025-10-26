@@ -145,6 +145,14 @@ namespace DIALOGUE
             while (!conversationQueue.IsEmpty())
             {
                 Conversation currentConversation = conversation;
+
+                // 如果当前对话已结束，则从队列中删除该对话并继续循环
+                if (currentConversation.HasReachedEnd())
+                {
+                    conversationQueue.Dequeue();
+                    continue;
+                }
+                
                 string rawLine = currentConversation.CurrentLine();
 
                 // 如果当前行为空白行，则尝试推进到下一对话行并继续循环
@@ -196,6 +204,10 @@ namespace DIALOGUE
         {
             // 推进对话进度
             conversation.IncrementProgress();
+            
+            // 检查当前对话是否为队列中的第一个对话
+            if (conversation != conversationQueue.top)
+                return;
             
             // 检查对话是否已到达末尾，如果是则从队列中移除
             if (conversation.HasReachedEnd())
