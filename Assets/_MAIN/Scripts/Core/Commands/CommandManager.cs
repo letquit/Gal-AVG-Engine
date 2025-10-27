@@ -243,11 +243,24 @@ namespace COMMANDS
         /// <summary>
         /// 停止当前正在运行的命令进程
         /// </summary>
+        // public void StopCurrentProcess()
+        // {
+        //     // 如果存在正在运行的顶级进程，则终止该进程
+        //     if (topProcess != null)
+        //         KillProcess(topProcess);
+        // }
+        
         public void StopCurrentProcess()
         {
-            // 如果存在正在运行的顶级进程，则终止该进程
-            if (topProcess != null)
-                KillProcess(topProcess);
+            // 不再只终止 topProcess，而是终止所有活动进程。
+            // 我们需要复制列表，因为 KillProcess 会修改 activeProcesses 列表，
+            // 在遍历时修改集合会导致错误。
+            List<CommandProcess> processesToKill = new List<CommandProcess>(activeProcesses);
+
+            foreach (CommandProcess process in processesToKill)
+            {
+                KillProcess(process);
+            }
         }
 
         /// <summary>
@@ -292,15 +305,31 @@ namespace COMMANDS
         public void KillProcess(CommandProcess cmd)
         {
             // 从活动进程列表中移除该进程
-            activeProcesses.Remove(cmd);
+            // 检查一下 activeProcesses 是否真的包含 cmd，避免在某些边缘情况下出错
+            if (activeProcesses.Contains(cmd))
+                activeProcesses.Remove(cmd);
 
             // 如果进程有正在运行的进度且未完成，则停止进度
+            // (这里的 runningProgress.Stop() 可能是停止 Coroutine)
             if (cmd.runningProgress != null && !cmd.runningProgress.IsDone)
                 cmd.runningProgress.Stop();
-            
+    
             // 执行进程终止时的回调动作
+            // 这会调用 character.SetPosition(finalPosition)，正是我们需要的！
             cmd.onTerminateAction?.Invoke();
         }
+        // public void KillProcess(CommandProcess cmd)
+        // {
+        //     // 从活动进程列表中移除该进程
+        //     activeProcesses.Remove(cmd);
+        //
+        //     // 如果进程有正在运行的进度且未完成，则停止进度
+        //     if (cmd.runningProgress != null && !cmd.runningProgress.IsDone)
+        //         cmd.runningProgress.Stop();
+        //     
+        //     // 执行进程终止时的回调动作
+        //     cmd.onTerminateAction?.Invoke();
+        // }
 
         /// <summary>
         /// 等待命令执行完成的协程逻辑
