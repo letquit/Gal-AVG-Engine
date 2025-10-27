@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DIALOGUE;
 using UnityEngine;
 
@@ -10,8 +11,25 @@ namespace COMMANDS
     /// </summary>
     public class CMD_DatabaseExtension_General : CMD_DatabaseExtension
     {
-        private const string PARAM_SPEED = "-spd";
-        private const string PARAM_IMMEDIATE = "-i";
+        /// <summary>
+        /// 定义速度参数的标识符数组，支持 "-s" 和 "-spd"
+        /// </summary>
+        private static readonly string[] PARAM_SPEED = new string[] { "-s", "-spd" };
+        
+        /// <summary>
+        /// 定义立即执行参数的标识符数组，支持 "-i" 和 "-immediate"
+        /// </summary>
+        private static readonly string[] PARAM_IMMEDIATE = new string[] { "-i", "-immediate" };
+        
+        /// <summary>
+        /// 定义文件路径参数的标识符数组，支持 "-f"、"-file" 和 "-filepath"
+        /// </summary>
+        private static readonly string[] PARAM_FILEPATH = new string[] { "-f", "-file", "-filepath" };
+        
+        /// <summary>
+        /// 定义入队参数的标识符数组，支持 "-e" 和 "-enqueue"
+        /// </summary>
+        private static readonly string[] PARAM_ENQUEUE = new string[] { "-e", "-enqueue" };
         
         /// <summary>
         /// 扩展命令数据库，向其中添加通用命令
@@ -31,6 +49,40 @@ namespace COMMANDS
             database.AddCommand("showdb", new Func<string[], IEnumerator>(ShowDialogueBox));
             // 添加隐藏对话框命令
             database.AddCommand("hidedb", new Func<string[], IEnumerator>(HideDialogueBox));
+            
+            database.AddCommand("load", new Action<string[]>(LoadNewDialogueFile));
+        }
+
+        /// <summary>
+        /// 加载新的对话文件并启动或入队新对话
+        /// </summary>
+        /// <param name="data">包含文件路径和入队标志等参数的字符串数组</param>
+        private static void LoadNewDialogueFile(string[] data)
+        {
+            string fileName = string.Empty;
+            bool enqueue = false;
+
+            var parameters = ConvertDataToParameters(data);
+
+            parameters.TryGetValue(PARAM_FILEPATH, out fileName);
+            parameters.TryGetValue(PARAM_ENQUEUE, out enqueue, defaultValue: false);
+            
+            string filePath = FilePaths.GetPathToResource(FilePaths.resources_dialogueFiles, fileName);
+            TextAsset file = Resources.Load<TextAsset>(filePath);
+
+            if (file == null)
+            {
+                Debug.LogWarning($"File '{filePath}' could not be loaded from dialogue files. Please ensure it exists within the '{FilePaths.resources_dialogueFiles}' resources folder.");
+                return;
+            }
+
+            List<string> lines = FileManager.ReadTextAsset(file, includeBlankLines: true);
+            Conversation newConversation = new Conversation(lines);
+            
+            if (enqueue)
+                DialogueSystem.instance.conversationManager.Enqueue(newConversation);
+            else
+                DialogueSystem.instance.conversationManager.StartConversation(newConversation);
         }
 
         /// <summary>

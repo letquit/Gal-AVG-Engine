@@ -58,6 +58,11 @@ public class FilePaths
     public static readonly string resources_ambience = $"{resources_audio}Ambience/";
 
     /// <summary>
+    /// 资源路径常量，表示对话文件在资源目录中的相对路径
+    /// </summary>
+    public static readonly string resources_dialogueFiles = $"Dialogue Files/";
+
+    /// <summary>
     /// 获取资源的完整路径
     /// </summary>
     /// <param name="defaultPath">默认的基础路径</param>

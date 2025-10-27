@@ -113,6 +113,8 @@ namespace DIALOGUE
         {
             // 停止当前正在进行的对话
             StopConversation();
+            // 清空对话队列
+            conversationQueue.Clear();
             
             // 将新的对话加入队列
             Enqueue(conversation);

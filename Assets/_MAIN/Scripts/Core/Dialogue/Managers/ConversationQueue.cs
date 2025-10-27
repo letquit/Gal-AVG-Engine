@@ -56,5 +56,10 @@ namespace DIALOGUE
         /// </summary>
         /// <returns>如果队列为空返回true，否则返回false</returns>
         public bool IsEmpty() => conversationQueue.Count == 0;
+        
+        /// <summary>
+        /// 清空对话队列中的所有内容
+        /// </summary>
+        public void Clear() => conversationQueue.Clear();
     }
 }
