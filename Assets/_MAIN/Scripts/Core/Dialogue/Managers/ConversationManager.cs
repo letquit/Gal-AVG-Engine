@@ -36,11 +36,6 @@ namespace DIALOGUE
         /// 用户是否已触发下一步操作（如点击）。
         /// </summary>
         private bool userPrompt = false;
-
-        /// <summary>
-        /// TagManager类型的私有字段，用于管理标签相关的操作
-        /// </summary>
-        private TagManager tagManager;
         
         /// <summary>
         /// LogicalLineManager类型的私有字段，用于管理逻辑行逻辑
@@ -77,7 +72,6 @@ namespace DIALOGUE
             // 订阅用户提示下一个事件
             dialogueSystem.onUserPrompt_Next += OnUserPrompt_Next;
             
-            tagManager = new TagManager();
             // 初始化逻辑行管理器
             logicalLineManager = new LogicalLineManager();
             // 创建对话队列实例
@@ -257,7 +251,7 @@ namespace DIALOGUE
             if (speakerData.makeCharacterEnter && (!character.isVisible && !character.isRevealing))
                 character.Show();
                 
-            dialogueSystem.ShowSpeakerName(tagManager.Inject(speakerData.displayname));
+            dialogueSystem.ShowSpeakerName(TagManager.Inject(speakerData.displayname));
                 
             DialogueSystem.instance.ApplySpeakerDataToDialogueContainer(speakerData.name);
 
@@ -375,7 +369,7 @@ namespace DIALOGUE
         IEnumerator BuildDialogue(string dialogue, bool append = false)
         {
             // 注入标签内容
-            dialogue = tagManager.Inject(dialogue);
+            dialogue = TagManager.Inject(dialogue);
             
             // 根据是否追加决定构建方式
             if (!append)

@@ -4354,12 +4354,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468261259}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dcb16b6fcc05ab94d8036bcd2f42e121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileToRead: {fileID: 4900000, guid: ad69708c4161484492f600d7f04bb63e, type: 3}
+  fileToRead: {fileID: 4900000, guid: b350c00dc3f540df8aebb7bdda4a06c8, type: 3}
 --- !u!114 &1468261262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4442,11 +4442,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468261259}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942ef56d009ce64488b78caa7e2eea35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  var_int: 0
+  var_flt: 0
+  var_bool: 0
+  var_str: 
 --- !u!1 &1470743510
 GameObject:
   m_ObjectHideFlags: 0
