@@ -1,0 +1,18 @@
+﻿
+CreateCharacter("Guard as Generic" -e true), CreateCharacter(Stella -e true)
+Guard.SetPosition(-x 0), Stella.SetPosition(-x 1)
+PlaySong("223AM" -v 0.8)
+SetLayerMedia(background -m 5)
+
+enter Stella "Today we are going to be creating a variable store!"
+
+Guard "What are you talking about?"
+
+Stella "Oh, don't worry, Mr. Guard.{a} This will actually make your life easier. Trust me!"
+"You see, a VariableStore is like a magical box where you can keep all your custom variables."
+
+Guard "Custom variables? I'm not following."
+
+Stella "Okay, imagine you're guarding the palace, and you have to keep track of how many times the doors have be"
+
+Guard "Please go away. You're distracting me."

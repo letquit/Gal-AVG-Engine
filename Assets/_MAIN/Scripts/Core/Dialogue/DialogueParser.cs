@@ -53,7 +53,6 @@ namespace DIALOGUE
                     else if (dialogueEnd == -1)
                     {
                         dialogueEnd = i;
-                        break;
                     }
                 }
                 else
@@ -94,4 +93,3 @@ namespace DIALOGUE
         }
     }
 }
-

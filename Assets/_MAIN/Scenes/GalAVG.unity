@@ -4324,6 +4324,7 @@ GameObject:
   - component: {fileID: 1468261265}
   - component: {fileID: 1468261266}
   - component: {fileID: 1468261267}
+  - component: {fileID: 1468261268}
   m_Layer: 0
   m_Name: Dialogue Testing
   m_TagString: Untagged
@@ -4353,7 +4354,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468261259}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dcb16b6fcc05ab94d8036bcd2f42e121, type: 3}
   m_Name: 
@@ -4432,6 +4433,18 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b9c20b322848ab4a9ee14b7a185c7a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1468261268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468261259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942ef56d009ce64488b78caa7e2eea35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1470743510
