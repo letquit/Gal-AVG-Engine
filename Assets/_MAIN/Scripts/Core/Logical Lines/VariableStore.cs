@@ -18,6 +18,19 @@ public class VariableStore
     /// 数据库与变量名之间的分隔符。
     /// </summary>
     private const char DATABASE_VARIABLE_RELATIONAL_ID = '.';
+    
+    /// <summary>
+    /// 定义用于匹配变量标识符的正则表达式模式。
+    /// 该模式匹配以可选感叹号开头、后跟美元符号、再跟随字母数字下划线或点号组成的字符串。
+    /// 示例匹配：$variable、$var.name、!$var_name
+    /// </summary>
+    public static readonly string REGEX_VARIABLE_IDS = @"[!]?\$[a-zA-Z0-9_.]+";
+
+    /// <summary>
+    /// 定义变量标识符的起始字符常量。
+    /// 用于标识变量引用的特殊字符，值为美元符号($)。
+    /// </summary>
+    public const char VARIABLE_ID = '$';
 
     /// <summary>
     /// 表示一个变量数据库，用于组织和管理一组相关变量。
@@ -233,6 +246,22 @@ public class VariableStore
         string variableName = parts.Length > 1 ? parts[1] : parts[0];
         
         return (parts, db, variableName);
+    }
+
+    /// <summary>
+    /// 检查指定名称的变量是否存在
+    /// </summary>
+    /// <param name="name">变量名称，可以包含数据库标识符前缀，格式为"数据库名.变量名"</param>
+    /// <returns>如果变量存在返回true，否则返回false</returns>
+    public static bool HasVariable(string name)
+    {
+        // 解析变量名称，分离数据库标识符和变量名
+        string[] parts = name.Split(DATABASE_VARIABLE_RELATIONAL_ID);
+        Database db = parts.Length > 1 ? GetDatabase(parts[0]) : defaultDatabase;
+        string variableName = parts.Length > 1 ? parts[1] : parts[0];
+        
+        // 检查数据库中是否包含指定名称的变量
+        return db.variables.ContainsKey(variableName);
     }
 
     /// <summary>

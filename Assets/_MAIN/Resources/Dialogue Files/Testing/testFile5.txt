@@ -1,0 +1,7 @@
+﻿
+$lightSwitch = true
+
+narrator "Flip!"
+$lightSwitch = !$lightSwitch
+
+narrator "The light is on? $lightSwitch"

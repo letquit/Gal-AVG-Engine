@@ -1,0 +1,8 @@
+﻿
+$money = 50
+
+narrator "Here is some money."
+
+$money *= 1.35
+
+narrator "You have '$money' money"

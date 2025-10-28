@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -98,6 +99,194 @@ namespace DIALOGUE.LogicalLines
             /// <param name="line">要检查的行内容。</param>
             /// <returns>如果是结束标记返回 true，否则返回 false。</returns>
             public static bool IsEncapsulationEnd(string line) => line.Trim().StartsWith(ENCAPSULATION_END);
+        }
+        
+        /// <summary>
+        /// 提供表达式解析与计算功能的静态工具类。
+        /// </summary>
+        public static class Expressions
+        {
+            /// <summary>
+            /// 定义支持的操作符集合，包括赋值、算术运算等操作符。
+            /// </summary>
+            public static HashSet<string> OPERATORS = new HashSet<string>() { "-", "-=", "+", "+=", "*", "*=", "/", "/=", "=" };
+
+            /// <summary>
+            /// 正则表达式：用于匹配基本的算术操作符（如 +, -, *, /, = 及其复合形式）。
+            /// </summary>
+            public static readonly string REGEX_ARITHMATIC = @"([-+*/=]=?)";
+
+            /// <summary>
+            /// 正则表达式：用于识别以变量开头并可能带有赋值操作的语句行。
+            /// </summary>
+            public static readonly string REGEX_OPERATOR_LINE = @"^\$\w+\s*(=|\+=|-=|\*=|/=|)\s*";
+
+            /// <summary>
+            /// 根据给定的表达式部分数组进行数学计算，并返回最终结果。
+            /// </summary>
+            /// <param name="expressionParts">由空格或操作符分隔的字符串数组，表示一个表达式的各个组成部分。</param>
+            /// <returns>表达式计算后的结果对象。</returns>
+            public static object CalculateValue(string[] expressionParts)
+            {
+                // 分别存储操作数和操作符
+                List<string> operandStrings = new List<string>();
+                List<string> operatorStrings = new List<string>();
+                List<object> operands = new List<object>();
+
+                // 遍历所有表达式片段，将它们分类为操作数或操作符
+                for (int i = 0; i < expressionParts.Length; i++)
+                {
+                    string part = expressionParts[i].Trim();
+
+                    if (part == string.Empty)
+                        continue;
+
+                    if (OPERATORS.Contains(part))
+                        operatorStrings.Add(part);
+                    else
+                        operandStrings.Add(part);
+                }
+
+                // 将字符串类型的操作数转换为实际值
+                foreach (string operandString in operandStrings)
+                {
+                    operands.Add(ExtractValue(operandString));
+                }
+
+                // 按照优先级顺序执行乘除法
+                CalculateValue_DivisionAndMultiplication(operatorStrings, operands);
+
+                // 执行加减法
+                CalculateValue_AdditionAndSubtraction(operatorStrings, operands);
+
+                return operands[0];
+            }
+
+            /// <summary>
+            /// 处理表达式中的乘法和除法操作。按照从左到右的顺序依次处理。
+            /// </summary>
+            /// <param name="operatorStrings">当前剩余的操作符列表。</param>
+            /// <param name="operands">当前剩余的操作数列表。</param>
+            private static void CalculateValue_DivisionAndMultiplication(List<string> operatorStrings,
+                List<object> operands)
+            {
+                for (int i = 0; i < operatorStrings.Count; i++)
+                {
+                    string operatorString = operatorStrings[i];
+
+                    if (operatorString == "*" || operatorString == "/")
+                    {
+                        double leftOperand = Convert.ToDouble(operands[i]);
+                        double rightOperand = Convert.ToDouble(operands[i + 1]);
+
+                        if (operatorString == "*")
+                            operands[i] = leftOperand * rightOperand;
+                        else
+                        {
+                            if (rightOperand == 0)
+                            {
+                                Debug.LogError("Cannot divide by zero!");
+                                return;
+                            }
+                            operands[i] = leftOperand / rightOperand;
+                        }
+                    }
+
+                    // 移除已处理过的操作数和操作符
+                    operands.RemoveAt(i + 1);
+                    operatorStrings.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            /// <summary>
+            /// 处理表达式中的加法和减法操作。在乘除之后按从左到右顺序处理。
+            /// </summary>
+            /// <param name="operatorStrings">当前剩余的操作符列表。</param>
+            /// <param name="operands">当前剩余的操作数列表。</param>
+            private static void CalculateValue_AdditionAndSubtraction(List<string> operatorStrings,
+                List<object> operands)
+            {
+                for (int i = 0; i < operatorStrings.Count; i++)
+                {
+                    string operatorString = operatorStrings[i];
+
+                    if (operatorString == "+" || operatorString == "-")
+                    {
+                        double leftOperand = Convert.ToDouble(operands[i]);
+                        double rightOperand = Convert.ToDouble(operands[i + 1]);
+
+                        if (operatorString == "+")
+                            operands[i] = leftOperand + rightOperand;
+                        else
+                            operands[i] = leftOperand - rightOperand;
+
+                        // 移除已处理过的操作数和操作符
+                        operands.RemoveAt(i + 1);
+                        operatorStrings.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// 解析单个表达式元素（可能是变量、常量或带否定前缀的布尔值），提取其真实值。
+            /// </summary>
+            /// <param name="value">要解析的原始字符串值。</param>
+            /// <returns>解析后的真实数据对象。</returns>
+            private static object ExtractValue(string value)
+            {
+                bool negate = false;
+
+                // 判断是否需要逻辑取反
+                if (value.StartsWith("!"))
+                {
+                    negate = true;
+                    value = value.Substring(1);
+                }
+
+                // 若是变量引用，则尝试获取变量值
+                if (value.StartsWith(VariableStore.VARIABLE_ID))
+                {
+                    string variableName = value.TrimStart(VariableStore.VARIABLE_ID);
+                    if (!VariableStore.HasVariable(variableName))
+                    {
+                        Debug.LogError($"Variable {variableName} does not exits!");
+                        return null;
+                    }
+
+                    VariableStore.TryGetValue(variableName, out object val);
+
+                    if (val is bool boolVal && negate)
+                        return !boolVal;
+
+                    return val;
+                }
+                // 若是字符串字面量，则去除引号并注入标签
+                else if (value.StartsWith('\"') && value.EndsWith('\"'))
+                {
+                    value = TagManager.Inject(value, injectTags: true, injectVariables: true);
+                    return value.Trim('"');
+                }
+                // 否则尝试将其解析为数字或布尔值
+                else
+                {
+                    if (int.TryParse(value, out int intValue))
+                    {
+                        return intValue;
+                    }
+                    else if (float.TryParse(value, out float floatValue))
+                    {
+                        return floatValue;
+                    }
+                    else if (bool.TryParse(value, out bool boolValue))
+                    {
+                        return negate ? !boolValue : boolValue;
+                    }
+                    else
+                        return value;
+                }
+            }
         }
     }
 }
