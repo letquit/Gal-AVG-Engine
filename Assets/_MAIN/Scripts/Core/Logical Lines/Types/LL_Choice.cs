@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+using static DIALOGUE.LogicalLines.LogicalLineUtils.Encapsulation;
+
 namespace DIALOGUE.LogicalLines
 {
     /// <summary>
@@ -18,9 +20,7 @@ namespace DIALOGUE.LogicalLines
         /// 获取当前逻辑行的关键字标识符，固定为 "choice"。
         /// </summary>
         public string keyword => "choice";
-
-        private const char ENCAPSULATION_START = '{';
-        private const char ENCAPSULATION_END = '}';
+        
         private const char CHOICE_IDENTIFIER = '-';
 
         /// <summary>
@@ -31,8 +31,11 @@ namespace DIALOGUE.LogicalLines
         /// <returns>返回一个协程迭代器，支持异步操作控制流。</returns>
         public IEnumerator Execute(DIALOGUE_LINE line)
         {
+            // 获取当前对话和进度
+            var currentConversation = DialogueSystem.instance.conversationManager.conversation;
+            var progress = DialogueSystem.instance.conversationManager.conversationProgress;
             // 提取原始选择数据
-            RawChoiceData data = RipChoiceData();
+            EncapsulatedData data = RipEncapsulationData(currentConversation, progress, ripHeaderAndEncapsulators: true);
 
             // 解析出具体的选择项
             List<Choice> choices = GetChoicesFromData(data);
@@ -78,55 +81,13 @@ namespace DIALOGUE.LogicalLines
         }
 
         /// <summary>
-        /// 从当前对话进度开始提取原始选择数据，直到遇到封闭符号 '}' 为止。
-        /// 数据范围由一对大括号 `{}` 定义，内部可能嵌套其他结构。
-        /// </summary>
-        /// <returns>封装了原始选择数据的对象，包括所有相关行以及结束索引。</returns>
-        private RawChoiceData RipChoiceData()
-        {
-            // 获取当前对话和进度信息
-            Conversation currentConversation = DialogueSystem.instance.conversationManager.conversation;
-            int currentProgress = DialogueSystem.instance.conversationManager.conversationProgress;
-            int encapsulationDepth = 0;
-            RawChoiceData data = new RawChoiceData { lines = new List<string>(), endingIndex = 0 };
-
-            // 遍历对话行，提取选择数据范围
-            for (int i = currentProgress; i < currentConversation.Count; i++)
-            {
-                string line = currentConversation.GetLines()[i];
-                data.lines.Add(line);
-
-                // 检查是否为封装开始符号，增加嵌套深度
-                if (IsEncapsulationStart(line))
-                {
-                    encapsulationDepth++;
-                    continue;
-                }
-
-                // 检查是否为封装结束符号，减少嵌套深度
-                if (IsEncapsulationEnd(line))
-                {
-                    encapsulationDepth--;
-                    // 当嵌套深度为0时，表示找到完整的数据范围
-                    if (encapsulationDepth == 0)
-                    {
-                        data.endingIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            return data;
-        }
-
-        /// <summary>
         /// 从原始选择数据中解析出所有可选的选项及其对应的结果对话行。
         /// 每个选项以 '-' 开头定义标题，在下一个选项或结束前的所有行为该选项的结果。
         /// 支持嵌套结构，通过封装层级进行识别。
         /// </summary>
         /// <param name="data">原始选择数据，包含多行字符串及结束位置。</param>
         /// <returns>解析后的选择列表，每个元素是一个完整的选项结构。</returns>
-        private List<Choice> GetChoicesFromData(RawChoiceData data)
+        private List<Choice> GetChoicesFromData(EncapsulatedData data)
         {
             List<Choice> choices = new List<Choice>();
             int encapsulationDepth = 0;
@@ -208,42 +169,11 @@ namespace DIALOGUE.LogicalLines
         }
 
         /// <summary>
-        /// 检查给定行是否为嵌套结构的起始标记（'{'）。
-        /// </summary>
-        /// <param name="line">要检查的行内容。</param>
-        /// <returns>如果是起始标记返回 true，否则返回 false。</returns>
-        private bool IsEncapsulationStart(string line) => line.Trim().StartsWith(ENCAPSULATION_START);
-
-        /// <summary>
-        /// 检查给定行是否为嵌套结构的结束标记（'}'）。
-        /// </summary>
-        /// <param name="line">要检查的行内容。</param>
-        /// <returns>如果是结束标记返回 true，否则返回 false。</returns>
-        private bool IsEncapsulationEnd(string line) => line.Trim().StartsWith(ENCAPSULATION_END);
-
-        /// <summary>
         /// 检查给定行是否为选项的起始标记（'-'）。
         /// </summary>
         /// <param name="line">要检查的行内容。</param>
         /// <returns>如果是选项起始标记返回 true，否则返回 false。</returns>
         private bool IsChoiceStart(string line) => line.Trim().StartsWith(CHOICE_IDENTIFIER);
-
-        /// <summary>
-        /// 存储原始选择数据的结构体。
-        /// 包含原始行集合与结束索引，用于定位对话继续点。
-        /// </summary>
-        private struct RawChoiceData
-        {
-            /// <summary>
-            /// 原始选择相关的全部行内容。
-            /// </summary>
-            public List<string> lines;
-
-            /// <summary>
-            /// 当玩家做完选择后，对话系统知道该从哪一行继续往下走。
-            /// </summary>
-            public int endingIndex;
-        }
 
         /// <summary>
         /// 表示一个选项的结构体，包括标题和结果对话行。
