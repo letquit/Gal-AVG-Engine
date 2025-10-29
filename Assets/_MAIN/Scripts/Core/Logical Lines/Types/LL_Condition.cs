@@ -63,7 +63,7 @@ namespace DIALOGUE.LogicalLines
             EncapsulatedData selData = conditionResult ? ifData : elseData;
 
             // 若选中数据有效且包含内容，则将其作为优先级对话入队处理
-            if ((selData.lines != null) && selData.lines.Count > 0)
+            if (!selData.isNull && selData.lines.Count > 0)
             {
                 Conversation newConversation = new Conversation(selData.lines);
                 DialogueSystem.instance.conversationManager.EnqueuePriority(newConversation);

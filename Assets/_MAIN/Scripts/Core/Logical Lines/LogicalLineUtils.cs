@@ -23,6 +23,11 @@ namespace DIALOGUE.LogicalLines
             public struct EncapsulatedData
             {
                 /// <summary>
+                /// 获取当前对象是否为空的判断结果
+                /// </summary>
+                public bool isNull => lines == null;
+                
+                /// <summary>
                 /// 被封装的内容行列表。
                 /// </summary>
                 public List<string> lines;
