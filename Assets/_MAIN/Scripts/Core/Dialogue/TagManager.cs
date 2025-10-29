@@ -82,7 +82,14 @@ public class TagManager
         for (int i = matchesList.Count - 1; i >= 0; i--)
         {
             var match = matchesList[i];
-            string variableName = match.Value.TrimStart(VariableStore.VARIABLE_ID);
+            // 提取变量名并判断是否需要取反
+            string variableName = match.Value.TrimStart(VariableStore.VARIABLE_ID, '!');
+            bool negate = match.Value.StartsWith('!');
+
+            // 检查变量名是否以非法字符结尾，如果是则移除该字符
+            bool endsInIllegalCharacter = variableName.EndsWith(VariableStore.DATABASE_VARIABLE_RELATIONAL_ID);
+            if (endsInIllegalCharacter)
+                variableName = variableName.Substring(0, variableName.Length - 1);
 
             // 尝试获取变量值，若不存在则记录错误日志
             if (!VariableStore.TryGetValue(variableName, out object variableValue))
@@ -90,11 +97,18 @@ public class TagManager
                 Debug.LogError($"Variable {variableName} not found in string assignment.");
                 continue;
             }
+            
+            // 对布尔类型变量进行取反操作
+            if (negate && variableValue is bool)
+                variableValue = !(bool)variableValue;
 
             // 计算要删除的长度，防止越界
             int lengthToBeRemoved =
                 match.Index + match.Length > value.Length ? value.Length - match.Index : match.Length;
+            if (endsInIllegalCharacter)
+                lengthToBeRemoved -= 1;
 
+            // 替换匹配到的变量占位符为实际变量值
             value = value.Remove(match.Index, lengthToBeRemoved);
             value = value.Insert(match.Index, variableValue.ToString());
         }

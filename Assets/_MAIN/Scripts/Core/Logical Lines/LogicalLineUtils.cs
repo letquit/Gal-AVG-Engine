@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace DIALOGUE.LogicalLines
@@ -190,12 +192,12 @@ namespace DIALOGUE.LogicalLines
                             }
                             operands[i] = leftOperand / rightOperand;
                         }
-                    }
 
-                    // 移除已处理过的操作数和操作符
-                    operands.RemoveAt(i + 1);
-                    operatorStrings.RemoveAt(i);
-                    i--;
+                        // 仅在处理完乘法或除法后，才移除已处理过的操作数和操作符
+                        operands.RemoveAt(i + 1);
+                        operatorStrings.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
 
@@ -284,7 +286,148 @@ namespace DIALOGUE.LogicalLines
                         return negate ? !boolValue : boolValue;
                     }
                     else
+                    {
+                        // 尝试将字符串解析为标签
+                        value = TagManager.Inject(value, injectTags: true, injectVariables: true);
                         return value;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 提供条件表达式解析和求值功能的静态类。
+        /// </summary>
+        public static class Conditions
+        {
+            /// <summary>
+            /// 定义条件表达式中支持的运算符的正则表达式。
+            /// 包括比较运算符（==, !=, <=, >=, <, >）和逻辑运算符（&&, ||）。
+            /// </summary>
+            public static readonly string REGEX_CONDITIONAL_OPERATORS = @"(==|!=|<=|>=|<|>|&&|\|\|)";
+            
+            /// <summary>
+            /// 对给定的条件表达式字符串进行解析并计算其布尔结果。
+            /// 支持单个布尔值、简单二元表达式以及部分复合表达式。
+            /// </summary>
+            /// <param name="condition">要评估的条件表达式字符串。</param>
+            /// <returns>条件表达式的布尔评估结果。</returns>
+            public static bool EvaluateCondition(string condition)
+            {
+                // 注入标签和变量，替换表达式中的占位符
+                condition = TagManager.Inject(condition, injectTags: true, injectVariables: true);
+
+                // 使用正则表达式将表达式按运算符分割，并去除空格
+                string[] parts = Regex.Split(condition, REGEX_CONDITIONAL_OPERATORS).Select(p => p.Trim()).ToArray();
+
+                // 去除字符串值的引号
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    if (parts[i].StartsWith("\"") && parts[i].EndsWith("\""))
+                        parts[i] = parts[i].Substring(1, parts[i].Length - 2);
+                }
+
+                // 单个值的情况：尝试解析为布尔值
+                if (parts.Length == 1)
+                {
+                    if (bool.TryParse(parts[0], out bool result))
+                        return result;
+                    else
+                    {
+                        Debug.LogError($"Could not parse condition: {condition}");
+                        return false;
+                    }
+                }
+                // 三段式表达式：左操作数、运算符、右操作数
+                else if (parts.Length == 3)
+                {
+                    return EvaluateExpression(parts[0], parts[1], parts[2]);
+                }
+                // 不支持的表达式格式
+                else
+                {
+                    Debug.LogError($"Unsupported condition format: {condition}");
+                    return false;
+                }
+            }
+
+            /// <summary>
+            /// 定义通用二元运算符委托，用于比较两个相同类型的值。
+            /// </summary>
+            /// <typeparam name="T">参与运算的操作数类型。</typeparam>
+            /// <param name="left">左操作数。</param>
+            /// <param name="right">右操作数。</param>
+            /// <returns>运算结果。</returns>
+            private delegate bool OperatorFunc<T>(T left, T right);
+
+            /// <summary>
+            /// 存储布尔类型支持的运算符及其对应实现的字典。
+            /// </summary>
+            private static Dictionary<string, OperatorFunc<bool>> boolOperators =
+                new Dictionary<string, OperatorFunc<bool>>()
+                {
+                    { "&&", (left, right) => left && right },
+                    { "||", (left, right) => left || right },
+                    { "==", (left, right) => left == right },
+                    { "!=", (left, right) => left != right }
+                };
+
+            /// <summary>
+            /// 存储浮点数类型支持的运算符及其对应实现的字典。
+            /// </summary>
+            private static Dictionary<string, OperatorFunc<float>> floatOperators =
+                new Dictionary<string, OperatorFunc<float>>()
+                {
+                    { "==", (left, right) => left == right },
+                    { "!=", (left, right) => left != right },
+                    { ">", (left, right) => left > right },
+                    { ">=", (left, right) => left >= right },
+                    { "<", (left, right) => left < right },
+                    { "<=", (left, right) => left <= right }
+                };
+
+            /// <summary>
+            /// 存储整数类型支持的运算符及其对应实现的字典。
+            /// </summary>
+            private static Dictionary<string, OperatorFunc<int>> intOperators =
+                new Dictionary<string, OperatorFunc<int>>()
+                {
+                    { "==", (left, right) => left == right },
+                    { "!=", (left, right) => left != right },
+                    { ">", (left, right) => left > right },
+                    { ">=", (left, right) => left >= right },
+                    { "<", (left, right) => left < right },
+                    { "<=", (left, right) => left <= right }
+                };
+            
+            /// <summary>
+            /// 根据操作数类型选择合适的运算符字典，并执行对应的运算。
+            /// 支持布尔、浮点数、整数和字符串类型的比较。
+            /// </summary>
+            /// <param name="left">左操作数字符串。</param>
+            /// <param name="op">运算符字符串。</param>
+            /// <param name="right">右操作数字符串。</param>
+            /// <returns>表达式的布尔运算结果。</returns>
+            private static bool EvaluateExpression(string left, string op, string right)
+            {
+                // 尝试解析为布尔类型并执行运算
+                if (bool.TryParse(left, out bool leftBool) && bool.TryParse(right, out bool rightBool))
+                    return boolOperators[op](leftBool, rightBool);
+                
+                // 尝试解析为浮点数并执行运算
+                if (float.TryParse(left, out float leftFloat) && float.TryParse(right, out float rightFloat))
+                    return floatOperators[op](leftFloat, rightFloat);
+                
+                // 尝试解析为整数并执行运算
+                if (int.TryParse(left, out int leftInt) && int.TryParse(right, out int rightInt))
+                    return intOperators[op](leftInt, rightInt);
+                
+                // 默认字符串比较
+                switch (op)
+                {
+                    case "==": return left == right;
+                    case "!=": return left != right;
+                    default: throw new InvalidOperationException($"Unsupported Operation: {op}");
                 }
             }
         }

@@ -17,7 +17,7 @@ public class VariableStore
     /// <summary>
     /// 数据库与变量名之间的分隔符。
     /// </summary>
-    private const char DATABASE_VARIABLE_RELATIONAL_ID = '.';
+    public const char DATABASE_VARIABLE_RELATIONAL_ID = '.';
     
     /// <summary>
     /// 定义用于匹配变量标识符的正则表达式模式。
