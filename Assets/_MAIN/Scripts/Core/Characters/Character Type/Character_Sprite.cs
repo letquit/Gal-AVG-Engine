@@ -119,6 +119,13 @@ namespace CHARACTERS
         /// <returns>找到的精灵资源，未找到则返回null</returns>
         public Sprite GetSprite(string spriteName)
         {
+            // 首先尝试从配置数据中获取精灵资源
+            if (config.sprites.Count > 0)
+            {
+                if (config.sprites.TryGetValue(spriteName, out Sprite sprite))
+                    return sprite;
+            }
+            
             if (config.characterType == CharacterType.SpriteSheet)
             {
                 string[] data = spriteName.Split(SPRITESHEET_TEX_SPRITE_DELIMITTER);

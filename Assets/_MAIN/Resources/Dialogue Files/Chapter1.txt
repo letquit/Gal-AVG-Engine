@@ -1,4 +1,7 @@
-﻿Narrator "The sky rumbled as a storm approached.{c}Not soon after the storm worsened and the sky began to let down a deluge as lightning crackled above."
+﻿
+enter Raelin [0:A1,1:A_Guilty] "Hi!"
+
+Narrator "The sky rumbled as a storm approached.{c}Not soon after the storm worsened and the sky began to let down a deluge as lightning crackled above."
 
 "Dashing through the rain and mud, two figures began to see lights emerge through the thick of the trees surrounding them."
 

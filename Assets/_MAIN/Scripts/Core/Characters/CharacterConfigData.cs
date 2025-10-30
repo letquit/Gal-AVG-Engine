@@ -1,4 +1,5 @@
 using System;
+using AYellowpaper.SerializedCollections;
 using DIALOGUE;
 using TMPro;
 using UnityEngine;
@@ -29,6 +30,12 @@ namespace CHARACTERS
         /// 可选的角色预制体引用，用于直接指定角色预制体资源
         /// </summary>
         public GameObject characterPrefab;
+        
+        /// <summary>
+        /// 可选的角色精灵字典，用于存储角色精灵资源
+        /// </summary>
+        [SerializedDictionary("Path / ID", "Sprite")]
+        public SerializedDictionary<string, Sprite> sprites = new SerializedDictionary<string, Sprite>();
 
         /// <summary>
         /// 创建当前角色配置数据的深拷贝副本
