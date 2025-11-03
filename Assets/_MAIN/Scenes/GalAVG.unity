@@ -1967,7 +1967,7 @@ MonoBehaviour:
     root: {fileID: 1513035366}
     nameContainer:
       root: {fileID: 1297713868}
-      nameText: {fileID: 832123506}
+      <nameText>k__BackingField: {fileID: 832123506}
     dialogueText: {fileID: 2022794641}
   mainCanvas: {fileID: 2015347664}
   prompt: {fileID: 1981276292}
@@ -2403,12 +2403,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2246b681f4c9ed4daa09da6ac1a9bca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allPanels:
-  - panelName: Background
+  <allPanels>k__BackingField:
+  - panelName: background
     rootPanel: {fileID: 14498895}
-  - panelName: Cinematic
+  - panelName: cinematic
     rootPanel: {fileID: 1018176094}
-  - panelName: Foreground
+  - panelName: foreground
     rootPanel: {fileID: 324121691}
 --- !u!1 &787243863
 GameObject:
@@ -4325,6 +4325,7 @@ GameObject:
   - component: {fileID: 1468261266}
   - component: {fileID: 1468261267}
   - component: {fileID: 1468261268}
+  - component: {fileID: 1468261269}
   m_Layer: 0
   m_Name: Dialogue Testing
   m_TagString: Untagged
@@ -4451,6 +4452,30 @@ MonoBehaviour:
   var_flt: 0
   var_bool: 0
   var_str: 
+--- !u!114 &1468261269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468261259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df11905571fc6164aa154e348ae2f4f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    currentDialogue: 
+    currentSpeaker: 
+    dialogueFont: 
+    dialogueColor: {r: 0, g: 0, b: 0, a: 0}
+    dialogueScale: 0
+    speakerFont: 
+    speakerNameColor: {r: 0, g: 0, b: 0, a: 0}
+    speakerScale: 0
+  audioData: []
+  graphicData: []
+  characterData: []
 --- !u!1 &1470743510
 GameObject:
   m_ObjectHideFlags: 0

@@ -69,7 +69,7 @@ public class AudioChannel
         }
 
         // 创建新的音频轨道并播放
-        AudioTrack track = new AudioTrack(clip, loop, startingVolume, volumeCap, pitch, this, AudioManager.instance.musicMixer);
+        AudioTrack track = new AudioTrack(clip, loop, startingVolume, volumeCap, pitch, this, AudioManager.instance.musicMixer, filePath);
         track.Play();
 
         SetAsActiveTrack(track);

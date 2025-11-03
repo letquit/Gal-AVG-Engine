@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -10,7 +11,20 @@ public class GraphicPanel
 {
     public string panelName;
     public GameObject rootPanel;
-    private List<GraphicLayer> layers = new List<GraphicLayer>();
+    public List<GraphicLayer> layers { get; private set; } = new List<GraphicLayer>();
+
+    /// <summary>
+    /// 判断当前对象是否处于清除状态
+    /// </summary>
+    /// <returns>
+    /// 当满足以下任一条件时返回true：
+    /// 1. layers为null
+    /// 2. layers集合为空
+    /// 3. layers集合中所有图层的currentGraphic都为null
+    /// 否则返回false
+    /// </returns>
+    public bool isClear => layers == null || layers.Count == 0 || layers.All(layer => layer.currentGraphic == null);
+
 
     /// <summary>
     /// 根据图层深度获取对应的图形图层

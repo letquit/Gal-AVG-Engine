@@ -20,7 +20,7 @@ public class GraphicPanelManager : MonoBehaviour
     /// <summary>
     /// 序列化字段，存储所有图形面板的数组
     /// </summary>
-    [SerializeField] private GraphicPanel[] allPanels;
+    [field:SerializeField] public GraphicPanel[] allPanels { get; private set; }
 
     /// <summary>
     /// Unity生命周期方法，在对象初始化时调用

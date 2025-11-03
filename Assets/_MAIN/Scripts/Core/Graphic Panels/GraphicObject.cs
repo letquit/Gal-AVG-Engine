@@ -25,7 +25,14 @@ public class GraphicObject
     /// <summary>
     /// 判断当前图形是否是视频类型。
     /// </summary>
-    public bool isVideo { get { return video != null; }}
+    public bool isVideo => video != null;
+
+    /// <summary>
+    /// 获取音频是否启用的状态
+    /// </summary>
+    /// <returns>如果音频组件存在且未静音则返回true，否则返回false</returns>
+    public bool useAudio => (audio != null ? !audio.mute : false);
+
 
     public VideoPlayer video = null;
     public AudioSource audio = null;

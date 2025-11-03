@@ -34,6 +34,11 @@ namespace DIALOGUE
         public float dialogueFontScale = 1f;
 
         /// <summary>
+        /// 字体缩放系数
+        /// </summary>
+        public float nameFontScale = 1f;
+
+        /// <summary>
         /// 对话文本的默认字体大小
         /// </summary>
         public float defaultDialogueFontSize = DEFAULT_FONTSIZE_DIALOGUE;

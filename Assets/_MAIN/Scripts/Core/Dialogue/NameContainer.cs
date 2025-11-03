@@ -12,7 +12,7 @@ namespace DIALOGUE
     public class NameContainer
     {
         [SerializeField] private GameObject root;
-        [SerializeField] public TextMeshProUGUI nameText;
+        [field:SerializeField] public TextMeshProUGUI nameText { get; private set; }
 
         /// <summary>
         /// 显示名称容器

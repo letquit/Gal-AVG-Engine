@@ -18,6 +18,11 @@ public class FilePaths
     public static readonly string resources_graphics = "Graphics/";
     
     /// <summary>
+    /// 字体资源路径常量定义
+    /// </summary>
+    public static readonly string resources_font = "Fonts/";
+    
+    /// <summary>
     /// 背景图片资源目录路径常量
     /// </summary>
     public static readonly string resources_backgroundImages = $"{resources_graphics}BG Images/";

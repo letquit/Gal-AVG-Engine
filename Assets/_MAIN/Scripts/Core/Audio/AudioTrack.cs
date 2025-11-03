@@ -11,6 +11,12 @@ public class AudioTrack
     /// 获取音频轨道的名称
     /// </summary>
     public string name { get; private set; }
+    
+    /// <summary>
+    /// 获取路径属性值
+    /// </summary>
+    /// <returns>返回当前对象的路径字符串</returns>
+    public string path { get; private set; }
 
     /// <summary>
     /// 获取音频轨道根游戏对象的引用
@@ -27,6 +33,14 @@ public class AudioTrack
     /// 获取音量上限值
     /// </summary>
     public float volumeCap { get; private set; }
+    
+    /// <summary>
+    /// 获取或设置音频源的音调
+    /// </summary>
+    /// <value>
+    /// 音频源的音调值
+    /// </value>
+    public float pitch { get { return source.pitch; } set { source.pitch = value; } }
     
     /// <summary>
     /// 获取音频是否正在播放
@@ -48,12 +62,17 @@ public class AudioTrack
     /// <param name="pitch">音频播放速率</param>
     /// <param name="channel">所属音频通道</param>
     /// <param name="mixer">音频混音器组</param>
-    public AudioTrack(AudioClip clip, bool loop, float startingVolume, float volumeCap, float pitch, AudioChannel channel, AudioMixerGroup mixer)
+    /// <param name="filePath">音频文件路径</param>
+    public AudioTrack(AudioClip clip, bool loop, float startingVolume, float volumeCap, float pitch, AudioChannel channel, AudioMixerGroup mixer, string filePath)
     {
+        // 初始化音频轨道的基本信息
         name = clip.name;
+        path = filePath;
+        
         this.channel = channel;
         this.volumeCap = volumeCap;
         
+        // 创建并配置音频源组件
         source = CreateSource();
         source.clip = clip;
         source.loop = loop;

@@ -22,7 +22,8 @@ namespace CHARACTERS
         public TMP_FontAsset nameFont;
         public TMP_FontAsset dialogueFont;
 
-        public float dialogueFontScale;
+        public float dialogueFontScale = 1f;
+        public float nameFontScale = 1f;
         public float nameFontSize;
         public float dialogueFontSize;
         
@@ -59,6 +60,7 @@ namespace CHARACTERS
             result.nameFontSize = nameFontSize;
             result.dialogueFontSize = dialogueFontSize;
             result.dialogueFontScale = dialogueFontScale;
+            result.nameFontScale = nameFontScale;
             
             return result;
         }
@@ -97,6 +99,7 @@ namespace CHARACTERS
                 result.nameFontSize = DialogueSystem.instance.config.defaultNameFontSize;
                 result.dialogueFontSize = DialogueSystem.instance.config.defaultDialogueFontSize;
                 result.dialogueFontScale = DialogueSystem.instance.config.dialogueFontScale;
+                result.nameFontScale = DialogueSystem.instance.config.nameFontScale;
                 
                 return result;
             }

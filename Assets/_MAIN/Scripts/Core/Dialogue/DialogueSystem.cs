@@ -183,16 +183,21 @@ namespace DIALOGUE
         }
 
         /// <summary>
-        /// 判断说话者是否为叙述者（narrator），如果是则不显示名称
-        /// 否则显示说话者名称
+        /// 显示或隐藏说话者名称
+        /// 当说话者不是叙述者时显示名称，否则隐藏名称并清空文本内容
         /// </summary>
-        /// <param name="speakerName">说话者的名称</param>
+        /// <param name="speakerName">说话者的名称，默认为空字符串</param>
         public void ShowSpeakerName(string speakerName = "")
         {
+            // 如果说话者不是叙述者，则显示说话者名称
             if (speakerName.ToLower() != "narrator")
                 dialogueContainer.nameContainer.Show(speakerName);
             else
+            {
+                // 如果是叙述者，则隐藏说话者名称并清空文本
                 HideSpeakerName();
+                dialogueContainer.nameContainer.nameText.text = "";
+            }
         }
 
         /// <summary>

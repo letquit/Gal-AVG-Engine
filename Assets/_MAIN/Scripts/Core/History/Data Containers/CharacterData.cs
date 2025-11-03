@@ -1,0 +1,174 @@
+using System;
+using System.Collections.Generic;
+using CHARACTERS;
+using UnityEngine;
+
+namespace History
+{
+    /// <summary>
+    /// 用于保存角色状态数据的类，包括角色的基本信息、配置缓存以及可视状态等。
+    /// </summary>
+    [Serializable]
+    public class CharacterData
+    {
+        public string characterName;        // 角色名称（内部标识）
+        public string displayName;          // 显示名称
+        public bool enabled;                // 是否启用/可见
+        public Color color;                 // 角色颜色
+        public int priority;                // 渲染优先级
+        public bool isHighLighted;          // 是否高亮显示
+        public bool isFacingLeft;           // 是否面向左侧
+        public Vector2 position;            // 当前位置
+        public CharacterConfigCache characterConfig; // 角色配置缓存
+
+        public string dataJSON;             // 根据角色类型序列化的额外数据JSON字符串
+
+        /// <summary>
+        /// 缓存角色配置信息的嵌套类，用于存储与角色相关的字体、颜色和类型等配置。
+        /// </summary>
+        [Serializable]
+        public class CharacterConfigCache
+        {
+            public string name;                     // 配置名称
+            public string alias;                    // 别名
+            public Character.CharacterType characterType; // 角色类型（Sprite/SpriteSheet/Live2D/Model3D）
+
+            public Color nameColor;                 // 名称文本颜色
+            public Color dialogueColor;             // 对话文本颜色
+
+            public string nameFont;                 // 名称字体资源路径
+            public string dialogueFont;             // 对话字体资源路径
+
+            public float nameFontScale = 1f;        // 名称字体缩放比例
+            public float dialogueFontScale = 1f;    // 对话字体缩放比例
+
+            /// <summary>
+            /// 使用 CharacterConfigData 初始化缓存配置。
+            /// </summary>
+            /// <param name="reference">原始角色配置数据</param>
+            public CharacterConfigCache(CharacterConfigData reference)
+            {
+                name = reference.name;
+                alias = reference.alias;
+                characterType = reference.characterType;
+
+                nameColor = reference.nameColor;
+                dialogueColor = reference.dialogueColor;
+
+                nameFont = FilePaths.resources_font + reference.nameFont.name;
+                dialogueFont = FilePaths.resources_font + reference.dialogueFont.name;
+
+                nameFontScale = reference.nameFontScale;
+                dialogueFontScale = reference.dialogueFontScale;
+            }
+        }
+
+        /// <summary>
+        /// 捕获当前所有可见角色的状态并生成 CharacterData 列表。
+        /// </summary>
+        /// <returns>包含所有可见角色状态的 CharacterData 列表</returns>
+        public static List<CharacterData> Capture()
+        {
+            List<CharacterData> characters = new List<CharacterData>();
+
+            // 遍历所有角色，仅处理可见的角色
+            foreach (var character in CharacterManager.instance.allCharacters)
+            {
+                if (!character.isVisible)
+                    continue;
+
+                CharacterData entry = new CharacterData();
+                entry.characterName = character.name;
+                entry.displayName = character.displayName;
+                entry.enabled = character.isVisible;
+                entry.color = character.color;
+                entry.priority = character.priority;
+                entry.isHighLighted = character.highlighted;
+                entry.position = character.targetPosition;
+                entry.characterConfig = new CharacterConfigCache(character.config);
+
+                // 根据不同角色类型保存额外数据
+                switch (character.config.characterType)
+                {
+                    case Character.CharacterType.Sprite:
+                    case Character.CharacterType.SpriteSheet:
+                        SpriteData sData = new SpriteData();
+                        sData.layers = new List<SpriteData.LayerData>();
+
+                        Character_Sprite sc = character as Character_Sprite;
+                        foreach (var layer in sc.layers)
+                        {
+                            var layerData = new SpriteData.LayerData();
+                            layerData.color = layer.renderer.color;
+                            layerData.spriteName = layer.renderer.sprite.name;
+                            sData.layers.Add(layerData);
+                        }
+
+                        entry.dataJSON = JsonUtility.ToJson(sData);
+                        break;
+                    case Character.CharacterType.Live2D:
+                        Live2DData l2Data = new Live2DData();
+                        Character_Live2D lc = character as Character_Live2D;
+
+                        l2Data.expression = lc.activeExpression;
+                        l2Data.motion = lc.activeMotion;
+
+                        entry.dataJSON = JsonUtility.ToJson(l2Data);
+                        break;
+                    case Character.CharacterType.Model3D:
+                        Model3DData m3Data = new Model3DData();
+                        Character_Model3D mc = character as Character_Model3D;
+
+                        m3Data.position = mc.model.position;
+                        m3Data.rotation = mc.model.rotation;
+
+                        entry.dataJSON = JsonUtility.ToJson(m3Data);
+                        break;
+                }
+
+                characters.Add(entry);
+            }
+
+            return characters;
+        }
+
+        /// <summary>
+        /// 用于保存精灵角色图层数据的嵌套类。
+        /// </summary>
+        [Serializable]
+        public class SpriteData
+        {
+            public List<LayerData> layers; // 图层列表
+
+            /// <summary>
+            /// 表示精灵图层的数据结构。
+            /// </summary>
+            [Serializable]
+            public class LayerData
+            {
+                public string spriteName;   // 精灵名称
+                public Color color;         // 图层颜色
+            }
+        }
+
+        /// <summary>
+        /// 用于保存Live2D角色状态数据的嵌套类。
+        /// </summary>
+        [Serializable]
+        public class Live2DData
+        {
+            public string expression;   // 当前表情
+            public string motion;       // 当前动作
+        }
+
+        /// <summary>
+        /// 用于保存3D模型角色状态数据的嵌套类。
+        /// </summary>
+        [Serializable]
+        public class Model3DData
+        {
+            public Vector3 position;     // 模型位置
+            public Quaternion rotation;  // 模型旋转
+        }
+    }
+}

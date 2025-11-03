@@ -89,7 +89,14 @@ namespace CHARACTERS
         /// 获取或设置优先级属性
         /// </summary>
         public int priority { get; protected set; }
-
+        
+        /// <summary>
+        /// 获取目标位置的属性
+        /// </summary>
+        /// <remarks>
+        /// 这是一个只读属性，外部只能获取targetPosition的值，不能直接修改
+        /// </remarks>
+        public Vector2 targetPosition { get; private set; }
         
         /// <summary>
         /// 获取角色管理器实例的引用
@@ -356,6 +363,9 @@ namespace CHARACTERS
             // 设置锚点范围
             root.anchorMin = minAnchorTarget;
             root.anchorMax = maxAnchorTarget;
+            
+            // 更新目标位置
+            targetPosition = position;
         }
 
         /// <summary>
@@ -377,6 +387,9 @@ namespace CHARACTERS
             
             // 启动新的移动协程
             co_moving = characterManager.StartCoroutine(MovingToPosition(position, speed, smooth));
+            
+            // 更新目标位置
+            targetPosition = position;
             
             return co_moving;
         }

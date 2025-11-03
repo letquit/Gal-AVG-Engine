@@ -29,6 +29,9 @@ namespace CHARACTERS
         private List<CubismRenderController> oldRenderers = new List<CubismRenderController>();
 
         private float xScale;
+        
+        public string activeExpression { get; private set; }
+        public string activeMotion { get; private set; }
 
         /// <summary>
         /// 获取或设置对象的可见状态
@@ -66,6 +69,7 @@ namespace CHARACTERS
         public void SetMotion(string animationName)
         {
             motionAnimator.Play(animationName);
+            activeMotion = animationName;
         }
 
         /// <summary>
@@ -75,6 +79,7 @@ namespace CHARACTERS
         public void SetExpression(int expressionIndex)
         {
             expressionController.CurrentExpressionIndex = expressionIndex;
+            activeExpression = expressionIndex.ToString();
         }
         
         /// <summary>
@@ -84,6 +89,7 @@ namespace CHARACTERS
         public void SetExpression(string expressionName)
         {
             expressionController.CurrentExpressionIndex = GetExpressionIndexByName(expressionName);
+            activeExpression = expressionName;
         }
 
         /// <summary>
