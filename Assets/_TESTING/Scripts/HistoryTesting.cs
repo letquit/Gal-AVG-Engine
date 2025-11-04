@@ -2,22 +2,21 @@ using System;
 using System.Collections.Generic;
 using History;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace TESTING
 {
     public class HistoryTesting : MonoBehaviour
     {
-        public DialogueData data;
-        public List<AudioData> audioData;
-        public List<GraphicData> graphicData;
-        public List<CharacterData> characterData;
+        public HistoryState state = new HistoryState();
 
         private void Update()
         {
-            data = DialogueData.Capture();
-            audioData = AudioData.Capture();
-            graphicData = GraphicData.Capture();
-            characterData = CharacterData.Capture();
+            if (Keyboard.current.hKey.wasPressedThisFrame)
+                state = HistoryState.Capture();
+            
+            if (Keyboard.current.rKey.wasPressedThisFrame)
+                state.Load();
         }
     }
 }

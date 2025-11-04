@@ -34,7 +34,7 @@ public class GraphicLayer
             return null;
         }
         
-        return SetTexture(tex, transitionSpeed, blendingTexture, filePath);
+        return SetTexture(tex, transitionSpeed, blendingTexture, filePath, immediate);
     }
     
     /// <summary>
@@ -43,13 +43,13 @@ public class GraphicLayer
     /// <param name="tex">要设置的纹理对象</param>
     /// <param name="transitionSpeed">过渡速度，默认为1f</param>
     /// <param name="blendingTexture">混合纹理，默认为null</param>
-    /// <param name="filepath">文件路径，用于标识纹理来源，默认为空字符串</param>
+    /// <param name="filePath">文件路径，用于标识纹理来源，默认为空字符串</param>
     /// <param name="immediate">是否立即显示，不使用过渡效果，默认为false</param>
     /// <returns>用于控制过渡动画的协程</returns>
     public Coroutine SetTexture(Texture tex, float transitionSpeed = 1f, Texture blendingTexture = null,
-        string filepath = "", bool immediate = false)
+        string filePath = "", bool immediate = false)
     {
-        return CreateGraphic(tex, transitionSpeed, filepath, blendingTexture: blendingTexture, immediate: immediate);
+        return CreateGraphic(tex, transitionSpeed, filePath, blendingTexture: blendingTexture, immediate: immediate);
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class GraphicLayer
             return null;
         }
         
-        return SetVideo(clip, transitionSpeed, useAudio, blendingTexture, filePath);
+        return SetVideo(clip, transitionSpeed, useAudio, blendingTexture, filePath, immediate);
     }
     
     /// <summary>
@@ -83,13 +83,13 @@ public class GraphicLayer
     /// <param name="transitionSpeed">过渡速度，默认为1f</param>
     /// <param name="useAudio">是否启用音频播放，默认为true</param>
     /// <param name="blendingTexture">混合纹理，默认为null</param>
-    /// <param name="filepath">文件路径，用于标识视频来源，默认为空字符串</param>
+    /// <param name="filePath">文件路径，用于标识视频来源，默认为空字符串</param>
     /// <param name="immediate">是否立即显示，不使用过渡效果，默认为false</param>
     /// <returns>用于控制过渡动画的协程</returns>
     public Coroutine SetVideo(VideoClip video, float transitionSpeed = 1f, bool useAudio = true,
-        Texture blendingTexture = null, string filepath = "", bool immediate = false)
+        Texture blendingTexture = null, string filePath = "", bool immediate = false)
     {
-        return CreateGraphic(video, transitionSpeed, filepath, useAudio, blendingTexture, immediate);
+        return CreateGraphic(video, transitionSpeed, filePath, useAudio, blendingTexture, immediate);
     }
 
     /// <summary>

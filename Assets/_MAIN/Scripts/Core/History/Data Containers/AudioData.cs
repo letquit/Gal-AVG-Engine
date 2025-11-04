@@ -57,5 +57,44 @@ namespace History
             
             return audioChannels;
         }
+        
+        /// <summary>
+        /// 应用音频数据列表，更新音频通道的状态
+        /// </summary>
+        /// <param name="data">音频数据列表，包含各个通道的音频配置信息</param>
+        public static void Apply(List<AudioData> data)
+        {
+            // 缓存已处理的通道索引
+            List<int> cache = new List<int>();
+            foreach (var channelData in data)
+            {
+                // 获取或创建指定索引的音频通道
+                AudioChannel channel =
+                    AudioManager.instance.TryGetChannel(channelData.channel, createIfDoesNotExist: true);
+                
+                // 检查当前活动轨道是否与目标轨道一致，不一致则加载并播放新轨道
+                if (channel.activeTrack == null || channel.activeTrack.name != channelData.trackName)
+                {
+                    AudioClip clip = HistoryCache.LoadAudio(channelData.trackPath);
+                    if (clip != null)
+                    {
+                        channel.StopTrack(immediate: true);
+                        channel.PlayTrack(clip, channelData.loop, channelData.trackVolume, channelData.trackVolume,
+                            channelData.trackPitch, channelData.trackPath);
+                    }
+                    else
+                        Debug.LogWarning($"History State: Could not load audio track '{channelData.trackPath}'");
+                }
+                
+                cache.Add(channelData.channel);
+            }
+
+            // 停止未在数据列表中指定的所有其他通道
+            foreach (var channel in AudioManager.instance.channels)
+            {
+                if (!cache.Contains(channel.Value.channelIndex))
+                    channel.Value.StopTrack(immediate: true);
+            }
+        }
     }
 }

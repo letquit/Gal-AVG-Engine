@@ -131,6 +131,99 @@ namespace History
 
             return characters;
         }
+        
+        /// <summary>
+        /// 应用一组角色数据到当前场景中的角色对象，包括显示名称、颜色、高亮状态、优先级、朝向、位置等属性。
+        /// 同时根据角色类型（Sprite、Live2D、Model3D）更新其特有的表现数据。
+        /// 最后隐藏未在数据列表中出现的角色。
+        /// </summary>
+        /// <param name="data">包含所有需要应用的角色数据的列表</param>
+        public static void Apply(List<CharacterData> data)
+        {
+            // 缓存已处理角色的名称，用于后续判断哪些角色需要被隐藏
+            List<string> cache = new List<string>();
+
+            foreach (CharacterData characterData in data)
+            {
+                // 获取或创建对应名称的角色实例
+                Character character =
+                    CharacterManager.instance.GetCharacter(characterData.characterName, createIfDoesNotExist: true);
+                
+                // 设置基础属性
+                character.displayName = characterData.displayName;
+                character.SetColor(characterData.color);
+                
+                // 设置高亮状态
+                if (characterData.isHighLighted)
+                    character.Highlight(immediate: true);
+                else
+                    character.UnHighlight(immediate: true);
+                
+                // 设置优先级和朝向
+                character.SetPriority(characterData.priority);
+
+                if (character.isFacingLeft)
+                    character.FaceLeft(immediate: true);
+                else
+                    character.FaceRight(immediate: true);
+                
+                // 设置位置和可见性
+                character.SetPosition(characterData.position);
+                character.isVisible = characterData.enabled;
+
+                // 根据不同角色类型设置特定数据
+                switch (character.config.characterType)
+                {
+                    case Character.CharacterType.Sprite:
+                    case Character.CharacterType.SpriteSheet:
+                        // 处理 Sprite 类型角色：更新图层精灵
+                        SpriteData sData = JsonUtility.FromJson<SpriteData>(characterData.dataJSON);
+                        Character_Sprite sc = character as Character_Sprite;
+
+                        for (int i = 0; i < sData.layers.Count; i++)
+                        {
+                            var layer = sData.layers[i];
+                            if (sc.layers[i].renderer.sprite != null &&
+                                sc.layers[i].renderer.sprite.name != layer.spriteName)
+                            {
+                                Sprite sprite = sc.GetSprite(layer.spriteName);
+                                if (sprite != null)
+                                    sc.SetSprite(sprite, i);
+                                else 
+                                    Debug.LogWarning($"History State: Could not load sprite '{layer.spriteName}");
+                            }
+
+                        }
+                        break;
+                    case Character.CharacterType.Live2D:
+                        // 处理 Live2D 类型角色：更新表情和动作
+                        Live2DData l2Data = JsonUtility.FromJson<Live2DData>(characterData.dataJSON);
+                        Character_Live2D lc = (Character_Live2D)character;
+                        if (lc.activeExpression != l2Data.expression)
+                            lc.SetExpression(l2Data.expression);
+                        if (lc.activeMotion != l2Data.motion)
+                            lc.SetMotion(l2Data.motion);
+                        break;
+                    case Character.CharacterType.Model3D:
+                        // 处理 3D 模型类型角色：更新模型的位置和旋转
+                        Model3DData m3Data = JsonUtility.FromJson<Model3DData>(characterData.dataJSON);
+                        Character_Model3D mc = (Character_Model3D)character;
+                        mc.model.position = m3Data.position;
+                        mc.model.rotation = m3Data.rotation;
+                        break;
+                }
+
+                // 将已处理角色加入缓存
+                cache.Add(character.name);
+            }
+
+            // 隐藏未在数据中指定的所有其他角色
+            foreach (Character character in CharacterManager.instance.allCharacters)
+            {
+                if (!cache.Contains(character.name))
+                    character.isVisible = false;
+            }
+        }
 
         /// <summary>
         /// 用于保存精灵角色图层数据的嵌套类。

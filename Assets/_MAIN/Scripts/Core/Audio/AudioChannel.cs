@@ -179,14 +179,25 @@ public class AudioChannel
     }
 
     /// <summary>
-    /// 停止当前激活的音频轨道，并尝试重新启动音量调节逻辑。
+    /// 停止当前活动的音轨
     /// </summary>
-    public void StopTrack()
+    /// <param name="immediate">是否立即停止音轨。如果为true，则立即销毁音轨；如果为false，则先尝试音量平衡处理再停止</param>
+    public void StopTrack(bool immediate = false)
     {
         if (activeTrack == null)
             return;
 
-        activeTrack = null;
-        TryStartVolumeLeveling();
+        // 立即停止模式：直接销毁音轨对象
+        if (immediate)
+        {
+            DestroyTrack(activeTrack);
+            activeTrack = null;
+        }
+        // 渐进停止模式：先尝试音量平衡处理
+        else
+        {
+            activeTrack = null;
+            TryStartVolumeLeveling();
+        }
     }
 }

@@ -38,12 +38,25 @@ namespace History
         }
 
         /// <summary>
-        /// 加载并恢复此历史状态的数据
-        /// 将当前游戏状态恢复到此历史状态记录时的状态
+        /// 加载对话、角色、音频和图形数据配置
         /// </summary>
+        /// <remarks>
+        /// 该方法依次应用四种数据配置：
+        /// 1. 对话数据配置
+        /// 2. 角色数据配置
+        /// 3. 音频数据配置
+        /// 4. 图形数据配置
+        /// </remarks>
         public void Load()
         {
-            
+            // 应用对话数据配置
+            DialogueData.Apply(dialogue);
+            // 应用角色数据配置
+            CharacterData.Apply(characters);
+            // 应用音频数据配置
+            AudioData.Apply(audio);
+            // 应用图形数据配置
+            GraphicData.Apply(graphics);
         }
     }
 }

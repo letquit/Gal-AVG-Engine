@@ -1,5 +1,6 @@
 using System;
 using DIALOGUE;
+using TMPro;
 using UnityEngine;
 
 namespace History
@@ -49,6 +50,44 @@ namespace History
             data.speakerScale = nameText.fontSize;
             
             return data;
+        }
+        
+        /// <summary>
+        /// 应用对话数据到对话系统界面
+        /// </summary>
+        /// <param name="data">包含对话内容、样式等信息的对话数据对象</param>
+        public static void Apply(DialogueData data)
+        { 
+            // 获取对话系统实例和相关UI组件
+            var ds = DialogueSystem.instance;
+            var dialogueText = ds.dialogueContainer.dialogueText;
+            var nameText = ds.dialogueContainer.nameContainer.nameText;
+            
+            // 设置对话文本内容和样式
+            dialogueText.text = data.currentDialogue;
+            dialogueText.color = data. dialogueColor;
+            dialogueText.fontSize = data.dialogueScale;
+            
+            // 设置说话者名称文本内容和样式
+            nameText.text = data.currentSpeaker;
+            nameText.color = data.speakerNameColor;
+            nameText.fontSize = data.speakerScale;
+
+            // 如果对话文本字体需要更换，则加载并应用新字体
+            if (data.dialogueFont != dialogueText.font.name)
+            {
+                TMP_FontAsset fontAsset = HistoryCache.LoadFont(data.dialogueFont);
+                if (fontAsset != null)
+                    dialogueText.font = fontAsset;
+            }
+
+            // 如果说话者名称字体需要更换，则加载并应用新字体
+            if (data.speakerFont != nameText.font.name)
+            {
+                TMP_FontAsset fontAsset = HistoryCache.LoadFont(data.speakerFont);
+                if (fontAsset != null)
+                    nameText.font = fontAsset;
+            }
         }
     }
 }
