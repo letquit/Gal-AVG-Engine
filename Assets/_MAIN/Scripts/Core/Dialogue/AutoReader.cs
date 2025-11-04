@@ -22,6 +22,7 @@ namespace DIALOGUE
         private TextArchitect architect => conversationManager.architect;
         
         [SerializeField] private TextMeshProUGUI statusText;
+        [HideInInspector] public bool allowToggle = true;
 
         public bool skip { get; set; } = false;
         public float speed { get; set; } = 1f;
@@ -133,6 +134,10 @@ namespace DIALOGUE
         /// </summary>
         public void Toggle_Auto()
         {
+            // 不允许切换
+            if (!allowToggle)
+                return;
+            
             bool prevState = skip;
             skip = false;
             
@@ -155,6 +160,10 @@ namespace DIALOGUE
         /// </summary>
         public void Toggle_Skip()
         {
+            // 不允许切换
+            if (!allowToggle)
+                return;
+
             bool prevState = skip;
             skip = true;
             

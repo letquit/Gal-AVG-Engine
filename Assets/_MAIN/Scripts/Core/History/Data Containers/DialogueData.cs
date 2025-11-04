@@ -65,11 +65,22 @@ namespace History
             
             // 设置对话文本内容和样式
             dialogueText.text = data.currentDialogue;
-            dialogueText.color = data. dialogueColor;
+            dialogueText.color = data.dialogueColor;
             dialogueText.fontSize = data.dialogueScale;
+            
+            // 修复打字机效果下的历史记录显示问题
+            dialogueText.maxVisibleCharacters = data.currentDialogue.Length;
+            dialogueText.ForceMeshUpdate();
             
             // 设置说话者名称文本内容和样式
             nameText.text = data.currentSpeaker;
+            
+            // 如果名称不为空，则显示名称容器, 否则隐藏
+            if (nameText.text != string.Empty)
+                ds.dialogueContainer.nameContainer.Show();
+            else
+                ds.dialogueContainer.nameContainer.Hide();
+            
             nameText.color = data.speakerNameColor;
             nameText.fontSize = data.speakerScale;
 

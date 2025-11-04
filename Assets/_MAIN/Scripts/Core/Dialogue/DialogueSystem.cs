@@ -62,6 +62,11 @@ namespace DIALOGUE
         /// 用户按下“下一句”按钮时触发的事件
         /// </summary>
         public event DialogueSystemEvent onUserPrompt_Next;
+        
+        /// <summary>
+        /// 对话系统清除事件委托
+        /// </summary>
+        public event DialogueSystemEvent onClear;
 
         /// <summary>
         /// 获取当前是否正在运行对话流程
@@ -160,6 +165,42 @@ namespace DIALOGUE
             onUserPrompt_Next?.Invoke();
         }
 
+        /// <summary>
+        /// 当系统提示需要清除时调用此方法
+        /// </summary>
+        public void OnSystemPrompt_Clear()
+        {
+            onClear?.Invoke();
+        }
+
+        /// <summary>
+        /// 开始查看历史记录时调用此方法
+        /// 禁用相关交互功能，确保在查看历史时不被用户输入干扰
+        /// </summary>
+        public void OnStartViewingHistory()
+        {
+            // 隐藏提示界面并禁用自动朗读和用户输入功能
+            prompt.Hide();
+            autoReader.allowToggle = false;
+            conversationManager.allowUserPrompts = false;
+            
+            // 如果自动朗读功能处于开启状态，则将其禁用
+            if(autoReader.isOn)
+                autoReader.Disable();
+        }
+        
+        /// <summary>
+        /// 停止查看历史记录时调用此方法
+        /// 恢复相关交互功能，允许用户继续正常使用
+        /// </summary>
+        public void OnStopViewingHistory()
+        {
+            // 显示提示界面并恢复自动朗读和用户输入功能
+            prompt.Show();
+            autoReader.allowToggle = true;
+            conversationManager.allowUserPrompts = true;
+        }
+        
         /// <summary>
         /// 根据说话者名称获取角色配置数据并应用到对话容器中
         /// </summary>

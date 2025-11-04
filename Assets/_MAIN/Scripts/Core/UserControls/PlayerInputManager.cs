@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using History;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -34,6 +35,8 @@ namespace DIALOGUE
         private void InitializeActions()
         {
             actions.Add((input.actions["Next"], OnNext));
+            actions.Add((input.actions["HistoryBack"], OnHistoryBack));
+            actions.Add((input.actions["HistoryForward"], OnHistoryForward));
         }
 
         /// <summary>
@@ -61,6 +64,24 @@ namespace DIALOGUE
         public void OnNext(InputAction.CallbackContext c)
         {
             DialogueSystem.instance.OnUserPrompt_Next();
+        }
+        
+        /// <summary>
+        /// 处理历史记录后退操作的回调函数
+        /// </summary>
+        /// <param name="c">输入动作的回调上下文信息</param>
+        public void OnHistoryBack(InputAction.CallbackContext c)
+        {
+            HistoryManager.instance.GoBack();
+        }
+        
+        /// <summary>
+        /// 处理历史记录前进操作的回调函数
+        /// </summary>
+        /// <param name="c">输入动作的回调上下文信息</param>
+        public void OnHistoryForward(InputAction.CallbackContext c)
+        {
+            HistoryManager.instance.GoForward();
         }
     }
 }

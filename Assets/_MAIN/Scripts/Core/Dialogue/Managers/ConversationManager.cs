@@ -60,7 +60,11 @@ namespace DIALOGUE
         /// 对话队列实例，用于管理多个对话的顺序执行
         /// </summary>
         private ConversationQueue conversationQueue;
-
+        
+        /// <summary>
+        /// 用户提示允许标志
+        /// </summary>
+        public bool allowUserPrompts = true;
         
         /// <summary>
         /// 初始化对话管理器实例
@@ -95,7 +99,9 @@ namespace DIALOGUE
         /// </summary>
         private void OnUserPrompt_Next()
         {
-            userPrompt = true;
+            // 如果允许用户提示
+            if (allowUserPrompts)
+                userPrompt = true;
         }
 
         /// <summary>
@@ -182,6 +188,8 @@ namespace DIALOGUE
                         yield return WaitForUserInput();
                     
                         CommandManager.instance.StopAllProcesses();
+                        // 清空系统提示
+                        dialogueSystem.OnSystemPrompt_Clear();
                     }
                 }
 
@@ -333,20 +341,32 @@ namespace DIALOGUE
         public bool isWaitingOnAutoTimer { get; private set; } = false;
         
         /// <summary>
-        /// 等待特定对话段落的开始信号被触发。
+        /// 等待对话段信号被触发的协程函数
         /// </summary>
-        /// <param name="segment">当前处理的对话段落。</param>
-        /// <returns>IEnumerator 用于协程执行。</returns>
+        /// <param name="segment">对话段数据，包含启动信号类型和延迟时间等信息</param>
+        /// <returns>返回IEnumerator用于协程执行</returns>
         IEnumerator WaitForDialogueSegmentSignalToBeTriggered(DL_DIALOGUE_DATA.DIALOGUE_SEGMENT segment)
         {
+            // 根据不同的启动信号类型执行相应的等待逻辑
             switch (segment.startSignal)
             {
                 case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.C:
+                    yield return WaitForUserInput();
+                    dialogueSystem.OnSystemPrompt_Clear();
+                    break;
                 case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.A:
                     // 等待用户输入
                     yield return WaitForUserInput();
                     break;
                 case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.WC:
+                    // 启用自动计时器
+                    isWaitingOnAutoTimer = true;
+                    // 等待指定延迟时间
+                    yield return new WaitForSeconds(segment.signalDelay);
+                    // 禁用自动计时器
+                    isWaitingOnAutoTimer = false;
+                    dialogueSystem.OnSystemPrompt_Clear();
+                    break;
                 case DL_DIALOGUE_DATA.DIALOGUE_SEGMENT.StartSignal.WA:
                     // 启用自动计时器
                     isWaitingOnAutoTimer = true;
