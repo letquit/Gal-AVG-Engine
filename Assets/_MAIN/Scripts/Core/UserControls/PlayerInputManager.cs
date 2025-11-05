@@ -37,6 +37,7 @@ namespace DIALOGUE
             actions.Add((input.actions["Next"], OnNext));
             actions.Add((input.actions["HistoryBack"], OnHistoryBack));
             actions.Add((input.actions["HistoryForward"], OnHistoryForward));
+            actions.Add((input.actions["HistoryLogs"], OnHistoryToggleLog));
         }
 
         /// <summary>
@@ -82,6 +83,22 @@ namespace DIALOGUE
         public void OnHistoryForward(InputAction.CallbackContext c)
         {
             HistoryManager.instance.GoForward();
+        }
+        
+        /// <summary>
+        /// 历史记录切换日志显示状态的回调函数
+        /// </summary>
+        /// <param name="c">输入动作的回调上下文</param>
+        public void OnHistoryToggleLog(InputAction.CallbackContext c)
+        {
+            // 获取历史管理器中的日志管理器实例
+            var logs = HistoryManager.instance.logManager;
+            
+            // 根据当前日志窗口的开启状态进行切换
+            if (!logs.isOpen)
+                logs.Open();
+            else
+                logs.Close();
         }
     }
 }

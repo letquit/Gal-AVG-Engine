@@ -11,6 +11,7 @@ namespace History
     /// 历史管理器类，负责管理和记录对话历史状态
     /// 该类继承自MonoBehaviour，作为Unity组件使用
     /// </summary>
+    [RequireComponent(typeof(HistoryLogManager))]
     [RequireComponent(typeof(HistoryNavigation))]
     public class HistoryManager : MonoBehaviour
     {
@@ -29,16 +30,27 @@ namespace History
         /// </summary>
         public List<HistoryState> history = new List<HistoryState>();
 
+        /// <summary>
+        /// 导航历史记录管理器
+        /// </summary>
         private HistoryNavigation navigation;
+        
+        /// <summary>
+        /// 获取历史日志管理器实例
+        /// </summary>
+        public HistoryLogManager logManager { get; private set; }
 
         /// <summary>
         /// Unity生命周期函数，在对象初始化时调用
-        /// 设置单例实例并获取HistoryNavigation组件
         /// </summary>
         private void Awake()
         {
+            // 设置单例模式实例
             instance = this;
+            // 获取历史导航组件
             navigation = GetComponent<HistoryNavigation>();
+            // 获取历史日志管理器组件
+            logManager = GetComponent<HistoryLogManager>();
         }
 
         /// <summary>
@@ -58,6 +70,8 @@ namespace History
         {
             HistoryState state = HistoryState.Capture();
             history.Add(state);
+            // 将当前状态添加到历史日志管理器中
+            logManager.AddLog(state);
             
             // 当历史记录数量超过限制时，移除最旧的记录
             if (history.Count > HISTORY_CACHE_LIMIT)
