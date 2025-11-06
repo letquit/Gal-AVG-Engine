@@ -64,7 +64,7 @@ namespace History
             var nameText = ds.dialogueContainer.nameContainer.nameText;
             
             // 设置对话文本内容和样式
-            dialogueText.text = data.currentDialogue;
+            ds.conversationManager.architect.SetText(data.currentDialogue);
             dialogueText.color = data.dialogueColor;
             dialogueText.fontSize = data.dialogueScale;
             

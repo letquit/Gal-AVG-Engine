@@ -117,11 +117,14 @@ namespace DIALOGUE
                 return;
             
             // 创建文本构建器实例并设置相关参数
-            architect = new TextArchitect(dialogueContainer.dialogueText);
-            // 显示速度
-            architect.speed = 1f;
-            architect.characterMultiplier = 1;
-            
+            architect = new TextArchitect(dialogueContainer.dialogueText, TABuilder.BuilderTypes.Typewriter)
+                {
+                    // 显示速度
+                    speed = 1f,
+                    // 字符间隔
+                    characterMultiplier = 1
+                };
+
             // 创建对话管理器实例
             conversationManager = new ConversationManager(architect);
             

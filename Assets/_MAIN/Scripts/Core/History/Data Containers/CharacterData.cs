@@ -21,6 +21,7 @@ namespace History
         public Vector2 position;            // 当前位置
         public CharacterConfigCache characterConfig; // 角色配置缓存
 
+        public string animationJSON;        // 动画数据JSON字符串
         public string dataJSON;             // 根据角色类型序列化的额外数据JSON字符串
 
         /// <summary>
@@ -83,9 +84,12 @@ namespace History
                 entry.enabled = character.isVisible;
                 entry.color = character.color;
                 entry.priority = character.priority;
+                entry.isFacingLeft = character.isFacingLeft;
                 entry.isHighLighted = character.highlighted;
                 entry.position = character.targetPosition;
                 entry.characterConfig = new CharacterConfigCache(character.config);
+                // 保存动画数据
+                entry.animationJSON = GetAnimationData(character);
 
                 // 根据不同角色类型保存额外数据
                 switch (character.config.characterType)
@@ -162,14 +166,21 @@ namespace History
                 // 设置优先级和朝向
                 character.SetPriority(characterData.priority);
 
-                if (character.isFacingLeft)
+                // 设置朝向
+                if (characterData.isFacingLeft)
                     character.FaceLeft(immediate: true);
                 else
                     character.FaceRight(immediate: true);
                 
                 // 设置位置和可见性
                 character.SetPosition(characterData.position);
+                
+                // 设置可见性
                 character.isVisible = characterData.enabled;
+
+                // 应用动画数据
+                AnimationData animationData = JsonUtility.FromJson<AnimationData>(characterData.animationJSON);
+                ApplyAnimationData(character, animationData);
 
                 // 根据不同角色类型设置特定数据
                 switch (character.config.characterType)
@@ -222,6 +233,97 @@ namespace History
             {
                 if (!cache.Contains(character.name))
                     character.isVisible = false;
+            }
+        }
+
+        /// <summary>
+        /// 获取角色动画控制器的参数数据并序列化为JSON字符串
+        /// </summary>
+        /// <param name="character">要获取动画数据的角色对象</param>
+        /// <returns>包含动画参数信息的JSON字符串</returns>
+        private static string GetAnimationData(Character character)
+        {
+            Animator animator = character.animator;
+            AnimationData data = new AnimationData();
+
+            // 遍历动画控制器的所有参数，排除Trigger类型参数
+            foreach (var param in animator.parameters)
+            {
+                if (param.type == AnimatorControllerParameterType.Trigger)
+                    continue;
+                
+                AnimationData.AnimationParameter pData = new AnimationData.AnimationParameter { name = param.name };
+
+                // 根据参数类型获取对应的值并存储
+                switch (param.type)
+                {
+                    case AnimatorControllerParameterType.Bool:
+                        pData.type = "Bool";
+                        pData.value = animator.GetBool(param.name).ToString();
+                        break;
+                    case AnimatorControllerParameterType.Float:
+                        pData.type = "Float";
+                        pData.value = animator.GetFloat(param.name).ToString();
+                        break;
+                    case AnimatorControllerParameterType.Int:
+                        pData.type = "Int";
+                        pData.value = animator.GetInteger(param.name).ToString();
+                        break;
+                }
+                
+                data.parameters.Add(pData);
+            }
+            
+            return JsonUtility.ToJson(data);
+        }
+
+        /// <summary>
+        /// 将动画数据应用到角色的动画控制器中
+        /// </summary>
+        /// <param name="character">要应用动画数据的角色对象</param>
+        /// <param name="data">包含动画参数信息的数据对象</param>
+        private static void ApplyAnimationData(Character character, AnimationData data)
+        {
+            Animator animator = character.animator;
+            
+            // 遍历所有参数数据并设置到动画控制器中
+            foreach (var param in data.parameters)
+            {
+                switch (param.type)
+                {
+                    case "Bool":
+                        animator.SetBool(param.name, bool.Parse(param.value));
+                        break;
+                    case "Float":
+                        animator.SetFloat(param.name, float.Parse(param.value));
+                        break;
+                    case "Int":
+                        animator.SetInteger(param.name, int.Parse(param.value));
+                        break;
+                }
+            }
+            
+            // 触发刷新动画的Trigger
+            animator.SetTrigger(Character.ANIMATION_REFRESH_TRIGGER);
+        }
+
+        /// <summary>
+        /// 动画数据容器类，用于存储和序列化动画参数信息
+        /// </summary>
+        [Serializable]
+        public class AnimationData
+        {
+            public List<AnimationParameter> parameters = new List<AnimationParameter>();
+            
+            /// <summary>
+            /// 动画参数数据类，存储单个动画参数的名称、类型和值
+            /// </summary>
+            [Serializable]
+            public class AnimationParameter
+            {
+                public string name;
+                public string type;
+                public string value;
             }
         }
 

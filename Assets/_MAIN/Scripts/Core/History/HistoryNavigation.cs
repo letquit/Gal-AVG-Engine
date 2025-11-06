@@ -98,7 +98,7 @@ namespace History
         public void GoBack()
         {
             // 检查是否可以进行导航操作
-            if ((progress == 0 && isViewingHistory) || !canNavigate)
+            if (history.Count == 0 || ((progress == 0 && isViewingHistory) || !canNavigate))
                 return;
             
             progress = isViewingHistory ? progress - 1 : history.Count - 1;
