@@ -53,12 +53,15 @@ namespace DIALOGUE.LogicalLines
             /// <param name="conversation">要从中提取数据的对话对象。</param>
             /// <param name="startingIndex">开始搜索封装内容的起始行索引。</param>
             /// <param name="ripHeaderAndEncapsulators">是否将起始和结束标记本身也加入结果中，默认为 false。</param>
+            /// <param name="parentStartingIndex">父级起始索引，用于计算最终返回数据中的绝对位置。</param>
             /// <returns>封装了原始选择数据的对象，包括所有相关行以及结束索引。</returns>
-            public static EncapsulatedData RipEncapsulationData(Conversation conversation, int startingIndex, bool ripHeaderAndEncapsulators = false)
+            public static EncapsulatedData RipEncapsulationData(Conversation conversation, int startingIndex, bool ripHeaderAndEncapsulators = false, int parentStartingIndex = 0)
             {
                 // 初始化封装深度计数器及返回数据结构
                 int encapsulationDepth = 0;
-                EncapsulatedData data = new EncapsulatedData { lines = new List<string>(), startingIndex = startingIndex, endingIndex = 0 };
+                // 创建封装数据对象，用于存储处理后的数据行及其索引信息 计算起始索引为当前起始索引与父级起始索引的和 结束索引为0
+                EncapsulatedData data = new EncapsulatedData { lines = new List<string>(), startingIndex =
+                    (startingIndex + parentStartingIndex), endingIndex = 0 };
 
                 // 遍历对话行以识别并收集封装区域内的所有有效行
                 for (int i = startingIndex; i < conversation.Count; i++)
@@ -84,7 +87,8 @@ namespace DIALOGUE.LogicalLines
                         // 嵌套层级归零表示完成整个封装块的读取
                         if (encapsulationDepth == 0)
                         {
-                            data.endingIndex = i;
+                            // 通过相对索引加上基准偏移量来确定绝对位置
+                            data.endingIndex = (i + parentStartingIndex);
                             break;
                         }
                     }

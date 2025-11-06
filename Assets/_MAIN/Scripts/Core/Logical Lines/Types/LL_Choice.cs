@@ -34,8 +34,8 @@ namespace DIALOGUE.LogicalLines
             // 获取当前对话和进度
             var currentConversation = DialogueSystem.instance.conversationManager.conversation;
             var progress = DialogueSystem.instance.conversationManager.conversationProgress;
-            // 提取原始选择数据
-            EncapsulatedData data = RipEncapsulationData(currentConversation, progress, ripHeaderAndEncapsulators: true);
+            // 调用RipEncapsulationData方法从当前会话中提取封装数据
+            EncapsulatedData data = RipEncapsulationData(currentConversation, progress, ripHeaderAndEncapsulators: true, parentStartingIndex: currentConversation.fileStartIndex);
 
             // 解析出具体的选择项
             List<Choice> choices = GetChoicesFromData(data);
@@ -60,7 +60,7 @@ namespace DIALOGUE.LogicalLines
             Choice selectedChoice = choices[panel.lastDecision.answerIndex];
 
             // 创建一个新的对话对象来承载被选中的后续对话内容
-            Conversation newConversation = new Conversation(selectedChoice.resultLines);
+            Conversation newConversation = new Conversation(selectedChoice.resultLines, file: currentConversation.file, fileStartIndex: selectedChoice.startIndex, fileEndIndex: selectedChoice.endIndex);
 
             // 设置主对话进度至当前选择块之后的位置
             DialogueSystem.instance.conversationManager.conversation.SetProgress(data.endingIndex);
@@ -81,12 +81,10 @@ namespace DIALOGUE.LogicalLines
         }
 
         /// <summary>
-        /// 从原始选择数据中解析出所有可选的选项及其对应的结果对话行。
-        /// 每个选项以 '-' 开头定义标题，在下一个选项或结束前的所有行为该选项的结果。
-        /// 支持嵌套结构，通过封装层级进行识别。
+        /// 从封装数据中提取选项列表
         /// </summary>
-        /// <param name="data">原始选择数据，包含多行字符串及结束位置。</param>
-        /// <returns>解析后的选择列表，每个元素是一个完整的选项结构。</returns>
+        /// <param name="data">包含选项信息的封装数据</param>
+        /// <returns>解析出的选项列表</returns>
         private List<Choice> GetChoicesFromData(EncapsulatedData data)
         {
             List<Choice> choices = new List<Choice>();
@@ -98,16 +96,23 @@ namespace DIALOGUE.LogicalLines
                 title = string.Empty,
                 resultLines = new List<string>(),
             };
-
-            // 遍历所有行数据，跳过首行（即 keyword 行）
-            foreach (var line in data.lines.Skip(1))
+            
+            // 遍历数据行，解析选项内容并构建选项列表
+            // 该循环处理从第二行开始的所有数据行，识别选项起始位置，
+            // 提取选项标题，并将选项内容按起始和结束索引分组存储
+            int choiceIndex = 0, i = 0;
+            for (i = 1; i < data.lines.Count; i++)
             {
+                var line = data.lines[i];
+                
                 // 判断当前行是否为新选项的开始，并且处于正确的封装层级
                 if (IsChoiceStart(line) && encapsulationDepth == 1)
                 {
                     // 如果不是第一个选项，则将当前选项添加到结果列表中
                     if (!isFirstChoice)
                     {
+                        choice.startIndex = data.startingIndex + (choiceIndex + 1);
+                        choice.endIndex = data.startingIndex + (i - 1);
                         choices.Add(choice);
                         choice = new Choice
                         {
@@ -116,6 +121,7 @@ namespace DIALOGUE.LogicalLines
                         };
                     }
 
+                    choiceIndex = i;
                     // 设置选项标题，去掉开头的 '-' 符号
                     choice.title = line.Trim().Substring(1);
                     isFirstChoice = false;
@@ -126,9 +132,13 @@ namespace DIALOGUE.LogicalLines
                 AddLineToResults(line, ref choice, ref encapsulationDepth);
             }
 
-            // 添加最后一个选项到结果列表中
+            // 处理最后一个选项，如果尚未添加到结果列表中
             if (!choices.Contains(choice))
+            {
+                choice.startIndex = data.startingIndex + (choiceIndex + 1);
+                choice.endIndex = data.startingIndex + (i - 2);
                 choices.Add(choice);
+            }
 
             return choices;
         }
@@ -190,6 +200,16 @@ namespace DIALOGUE.LogicalLines
             /// 用户选择此项后应播放的一系列对话行。
             /// </summary>
             public List<string> resultLines;
+
+            /// <summary>
+            /// 起始索引字段，用于标识某个范围或序列的开始位置
+            /// </summary>
+            public int startIndex;
+            
+            /// <summary>
+            /// 结束索引字段，用于标识某个范围或序列的结束位置
+            /// </summary>
+            public int endIndex;
         }
     }
 }

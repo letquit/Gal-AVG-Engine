@@ -266,10 +266,13 @@ namespace DIALOGUE
         /// 启动一个对话协程，通过传入的对话行列表创建新的对话对象
         /// </summary>
         /// <param name="line">包含对话内容的字符串列表</param>
+        /// <param name="filePath">对话文件的路径，默认为空字符串</param>
         /// <returns>返回启动的对话协程对象</returns>
-        public Coroutine Say(List<string> line)
+        public Coroutine Say(List<string> line, string filePath = "")
         {
-            Conversation conversation = new Conversation(line);
+            // 创建新的对话对象
+            Conversation conversation = new Conversation(line, file: filePath);
+            // 启动对话并返回协程对象
             return conversationManager.StartConversation(conversation);
         }
 

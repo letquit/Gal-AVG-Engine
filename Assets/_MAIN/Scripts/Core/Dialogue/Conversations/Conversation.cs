@@ -18,14 +18,43 @@ namespace DIALOGUE
         private int progress = 0;
         
         /// <summary>
+        /// 获取文件路径
+        /// </summary>
+        public string file { get; private set; }
+        
+        /// <summary>
+        /// 获取文件开始索引位置
+        /// </summary>
+        public int fileStartIndex { get; private set; }
+        
+        /// <summary>
+        /// 获取文件结束索引位置
+        /// </summary>
+        public int fileEndIndex { get; private set; }
+        
+        /// <summary>
         /// 初始化Conversation实例
         /// </summary>
         /// <param name="lines">对话行列表</param>
         /// <param name="progress">初始进度值，默认为0</param>
-        public Conversation(List<string> lines,int progress = 0)
+        /// <param name="file">文件路径，默认为空字符串</param>
+        /// <param name="fileStartIndex">文件开始索引，默认为-1，表示从0开始</param>
+        /// <param name="fileEndIndex">文件结束索引，默认为-1，表示到最后一行</param>
+        public Conversation(List<string> lines,int progress = 0, string file = "", int fileStartIndex = -1, int fileEndIndex = -1)
         {
             this.lines = lines;
             this.progress = progress;
+            this.file = file;
+            
+            // 设置默认的文件开始索引
+            if (fileStartIndex == -1)
+                fileStartIndex = 0;
+            // 设置默认的文件结束索引
+            if (fileEndIndex == -1)
+                fileEndIndex = lines.Count - 1;
+            
+            this.fileStartIndex = fileStartIndex;
+            this.fileEndIndex = fileEndIndex;
         }
         
         /// <summary>

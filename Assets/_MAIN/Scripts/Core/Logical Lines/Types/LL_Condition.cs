@@ -38,8 +38,8 @@ namespace DIALOGUE.LogicalLines
             Conversation currentConversation = DialogueSystem.instance.conversationManager.conversation;
             int currentProgress = DialogueSystem.instance.conversationManager.conversationProgress;
 
-            // 提取 if 块的数据封装
-            EncapsulatedData ifData = RipEncapsulationData(currentConversation, currentProgress, false);
+            // 初始化 if 数据块
+            EncapsulatedData ifData = RipEncapsulationData(currentConversation, currentProgress, false, parentStartingIndex: currentConversation.fileStartIndex);
 
             // 初始化 else 数据块
             EncapsulatedData elseData = new EncapsulatedData();
@@ -50,8 +50,8 @@ namespace DIALOGUE.LogicalLines
                 string nextLine = currentConversation.GetLines()[ifData.endingIndex + 1].Trim();
                 if (nextLine == ELSE)
                 {
-                    // 存在 else 分支时提取其数据
-                    elseData = RipEncapsulationData(currentConversation, ifData.endingIndex + 1, false);
+                    // 获取 else 数据块
+                    elseData = RipEncapsulationData(currentConversation, ifData.endingIndex + 1, false, parentStartingIndex: currentConversation.fileStartIndex);
                     ifData.endingIndex = elseData.endingIndex;
                 }
             }
@@ -65,7 +65,8 @@ namespace DIALOGUE.LogicalLines
             // 若选中数据有效且包含内容，则将其作为优先级对话入队处理
             if (!selData.isNull && selData.lines.Count > 0)
             {
-                Conversation newConversation = new Conversation(selData.lines);
+                // 创建新的对话对象
+                Conversation newConversation = new Conversation(selData.lines, file: currentConversation.file, fileStartIndex: selData.startingIndex, fileEndIndex: selData.endingIndex);
                 DialogueSystem.instance.conversationManager.EnqueuePriority(newConversation);
             }
 
