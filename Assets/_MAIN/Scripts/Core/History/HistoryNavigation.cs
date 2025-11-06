@@ -11,26 +11,56 @@ namespace History
     /// </summary>
     public class HistoryNavigation : MonoBehaviour
     {
+        /// <summary>
+        /// 当前进度值，表示对话或任务的完成进度
+        /// </summary>
         public int progress = 0;
         
+        /// <summary>
+        /// 状态文本UI组件，用于显示当前状态信息
+        /// </summary>
         [SerializeField] private TextMeshProUGUI statusText;
         
+        /// <summary>
+        /// 获取HistoryManager的单例实例
+        /// </summary>
         HistoryManager manager => HistoryManager.instance;
+        
+        /// <summary>
+        /// 获取历史记录列表的引用
+        /// </summary>
         private List<HistoryState> history => manager.history;
 
+        /// <summary>
+        /// 缓存的历史状态，用于快速访问最近查看的历史记录
+        /// </summary>
         private HistoryState cachedState = null;
+        
+        /// <summary>
+        /// 标识当前是否处于缓存状态的标志位
+        /// </summary>
         private bool isOnCachedState = false;
         
+        /// <summary>
+        /// 标识是否正在查看历史记录的标志位
+        /// </summary>
         public bool isViewingHistory = false;
+
+        /// <summary>
+        /// 获取是否可以进行导航操作的状态
+        /// 当对话系统不在逻辑行时返回true，否则返回false
+        /// </summary>
+        public bool canNavigate => !DialogueSystem.instance.conversationManager.isOnLogicalLine;
         
         /// <summary>
         /// 向前导航到下一个历史状态。
-        /// 如果当前不在历史浏览模式中则直接返回；如果已到达最新状态，
-        /// 则加载缓存的状态并退出历史浏览模式。
+        /// 如果当前不在历史浏览模式中或不能进行导航操作则直接返回；
+        /// 如果已到达最新状态，则加载缓存的状态并退出历史浏览模式。
         /// </summary>
         public void GoForward()
         {
-            if (!isViewingHistory)
+            // 检查是否可以进行导航操作
+            if (!isViewingHistory || !canNavigate)
                 return;
             
             HistoryState state = null;
@@ -67,7 +97,8 @@ namespace History
         /// </summary>
         public void GoBack()
         {
-            if (progress == 0 && isViewingHistory)
+            // 检查是否可以进行导航操作
+            if ((progress == 0 && isViewingHistory) || !canNavigate)
                 return;
             
             progress = isViewingHistory ? progress - 1 : history.Count - 1;

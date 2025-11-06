@@ -28,6 +28,11 @@ namespace DIALOGUE
         public bool isRunning => process != null;
 
         /// <summary>
+        /// 获取或设置一个值，指示当前对象是否位于逻辑行上
+        /// </summary>
+        public bool isOnLogicalLine { get; private set; } = false;
+
+        /// <summary>
         /// 文本构建器，用于逐字显示对话文本。
         /// </summary>
         public TextArchitect architect = null;
@@ -167,9 +172,10 @@ namespace DIALOGUE
                 DIALOGUE_LINE line = DialogueParser.Parse(rawLine);
                 // Debug.Log($"Parsed line - Speaker: {line.hasSpeaker}, Dialogue: {line.hasDialogue}, Commands: {line.hasCommands}");
 
-                // 检查并执行逻辑管理器中的自定义逻辑
+                // 尝试获取逻辑行逻辑
                 if (logicalLineManager.TryGetLogic(line, out Coroutine logic))
                 {
+                    isOnLogicalLine = true;
                     yield return logic;
                 }
                 else
@@ -195,6 +201,8 @@ namespace DIALOGUE
 
                 // 尝试推进到下一对话行
                 TryAdvanceConversation(currentConversation);
+                // 结束逻辑行
+                isOnLogicalLine = false;
             }
 
             process = null;
