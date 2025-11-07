@@ -12,6 +12,9 @@ public class FilePaths
     /// </summary>
     public static readonly string root = $"{Application.dataPath}/gameData/";
     
+    //运行时路径
+    public static readonly string gameSaves = $"{runtimePath}Save Files/";
+    
     /// <summary>
     /// 图形资源目录路径常量
     /// </summary>
@@ -81,5 +84,23 @@ public class FilePaths
         
         // 否则将资源名称拼接到默认路径后面
         return defaultPath + resourceName;
+    }
+
+    /// <summary>
+    /// 获取应用程序运行时数据路径
+    /// </summary>
+    /// <returns>返回应用程序数据存储路径字符串</returns>
+    public static string runtimePath
+    {
+        get
+        {
+            #if UNITY_EDITOR
+                // 在Unity编辑器环境下，返回Assets目录下的appdata文件夹路径
+                return "Assets/appdata/";
+            #else
+                // 在实际运行环境下，返回应用程序持久化数据路径下的appdata文件夹路径
+                return Application.persistentDataPath + "/appdata/";
+            #endif
+        }
     }
 }

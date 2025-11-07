@@ -1,16 +1,28 @@
+using System;
+using ADVENTUREGAME;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class GameSaveTesting : MonoBehaviour
+namespace TESTING
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class GameSaveTesting : MonoBehaviour
     {
-        
-    }
+        private void Start()
+        {
+            AVGGameSave.activeFile = new AVGGameSave();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void Update()
+        {
+            if (Keyboard.current.sKey.wasPressedThisFrame)
+            {
+                AVGGameSave.activeFile.Save();
+            }
+            else if (Keyboard.current.lKey.wasPressedThisFrame)
+            {
+                AVGGameSave.activeFile = FileManager.Load<AVGGameSave>($"{FilePaths.gameSaves}1{AVGGameSave.FILE_TYPE}");
+                AVGGameSave.activeFile.Load();
+            }
+        }
     }
 }

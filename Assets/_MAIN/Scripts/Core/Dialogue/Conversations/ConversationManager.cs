@@ -86,6 +86,11 @@ namespace DIALOGUE
             // 创建对话队列实例
             conversationQueue = new ConversationQueue();
         }
+
+        /// <summary>
+        /// 获取对话队列的只读副本
+        /// </summary>
+        public Conversation[] GetConversationQueue() => conversationQueue.GetReadOnly();
         
         /// <summary>
         /// 将对话对象添加到队列的末尾

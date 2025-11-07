@@ -61,5 +61,10 @@ namespace DIALOGUE
         /// 清空对话队列中的所有内容
         /// </summary>
         public void Clear() => conversationQueue.Clear();
+
+        /// <summary>
+        /// 获取对话队列的只读副本
+        /// </summary>
+        public Conversation[] GetReadOnly() => conversationQueue.ToArray();
     }
 }

@@ -88,5 +88,82 @@ public class FileManager
         
         return lines;
     }
+
+    /// <summary>
+    /// 尝试从给定路径创建目录
+    /// </summary>
+    /// <param name="path">要创建目录的路径</param>
+    /// <returns>如果目录已存在或成功创建则返回true，否则返回false</returns>
+    public static bool TryCreateDirectoryFromPath(string path)
+    {
+        // 如果路径已存在（无论是文件还是目录），直接返回true
+        if (Directory.Exists(path) || File.Exists(path))
+            return true;
+
+        // 如果路径包含点号，可能是一个文件路径包含文件扩展名，提取目录部分
+        if (path.Contains("."))
+        {
+            path = Path.GetDirectoryName(path);
+            if (Directory.Exists(path))
+                return true;
+        }
+        
+        // 如果路径为空字符串，无法创建目录
+        if (path == string.Empty)
+            return false;
+
+        try
+        {
+            Directory.CreateDirectory(path);
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Could not create directory! {e}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// 将JSON数据保存到指定文件路径
+    /// </summary>
+    /// <param name="filePath">要保存的文件路径</param>
+    /// <param name="JSONData">要保存的JSON数据字符串</param>
+    public static void Save(string filePath, string JSONData)
+    {
+        // 首先确保目标目录存在
+        if (!TryCreateDirectoryFromPath(filePath))
+        {
+            Debug.LogError($"FAILED TO SAVE FILE '{filePath}' Please see the console for error details.");
+            return;
+        }
+        
+        StreamWriter sw = new StreamWriter(filePath);
+        sw.Write(JSONData);
+        sw.Close();
+        
+        Debug.Log($"Saved data to file '{filePath}'");
+    }
+
+    /// <summary>
+    /// 从指定文件路径加载并反序列化JSON数据
+    /// </summary>
+    /// <typeparam name="T">要反序列化的目标类型</typeparam>
+    /// <param name="filePath">要加载的文件路径</param>
+    /// <returns>反序列化后的对象，如果文件不存在则返回默认值</returns>
+    public static T Load<T>(string filePath)
+    {
+        // 检查文件是否存在
+        if (File.Exists(filePath))
+        {
+            string JSONData = File.ReadAllLines(filePath)[0];
+            return JsonUtility.FromJson<T>(JSONData);
+        }
+        else
+        {
+            Debug.LogError($"Error - File does not exist! '{filePath}'");
+            return default(T);
+        }
+    }
 }
 

@@ -62,8 +62,8 @@ namespace DIALOGUE.LogicalLines
             // 创建一个新的对话对象来承载被选中的后续对话内容
             Conversation newConversation = new Conversation(selectedChoice.resultLines, file: currentConversation.file, fileStartIndex: selectedChoice.startIndex, fileEndIndex: selectedChoice.endIndex);
 
-            // 设置主对话进度至当前选择块之后的位置
-            DialogueSystem.instance.conversationManager.conversation.SetProgress(data.endingIndex);
+            // 设置主对话进度到指定的结束索引位置即跳转到对话中的特定节点
+            DialogueSystem.instance.conversationManager.conversation.SetProgress(data.endingIndex - currentConversation.fileStartIndex);
 
             // 将新构造的对话内容插入到对话管理器的高优先级队列中
             DialogueSystem.instance.conversationManager.EnqueuePriority(newConversation);

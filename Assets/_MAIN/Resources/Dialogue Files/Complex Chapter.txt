@@ -1,0 +1,49 @@
+﻿PlaySong("CenterLine" -v 0.4)
+SetLayerMedia(background "bg shrine_hallway")
+CreateCharacter(Stella), Stella.SetPosition(-0.3), Stella.Move(0.1), Stella.FaceRight()
+Stella.Show()
+
+Stella [0:2,1:shy 1] "Hello, everyone!{c}I hope the tutorial series is going well for you."
+"The save system should be able to save all conversations and their progress trackers to file."
+
+input "What is your name?"
+
+if (<input> == "Spiderman")
+{
+    narrator "You are the amazing <input>!"
+    narrator "And that's an impressive thing."
+    narrator "I got bit by a spider once, but I didn't get any superpowers.{c}I just got a $200 medical bill."
+}
+else
+{
+    narrator "It is nice to meet you, <input>."
+    narrator "So...{a} Do you come here often?"
+}
+
+choice "Is it working for you?"
+{
+    -Yes
+        Stella.Animate(hop)
+        Stella "Amazing!"
+        "Give yourself a pat on the back because you did a great job!"
+        choice "Did you give yourself a pat on the back?"
+        {
+            -I sure did!
+                Stella "Good! You've earned it!"
+                "There is a lot more to cover, so we should keep going."
+                "We still need to save variables you know."
+            -Not at all.
+                Stella "Well, if I were there, I would give you one right now!"
+                "But I'm not, so you gotta do it for me, okay?"
+                "Now we still need to save variables, so let's continue, okay!"
+        }
+        narrator "This is back to the second conversation!"
+        Stella "Yep, let's be done with it now and go back to the original."
+    -I don't know yet
+        Stella "Well, that's okay. That's why we are testing things!"
+        "Go ahead and save the file and try to reload it from here!"
+        Stella "If it works then you should respond yes next time."
+}
+
+Stella "Let's try some of our variables, okay?"
+"It's important to save the variable store to file as well."

@@ -52,12 +52,11 @@ namespace DIALOGUE.LogicalLines
                 {
                     // 获取 else 数据块
                     elseData = RipEncapsulationData(currentConversation, ifData.endingIndex + 1, false, parentStartingIndex: currentConversation.fileStartIndex);
-                    ifData.endingIndex = elseData.endingIndex;
                 }
             }
 
-            // 更新会话进度到条件结构末尾
-            currentConversation.SetProgress(ifData.endingIndex);
+            // 设置当前对话的进度到指定的结束索引位置
+            currentConversation.SetProgress(elseData.isNull ? ifData.endingIndex : elseData.endingIndex);
 
             // 根据条件结果选择需要执行的数据块
             EncapsulatedData selData = conditionResult ? ifData : elseData;
@@ -65,6 +64,10 @@ namespace DIALOGUE.LogicalLines
             // 若选中数据有效且包含内容，则将其作为优先级对话入队处理
             if (!selData.isNull && selData.lines.Count > 0)
             {
+                // 从对话索引中移除头部和封装符行
+                selData.startingIndex += 2; // 移除头部和起始封装符
+                selData.endingIndex -= 1;   // 移除结束封装符
+                
                 // 创建新的对话对象
                 Conversation newConversation = new Conversation(selData.lines, file: currentConversation.file, fileStartIndex: selData.startingIndex, fileEndIndex: selData.endingIndex);
                 DialogueSystem.instance.conversationManager.EnqueuePriority(newConversation);
