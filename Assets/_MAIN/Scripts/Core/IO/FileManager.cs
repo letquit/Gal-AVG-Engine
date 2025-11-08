@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -8,6 +9,11 @@ using UnityEngine;
 /// </summary>
 public class FileManager
 {
+    /// <summary>
+    /// 密钥常量定义
+    /// </summary>
+    private const string KEY = "SECRETKEY";
+    
     /// <summary>
     /// 读取指定路径的文本文件，返回文件中的所有行
     /// </summary>
@@ -129,7 +135,8 @@ public class FileManager
     /// </summary>
     /// <param name="filePath">要保存的文件路径</param>
     /// <param name="JSONData">要保存的JSON数据字符串</param>
-    public static void Save(string filePath, string JSONData)
+    /// <param name="encrypt">是否对数据进行加密保存，默认为false</param>
+    public static void Save(string filePath, string JSONData, bool encrypt = false)
     {
         // 首先确保目标目录存在
         if (!TryCreateDirectoryFromPath(filePath))
@@ -137,10 +144,22 @@ public class FileManager
             Debug.LogError($"FAILED TO SAVE FILE '{filePath}' Please see the console for error details.");
             return;
         }
-        
-        StreamWriter sw = new StreamWriter(filePath);
-        sw.Write(JSONData);
-        sw.Close();
+
+        // 根据是否加密选择不同的写入方式
+        if (encrypt)
+        {
+            byte[] dataBytes = Encoding.UTF8.GetBytes(JSONData);
+            byte[] keyBytes = Encoding.UTF8.GetBytes(KEY);
+            byte[] encryptedBytes = XOR(dataBytes, keyBytes);
+            
+            File.WriteAllBytes(filePath, encryptedBytes);
+        }
+        else
+        {
+            StreamWriter sw = new StreamWriter(filePath);
+            sw.Write(JSONData);
+            sw.Close();
+        }
         
         Debug.Log($"Saved data to file '{filePath}'");
     }
@@ -150,14 +169,30 @@ public class FileManager
     /// </summary>
     /// <typeparam name="T">要反序列化的目标类型</typeparam>
     /// <param name="filePath">要加载的文件路径</param>
+    /// <param name="encrypt">是否对数据进行解密读取，默认为false</param>
     /// <returns>反序列化后的对象，如果文件不存在则返回默认值</returns>
-    public static T Load<T>(string filePath)
+    public static T Load<T>(string filePath, bool encrypt = false)
     {
         // 检查文件是否存在
         if (File.Exists(filePath))
         {
-            string JSONData = File.ReadAllLines(filePath)[0];
-            return JsonUtility.FromJson<T>(JSONData);
+            // 根据是否加密选择不同的读取和解析方式
+            if (encrypt)
+            {
+                byte[] encryptedBytes = File.ReadAllBytes(filePath);
+                byte[] keyBytes = Encoding.UTF8.GetBytes(KEY);
+                
+                byte[] decryptedBytes = XOR(encryptedBytes, keyBytes);
+                
+                string decryptedString = Encoding.UTF8.GetString(decryptedBytes);
+                
+                return JsonUtility.FromJson<T>(decryptedString);
+            }
+            else
+            {
+                string JSONData = File.ReadAllLines(filePath)[0];
+                return JsonUtility.FromJson<T>(JSONData);
+            }
         }
         else
         {
@@ -165,5 +200,22 @@ public class FileManager
             return default(T);
         }
     }
-}
 
+    /// <summary>
+    /// 使用异或运算对字节数组进行加解密操作
+    /// </summary>
+    /// <param name="input">需要处理的字节数组</param>
+    /// <param name="key">用于异或运算的密钥字节数组</param>
+    /// <returns>经过异或运算处理后的结果字节数组</returns>
+    private static byte[] XOR(byte[] input, byte[] key)
+    {
+        byte[] output = new byte[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            output[i] = (byte)(input[i] ^ key[i % key.Length]);
+        }
+        
+        return output;
+    }
+}

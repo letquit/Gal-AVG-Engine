@@ -7,6 +7,7 @@ namespace TESTING
 {
     public class GameSaveTesting : MonoBehaviour
     {
+        public AVGGameSave save;
         private void Start()
         {
             AVGGameSave.activeFile = new AVGGameSave();
@@ -20,8 +21,14 @@ namespace TESTING
             }
             else if (Keyboard.current.lKey.wasPressedThisFrame)
             {
-                AVGGameSave.activeFile = FileManager.Load<AVGGameSave>($"{FilePaths.gameSaves}1{AVGGameSave.FILE_TYPE}");
-                AVGGameSave.activeFile.Load();
+                try
+                {
+                    save = AVGGameSave.Load($"{FilePaths.gameSaves}1{AVGGameSave.FILE_TYPE}", activateOnLoad: true);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Do something because we found an error. {e.ToString()}");
+                }
             }
         }
     }

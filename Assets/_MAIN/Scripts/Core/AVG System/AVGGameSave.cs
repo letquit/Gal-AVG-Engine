@@ -29,9 +29,9 @@ namespace ADVENTUREGAME
         public const string SCREENSHOT_FILE_TYPE = ".jpg";
 
         /// <summary>
-        /// 是否启用加密存储功能（当前未实现）。
+        /// 是否启用加密存储功能。
         /// </summary>
-        public const bool ENCRYPT_FILES = false;
+        public const bool ENCRYPT = true;
 
         /// <summary>
         /// 获取该存档对应的完整路径。
@@ -76,6 +76,27 @@ namespace ADVENTUREGAME
         public AVG_VariableData[] variables;
 
         /// <summary>
+        /// 从指定文件路径加载AVG游戏存档
+        /// </summary>
+        /// <param name="filePath">存档文件的完整路径</param>
+        /// <param name="activateOnLoad">是否在加载完成后立即激活存档，默认为false</param>
+        /// <returns>加载成功的AVGGameSave对象</returns>
+        public static AVGGameSave Load(string filePath, bool activateOnLoad = false)
+        {
+            // 从文件加载游戏存档对象
+            AVGGameSave save = FileManager.Load<AVGGameSave>(filePath, ENCRYPT);
+            
+            // 设置当前激活的存档文件
+            activeFile = save;
+            
+            // 根据参数决定是否立即激活存档
+            if (activateOnLoad)
+                save.Activate();
+            
+            return save;
+        }
+
+        /// <summary>
         /// 将当前游戏状态保存到指定路径中。
         /// 包括捕获当前的历史状态、获取历史日志以及正在运行的对话数据，并将其以 JSON 格式写入磁盘。
         /// </summary>
@@ -87,14 +108,14 @@ namespace ADVENTUREGAME
             variables = GetVariableData();
 
             string saveJSON = JsonUtility.ToJson(this);
-            FileManager.Save(filePath, saveJSON);
+            FileManager.Save(filePath, saveJSON, ENCRYPT);
         }
 
         /// <summary>
         /// 加载已保存的游戏状态并恢复相关系统组件的状态。
         /// 包括加载历史状态、重建历史日志管理器、设置对话队列等操作。
         /// </summary>
-        public void Load()
+        public void Activate()
         {
             if (activeState != null)
                 activeState.Load();

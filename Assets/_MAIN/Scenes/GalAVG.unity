@@ -6365,7 +6365,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468261259}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942ef56d009ce64488b78caa7e2eea35, type: 3}
   m_Name: 
@@ -6411,6 +6411,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e56ace274fa5a6429c144fbb9dc935e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  save:
+    playerName: 
+    slotNumber: 1
+    activeConversations: []
+    activeState:
+      dialogue:
+        currentDialogue: 
+        currentSpeaker: 
+        dialogueFont: 
+        dialogueColor: {r: 0, g: 0, b: 0, a: 0}
+        dialogueScale: 0
+        speakerFont: 
+        speakerNameColor: {r: 0, g: 0, b: 0, a: 0}
+        speakerScale: 0
+      characters: []
+      audio: []
+      graphics: []
+    historyLogs: []
+    variables: []
 --- !u!1 &1470743510
 GameObject:
   m_ObjectHideFlags: 0
