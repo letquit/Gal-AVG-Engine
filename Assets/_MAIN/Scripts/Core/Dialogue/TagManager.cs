@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ADVENTUREGAME;
 using UnityEngine;
 
 /// <summary>
@@ -15,7 +16,7 @@ public class TagManager
     /// </summary>
     private static readonly Dictionary<string, Func<string>> tags = new Dictionary<string, Func<string>>()
     {
-        { "<mainChar>", () => "Avira" },
+        { "<mainChar>", () => AVGGameSave.activeFile.playerName },
         { "<time>", () => DateTime.Now.ToString("hh:mm tt") },
         { "<playerLevel>", () => "15" },
         { "<input>", () => InputPanel.instance.lastInput },

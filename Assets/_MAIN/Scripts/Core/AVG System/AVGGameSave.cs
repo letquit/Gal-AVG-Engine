@@ -71,6 +71,11 @@ namespace ADVENTUREGAME
         public HistoryState[] historyLogs;
 
         /// <summary>
+        /// 存储AVG变量数据的数组字段
+        /// </summary>
+        public AVG_VariableData[] variables;
+
+        /// <summary>
         /// 将当前游戏状态保存到指定路径中。
         /// 包括捕获当前的历史状态、获取历史日志以及正在运行的对话数据，并将其以 JSON 格式写入磁盘。
         /// </summary>
@@ -79,6 +84,7 @@ namespace ADVENTUREGAME
             activeState = HistoryState.Capture();
             historyLogs = HistoryManager.instance.history.ToArray();
             activeConversations = GetConversationData();
+            variables = GetVariableData();
 
             string saveJSON = JsonUtility.ToJson(this);
             FileManager.Save(filePath, saveJSON);
@@ -96,6 +102,8 @@ namespace ADVENTUREGAME
             HistoryManager.instance.history = historyLogs.ToList();
             HistoryManager.instance.logManager.Clear();
             HistoryManager.instance.logManager.Rebuild();
+            
+            SetVariableData();
             
             SetConversationData();
             
@@ -193,6 +201,71 @@ namespace ADVENTUREGAME
                     Debug.LogError($"Encountered error while extracting saved conversation data! {e}");
                     continue;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 获取所有变量数据的数组
+        /// </summary>
+        /// <returns>包含所有变量名称、值和类型的AVG_VariableData数组</returns>
+        private AVG_VariableData[] GetVariableData()
+        {
+            List<AVG_VariableData> retData = new List<AVG_VariableData>();
+            
+            // 遍历所有数据库中的变量
+            foreach (var database in VariableStore.databases.Values)
+            {
+                foreach (var variable in database.variables)
+                {
+                    AVG_VariableData variableData = new AVG_VariableData();
+                    variableData.name = $"{database.name}.{variable.Key}";
+                    string val = $"{variable.Value.Get()}";
+                    variableData.value = val;
+                    variableData.type = val == string.Empty ? "System.String" : variable.Value.Get().GetType().ToString();
+                    retData.Add(variableData);
+                }
+            }
+            return retData.ToArray();
+        }
+        
+        /// <summary>
+        /// 设置变量数据
+        /// </summary>
+        private void SetVariableData()
+        {
+            // 遍历所有变量并根据类型进行解析和设置
+            foreach (var variable in variables)
+            {
+                string val = variable.value;
+                switch (variable.type)
+                {
+                    case "System.Boolean":
+                        if (bool.TryParse(val, out bool b_val))
+                        {
+                            VariableStore.TrySetValue(variable.name, b_val);
+                            continue;
+                        }
+                        break;
+                    case "System.Int32":
+                        if (int.TryParse(val, out int i_val))
+                        {
+                            VariableStore.TrySetValue(variable.name, i_val);
+                            continue;
+                        }
+                        break;
+                    case "System.Single":
+                        if (float.TryParse(val, out float f_val))
+                        {
+                            VariableStore.TrySetValue(variable.name, f_val);
+                            continue;
+                        }
+                        break;
+                    case "System.String":
+                        VariableStore.TrySetValue(variable.name, val);
+                        continue;
+                }
+                
+                Debug.LogError($"Could not interpret variable type. {variable.name} = {variable.type}");
             }
         }
     }

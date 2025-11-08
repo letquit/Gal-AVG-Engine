@@ -8,16 +8,19 @@ Stella [0:2,1:shy 1] "Hello, everyone!{c}I hope the tutorial series is going wel
 
 input "What is your name?"
 
-if (<input> == "Spiderman")
+SetPlayerName("<input>")
+
+if (<mainChar> == "Spiderman")
 {
-    narrator "You are the amazing <input>!"
+    narrator "You are the amazing <mainChar>!"
     narrator "And that's an impressive thing."
     narrator "I got bit by a spider once, but I didn't get any superpowers.{c}I just got a $200 medical bill."
 }
 else
 {
-    narrator "It is nice to meet you, <input>."
+    narrator "It is nice to meet you, <mainChar>."
     narrator "So...{a} Do you come here often?"
+    narrator "Again, you tell me your name is, <mainChar>"
 }
 
 choice "Is it working for you?"

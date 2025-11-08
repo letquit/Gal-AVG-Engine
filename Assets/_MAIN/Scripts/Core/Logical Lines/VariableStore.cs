@@ -135,7 +135,7 @@ public class VariableStore
     /// 所有已创建的数据库集合，以数据库名为键，Database 对象为值。
     /// 初始时包含一个默认数据库。
     /// </summary>
-    private static Dictionary<string, Database> databases = new Dictionary<string, Database>()
+    public static Dictionary<string, Database> databases = new Dictionary<string, Database>()
         { { DEFAULT_DATABASE_NAME, new Database(DEFAULT_DATABASE_NAME) } };
 
     /// <summary>

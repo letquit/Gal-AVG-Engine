@@ -24,6 +24,10 @@ namespace DIALOGUE
             
             // Debug.Log($"Speaker = '{speaker}'\nDialogue = '{dialogue}'\nCommands = '{commands}'");
             
+            // 我们必须分别将标签和变量注入到说话者和对话中，因为需要执行一些初始检查。
+            // 但命令不需要这些检查，因此我们可以立即在命令中注入变量。
+            commands = TagManager.Inject(commands);
+            
             return new DIALOGUE_LINE(rawLine, speaker, dialogue, commands);
         }
 

@@ -21,6 +21,11 @@ namespace ADVENTUREGAME
         private void Awake()
         {
             instance = this;
+            
+            // 获取AVGDatabaseLinkSetup组件实例
+            AVGDatabaseLinkSetup linkSetup = GetComponent<AVGDatabaseLinkSetup>();
+            // 调用外部链接设置方法，建立数据库连接
+            linkSetup.SetupExternalLinks();
         }
 
         /// <summary>
