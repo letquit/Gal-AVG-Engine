@@ -16,6 +16,11 @@ namespace ADVENTUREGAME
         public static AVGManager instance { get; private set; }
 
         /// <summary>
+        /// 主摄像机引用变量
+        /// </summary>
+        public Camera mainCamera;
+
+        /// <summary>
         /// Unity生命周期方法，在对象创建时初始化单例实例
         /// </summary>
         private void Awake()
@@ -26,6 +31,9 @@ namespace ADVENTUREGAME
             AVGDatabaseLinkSetup linkSetup = GetComponent<AVGDatabaseLinkSetup>();
             // 调用外部链接设置方法，建立数据库连接
             linkSetup.SetupExternalLinks();
+
+            // 创建一个空的AVG游戏保存实例
+            AVGGameSave.activeFile = new AVGGameSave();
         }
 
         /// <summary>

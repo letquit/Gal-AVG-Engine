@@ -110,12 +110,28 @@ namespace COMMANDS
             GraphicLayer graphicLayer = panel.GetLayer(layer, createIfDoesNotExist: true);
 
             // 根据媒体类型分别调用对应的设置方法
+            // 如果是纹理类型，则调用SetTexture方法进行处理
             if (graphic is Texture)
             {
+                // 当immediate为false时，添加终止动作到当前进程，用于在命令终止时重新设置纹理
+                if (!immediate)
+                    CommandManager.instance.AddTerminationActionToCurrentProcess(() =>
+                    {
+                        graphicLayer?.SetTexture(graphic as Texture, filePath: pathToGraphic, immediate: true);
+                    });
+                
                 yield return graphicLayer.SetTexture(graphic as Texture, transitionSpeed, blendTex, pathToGraphic, immediate);
             }
+            // 如果是视频类型，则调用SetVideo方法进行处理
             else
             {
+                // 当immediate为false时，添加终止动作到当前进程，用于在命令终止时重新设置纹理
+                if (!immediate)
+                    CommandManager.instance.AddTerminationActionToCurrentProcess(() =>
+                    {
+                        graphicLayer?.SetTexture(graphic as Texture, filePath: pathToGraphic, immediate: true);
+                    });
+                
                 yield return graphicLayer.SetVideo(graphic as VideoClip, transitionSpeed, useAudio, blendTex, pathToGraphic, immediate);
             }
         }

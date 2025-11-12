@@ -34,6 +34,12 @@ namespace ADVENTUREGAME
         public const bool ENCRYPT = true;
 
         /// <summary>
+        /// 截图缩放比例常量，用于指定截图时的缩放倍率
+        /// </summary>
+        public const float SCREENSHOT_DOWNSCALE_AMOUNT = 0.25f;
+
+
+        /// <summary>
         /// 获取该存档对应的完整路径。
         /// </summary>
         public string filePath => $"{FilePaths.gameSaves}{slotNumber}{FILE_TYPE}";
@@ -76,6 +82,11 @@ namespace ADVENTUREGAME
         public AVG_VariableData[] variables;
 
         /// <summary>
+        /// 时间戳字段，用于存储时间戳字符串
+        /// </summary>
+        public string timestamp;
+
+        /// <summary>
         /// 从指定文件路径加载AVG游戏存档
         /// </summary>
         /// <param name="filePath">存档文件的完整路径</param>
@@ -97,16 +108,23 @@ namespace ADVENTUREGAME
         }
 
         /// <summary>
-        /// 将当前游戏状态保存到指定路径中。
-        /// 包括捕获当前的历史状态、获取历史日志以及正在运行的对话数据，并将其以 JSON 格式写入磁盘。
+        /// 保存游戏状态到文件
         /// </summary>
         public void Save()
         {
+            // 捕获当前历史状态
             activeState = HistoryState.Capture();
             historyLogs = HistoryManager.instance.history.ToArray();
             activeConversations = GetConversationData();
             variables = GetVariableData();
+            
+            // 记录保存时间戳
+            timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            
+            // 截取游戏画面作为缩略图
+            ScreenshotMaster.CaptureScreenshot(AVGManager.instance.mainCamera, Screen.width, Screen.height, SCREENSHOT_DOWNSCALE_AMOUNT, screenshotPath);
 
+            // 将当前对象序列化为JSON并保存到文件
             string saveJSON = JsonUtility.ToJson(this);
             FileManager.Save(filePath, saveJSON, ENCRYPT);
         }

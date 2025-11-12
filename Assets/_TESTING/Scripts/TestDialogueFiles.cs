@@ -48,7 +48,6 @@ public class TestDialogueFiles : MonoBehaviour
         filePath = fileToRead.name;
 #endif
         
-        Debug.Log($"尝试加载对话文件: '{filePath}'");
         AVGManager.instance.LoadFile(filePath);
         
         // List<string> lines = FileManager.ReadTextAsset(fileToRead);
