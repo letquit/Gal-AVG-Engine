@@ -41,7 +41,7 @@ namespace DIALOGUE
         /// <summary>
         /// 自动读取器实例，用于处理自动化数据读取操作
         /// </summary>
-        private AutoReader autoReader;
+        public AutoReader autoReader { get; private set; }
 
         /// <summary>
         /// 序列化字段，用于引用主画布组组件
@@ -133,7 +133,8 @@ namespace DIALOGUE
             dialogueContainer.Initialize();
             
             // 初始化自动读取
-            if (TryGetComponent(out autoReader))
+            autoReader = GetComponent<AutoReader>();
+            if (autoReader != null)
                 autoReader.Initialize(conversationManager);
             
             // 如果音频管理器存在，则注册文本构建器

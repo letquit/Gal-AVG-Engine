@@ -67,6 +67,16 @@ namespace DIALOGUE.LogicalLines
 
             // 将新构造的对话内容插入到对话管理器的高优先级队列中
             DialogueSystem.instance.conversationManager.EnqueuePriority(newConversation);
+            
+            // 获取自动阅读器实例
+            AutoReader autoReader = DialogueSystem.instance.autoReader;
+            // 检查自动阅读器是否启用且处于跳过状态
+            if (autoReader != null && autoReader.isOn && autoReader.skip)
+            {
+                // 当存在活动配置且配置要求在选择后停止跳过时，禁用自动阅读器
+                if (AVG_Configuration.activeConfig != null && !AVG_Configuration.activeConfig.continueSkippingAfterChoice)
+                    autoReader.Disable();
+            }
         }
 
         /// <summary>
