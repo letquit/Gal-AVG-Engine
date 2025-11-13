@@ -104,6 +104,7 @@ public class AVG_Configuration
                 break;
             }
         }
+        // 设置分辨率下拉框的当前选项
         ui.resolutions.value = res_index;
         
         // 设置跳过选项的按钮状态
@@ -112,6 +113,16 @@ public class AVG_Configuration
         // 设置对话速度滑动条的值
         ui.architectSpeed.value = dialogueTextSpeed;
         ui.autoReaderSpeed.value = dialogueAutoReadSpeed;
+        
+        // 设置音量滑动条的值
+        ui.musicVolume.value = musicVolume;
+        ui.sfxVolume.value = sfxVolume;
+        ui.voiceVolume.value = voiceVolume;
+        
+        // 设置静音按钮的图标状态
+        ui.musicMute.sprite = musicMute ? ui.mutedSymbol : ui.unmutedSymbol;
+        ui.sfxMute.sprite = sfxMute ? ui.mutedSymbol : ui.unmutedSymbol;
+        ui.voiceMute.sprite = voiceMute ? ui.mutedSymbol : ui.unmutedSymbol;
     }
     
     /// <summary>

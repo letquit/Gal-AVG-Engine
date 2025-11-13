@@ -5,6 +5,7 @@ using System.Linq;
 using DIALOGUE;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 /// <summary>
@@ -134,6 +135,8 @@ public class ConfigMenu : MenuPage
         private static Color button_unselectedColor = new Color(1, 1, 1, 1);
         private static Color text_selectedColor = new Color(1, 1, 0, 1);
         private static Color text_unselectedColor = new Color(0.25f, 0.25f, 0.25f, 1);
+        public static Color musicOnColor = new Color(1, 0.65f, 0, 1);
+        public static Color musicOffColor = new Color(0.5f, 0.5f, 0.5f, 1);
         
         [Header("General")]
         public Button fullscreen;
@@ -144,8 +147,16 @@ public class ConfigMenu : MenuPage
 
         [Header("Audio")] 
         public Slider musicVolume;
+        public Image musicFill;
         public Slider sfxVolume;
+        public Image sfxFill;
         public Slider voiceVolume;
+        public Image voiceFill;
+        public Sprite mutedSymbol;
+        public Sprite unmutedSymbol;
+        public Image musicMute;
+        public Image sfxMute;
+        public Image voiceMute;
 
         /// <summary>
         /// 设置两个按钮的颜色样式以表示选中/未选中状态。
@@ -219,5 +230,80 @@ public class ConfigMenu : MenuPage
         AutoReader autoReader = DialogueSystem.instance.autoReader;
         if (autoReader != null)
             autoReader.speed = config.dialogueAutoReadSpeed;
+    }
+    
+    /// <summary>
+    /// 设置音乐音量。将UI中的音乐音量值应用到配置和音频管理器中，并更新UI填充颜色。
+    /// </summary>
+    public void SetMusicVolume()
+    {
+        config.musicVolume = ui.musicVolume.value;
+        AudioManager.instance.SetMusicVolume(config.musicVolume, config.musicMute);
+        
+        ui.musicFill.color = config.musicMute ? UI_ITEMS.musicOffColor : UI_ITEMS.musicOnColor;
+    }
+    
+    /// <summary>
+    /// 设置音效音量。将UI中的音效音量值应用到配置和音频管理器中，并更新UI填充颜色。
+    /// </summary>
+    public void SetSFXVolume()
+    {
+        config.sfxVolume = ui.sfxVolume.value;
+        AudioManager.instance.SetSFXVolume(config.sfxVolume, config.sfxMute);
+        
+        ui.sfxFill.color = config.sfxMute ? UI_ITEMS.musicOffColor : UI_ITEMS.musicOnColor;
+    }
+    
+    /// <summary>
+    /// 设置语音音量。将UI中的语音音量值应用到配置和音频管理器中，并更新UI填充颜色。
+    /// </summary>
+    public void SetVoiceVolume()
+    {
+        config.voiceVolume = ui.voiceVolume.value;
+        AudioManager.instance.SetVoicesVolume(config.voiceVolume, config.voiceMute);
+        
+        ui.voiceFill.color = config.voiceMute ? UI_ITEMS.musicOffColor : UI_ITEMS.musicOnColor;
+    }
+
+    /// <summary>
+    /// 切换音乐静音状态。更新配置、UI元素（滑动条背景色和静音按钮图标），并通知音频管理器。
+    /// </summary>
+    public void SetMusicMute()
+    {
+        config.musicMute = !config.musicMute;
+        // 更新音乐滑动条的背景颜色
+        ui.musicVolume.fillRect.GetComponent<Image>().color = config.musicMute ? UI_ITEMS.musicOffColor : UI_ITEMS.musicOnColor;
+        // 更改静音按钮图标
+        ui.musicMute.sprite = config.musicMute ? ui.mutedSymbol : ui.unmutedSymbol;
+        
+        AudioManager.instance.SetMusicVolume(config.musicVolume, config.musicMute);
+    }
+    
+    /// <summary>
+    /// 切换音效静音状态。更新配置、UI元素（滑动条背景色和静音按钮图标），并通知音频管理器。
+    /// </summary>
+    public void SetSFXMute()
+    {
+        config.sfxMute = !config.sfxMute;
+        // 更新音效滑动条的背景颜色
+        ui.sfxVolume.fillRect.GetComponent<Image>().color = config.sfxMute ? UI_ITEMS.musicOffColor : UI_ITEMS.musicOnColor;
+        // 更改静音按钮图标
+        ui.sfxMute.sprite = config.sfxMute ? ui.mutedSymbol : ui.unmutedSymbol;
+        
+        AudioManager.instance.SetSFXVolume(config.sfxVolume, config.sfxMute);
+    }
+    
+    /// <summary>
+    /// 切换语音静音状态。更新配置、UI元素（滑动条背景色和静音按钮图标），并通知音频管理器。
+    /// </summary>
+    public void SetVoiceMute()
+    {
+        config.voiceMute = !config.voiceMute;
+        // 更新语音滑动条的背景颜色
+        ui.voiceVolume.fillRect.GetComponent<Image>().color = config.voiceMute ? UI_ITEMS.musicOffColor : UI_ITEMS.musicOnColor;
+        // 更改静音按钮图标
+        ui.voiceMute.sprite = config.voiceMute ? ui.mutedSymbol : ui.unmutedSymbol;
+        
+        AudioManager.instance.SetVoicesVolume(config.voiceVolume, config.voiceMute);
     }
 }

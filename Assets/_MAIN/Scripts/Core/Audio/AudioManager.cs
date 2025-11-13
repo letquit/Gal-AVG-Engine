@@ -8,6 +8,11 @@ using UnityEngine.Audio;
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
+    public const string MUSIC_VOLUME_PARAMETER_NAME = "MusicVolume";
+    public const string SFX_VOLUME_PARAMETER_NAME = "SFXVolume";
+    public const string VOICES_VOLUME_PARAMETER_NAME = "VoicesVolume";
+    public const float MUTED_VOLUME_LEVEL = -80f;
+    
     private const string SFX_PARENT_NAME = "SFX";
     private const string SFX_NAME_FORMAT = "SFX - [{0}]";
     public const float TRACK_TRANSITION_SPEED = 1f;
@@ -18,6 +23,8 @@ public class AudioManager : MonoBehaviour
     public AudioMixerGroup musicMixer;
     public AudioMixerGroup sfxMixer;
     public AudioMixerGroup voicesMixer;
+
+    public AnimationCurve audioFalloffCurve;
 
     private Transform sfxRoot;
     
@@ -587,5 +594,41 @@ public class AudioManager : MonoBehaviour
         lastTypingSoundTime = Time.time;
         
         PlayRandomTypingSound();
+    }
+
+    /// <summary>
+    /// 设置音乐音量大小
+    /// </summary>
+    /// <param name="volume">音量级别，范围通常在0到1之间</param>
+    /// <param name="muted">是否静音，如果为true则使用预设的静音音量级别</param>
+    public void SetMusicVolume(float volume, bool muted)
+    {
+        // 根据是否静音来决定最终音量值：静音时使用预设静音级别，否则根据音频衰减曲线计算
+        volume = muted ? MUTED_VOLUME_LEVEL : audioFalloffCurve.Evaluate(volume);
+        musicMixer.audioMixer.SetFloat(MUSIC_VOLUME_PARAMETER_NAME, volume);
+    }
+    
+    /// <summary>
+    /// 设置音效音量大小
+    /// </summary>
+    /// <param name="volume">音量级别，范围通常在0到1之间</param>
+    /// <param name="muted">是否静音，如果为true则使用预设的静音音量级别</param>
+    public void SetSFXVolume(float volume, bool muted)
+    {
+        // 根据是否静音来决定最终音量值：静音时使用预设静音级别，否则根据音频衰减曲线计算
+        volume = muted ? MUTED_VOLUME_LEVEL : audioFalloffCurve.Evaluate(volume);
+        sfxMixer.audioMixer.SetFloat(SFX_VOLUME_PARAMETER_NAME, volume);
+    }
+    
+    /// <summary>
+    /// 设置语音音量大小
+    /// </summary>
+    /// <param name="volume">音量级别，范围通常在0到1之间</param>
+    /// <param name="muted">是否静音，如果为true则使用预设的静音音量级别</param>
+    public void SetVoicesVolume(float volume, bool muted)
+    {
+        // 根据是否静音来决定最终音量值：静音时使用预设静音级别，否则根据音频衰减曲线计算
+        volume = muted ? MUTED_VOLUME_LEVEL : audioFalloffCurve.Evaluate(volume);
+        voicesMixer.audioMixer.SetFloat(VOICES_VOLUME_PARAMETER_NAME, volume);
     }
 }
