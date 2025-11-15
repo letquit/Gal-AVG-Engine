@@ -200,16 +200,16 @@ public class GraphicObject
     /// <summary>
     /// 执行实际的颜色/纹理渐变逻辑，控制透明度从当前值向目标值变化。
     /// </summary>
-    /// <param name="target">目标透明度值（0 表示完全透明，1 表示完全不透明）。</param>
-    /// <param name="speed">过渡速率。</param>
-    /// <param name="blend">混合使用的纹理。</param>
-    /// <returns>IEnumerator 接口供协程使用。</returns>
     private IEnumerator Fading(float target, float speed, Texture blend)
     {
+        // 在协程开始时进行检查，确保对象在启动时就是有效的
+        if (renderer == null) 
+            yield break;
+
         bool isBlending = blend != null;
         bool fadingIn = target > 0;
 
-        // 如果当前材质是默认的UI材质，则创建过渡材质
+        // 在访问材质前再次检查
         if (renderer.material.name == DEFAULT_UI_MATERIAL)
         {
             Texture tex = renderer.material.GetTexture(MATERIAL_FIELD_MAINTEX);
@@ -217,37 +217,44 @@ public class GraphicObject
             renderer.material.SetTexture(MATERIAL_FIELD_MAINTEX, tex);
         }
         
-        // 设置混合纹理和初始透明度状态
         renderer.material.SetTexture(MATERIAL_FIELD_BLENDTEX, blend);
         renderer.material.SetFloat(MATERIAL_FIELD_ALPHA, isBlending ? 1 : fadingIn ? 0 : 1);
         renderer.material.SetFloat(MATERIAL_FIELD_BLEND, isBlending ? fadingIn ? 0 : 1 : 1);
         
         string opacityParam = isBlending ? MATERIAL_FIELD_BLEND : MATERIAL_FIELD_ALPHA;
 
-        // 持续更新透明度直到达到目标值
-        while (renderer.material.GetFloat(opacityParam) != target)
+        // 在 while 循环条件中添加全面的 null 检查
+        while (renderer != null && renderer.material.GetFloat(opacityParam) != target)
         {
             float opacity = Mathf.MoveTowards(renderer.material.GetFloat(opacityParam), target, speed * Time.deltaTime * GraphicPanelManager.DEFAULT_TRANSITION_SPEED);
-            renderer.material.SetFloat(opacityParam, opacity);
             
-            if (isVideo)
+            // 在设置属性前，再次检查以确保绝对安全
+            if (renderer != null)
+                renderer.material.SetFloat(opacityParam, opacity);
+            
+            if (isVideo && audio != null) // 同时检查 audio
                 audio.volume = opacity;
             
             yield return null;
         }
 
-        // 清除协程引用以避免重复调用问题
         co_fadingIn = null;
         co_fadingOut = null;
 
-        // 如果目标透明度为0，则销毁该对象; 否则清理背景
+        // 在执行任何操作前都进行 null 检查
         if (target == 0)
-            Destroy();
+        {
+            if (renderer != null)
+                Destroy();
+        }
         else
         {
-            DestroyBackgroundGraphicsOnLayer();
-            renderer.texture = renderer.material.GetTexture(MATERIAL_FIELD_MAINTEX);
-            renderer.material = null;
+            if (renderer != null)
+            {
+                DestroyBackgroundGraphicsOnLayer();
+                renderer.texture = renderer.material.GetTexture(MATERIAL_FIELD_MAINTEX);
+                renderer.material = null;
+            }
         }
     }
 
@@ -264,7 +271,13 @@ public class GraphicObject
         if (layer.oldGraphics.Contains(this))
             layer.oldGraphics.Remove(this);
         
-        Object.Destroy(renderer.gameObject);
+        // 先将类成员的 renderer 引用置为 null，再销毁游戏对象 这样可以立即让其他正在运行的协程知道该对象已失效
+        if (renderer != null)
+        {
+            RawImage tempRenderer = renderer;
+            renderer = null;
+            Object.Destroy(tempRenderer.gameObject);
+        }
     }
 
     /// <summary>

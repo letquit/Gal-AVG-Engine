@@ -68,7 +68,7 @@ namespace History
             dialogueText.color = data.dialogueColor;
             dialogueText.fontSize = data.dialogueScale;
             
-            // 修复打字机效果下的历史记录显示问题
+            // 打字机效果下的历史记录显示问题
             dialogueText.maxVisibleCharacters = data.currentDialogue.Length;
             dialogueText.ForceMeshUpdate();
             

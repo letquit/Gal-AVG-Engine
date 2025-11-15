@@ -144,33 +144,36 @@ namespace CHARACTERS
         public bool HasCharacter(string characterName) => characters.ContainsKey(characterName.ToLower());
 
         /// <summary>
-        /// 创建指定名称的角色实例
+        /// 获取或创建指定名称的角色实例。这是一个幂等操作。
         /// </summary>
-        /// <param name="characterName">要创建的角色名称</param>
-        /// <param name="revealAfterCreation">创建后是否显示角色，默认为false</param>
-        /// <returns>创建成功的角色实例，如果角色已存在则返回null</returns>
+        /// <param name="characterName">要创建的角色名称，可以包含 " as " 别名。</param>
+        /// <param name="revealAfterCreation">仅在首次创建时，是否立即显示角色。默认为 false。</param>
+        /// <returns>一个已存在或新创建的角色实例。此方法永远不应返回 null。</returns>
         public Character CreateCharacter(string characterName, bool revealAfterCreation = false)
         {
-            // 检查角色是否已存在
-            if (characters.ContainsKey(characterName.ToLower()))
+            // 1. 解析出角色的核心信息（真实名称和别名）。
+            CHARACTER_INFO info = GetCharacterInfo(characterName);
+            string characterKey = info.name.ToLower();
+
+            // 2. 使用角色的真实名称作为唯一键进行检查。
+            if (characters.ContainsKey(characterKey))
             {
-                Debug.LogWarning($"A Character called '{characterName}' already exists. Did not create the character.");
-                return null;
+                // 角色已存在，记录一条信息日志并返回现有实例。
+                Debug.Log($"Character '{info.name}' already exists. Reusing existing instance.");
+                return characters[characterKey];
             }
             
-            // 获取角色信息并创建角色实例
-            CHARACTER_INFO info = GetCharacterInfo(characterName);
-         
+            // 3. 如果角色不存在，则创建新实例。
             Character character = CreateCharacterFromInfo(info);
             
-            // 设置角色的别名
+            // 4. 设置别名（如果提供了）。
             if (info.castingName != info.name)
                 character.castingName = info.castingName;
             
-            // 添加角色实例到字典中
-            characters.Add(info.name.ToLower(), character);
+            // 5. 将新创建的角色添加到字典中。
+            characters.Add(characterKey, character);
             
-            // 如果需要创建后显示角色，则调用Show方法
+            // 6. （仅限首次创建时）如果需要，显示角色。
             if (revealAfterCreation)
                 character.Show();
             
