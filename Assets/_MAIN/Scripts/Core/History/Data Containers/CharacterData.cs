@@ -12,6 +12,7 @@ namespace History
     public class CharacterData
     {
         public string characterName;        // 角色名称（内部标识）
+        public string castingName;          // 角色别名
         public string displayName;          // 显示名称
         public bool enabled;                // 是否启用/可见
         public Color color;                 // 角色颜色
@@ -80,6 +81,7 @@ namespace History
 
                 CharacterData entry = new CharacterData();
                 entry.characterName = character.name;
+                entry.castingName = character.castingName;
                 entry.displayName = character.displayName;
                 entry.enabled = character.isVisible;
                 entry.color = character.color;
@@ -149,9 +151,27 @@ namespace History
 
             foreach (CharacterData characterData in data)
             {
-                // 获取或创建对应名称的角色实例
-                Character character =
-                    CharacterManager.instance.GetCharacter(characterData.characterName, createIfDoesNotExist: true);
+                Character character = null;
+                // 如果扮演名称为空，则直接根据角色名称获取角色（不存在时自动创建）
+                if (characterData.castingName == string.Empty)
+                {
+                    character = CharacterManager.instance.GetCharacter(characterData.characterName,
+                        createIfDoesNotExist: true);
+                }
+                else
+                {
+                    // 扮演名称不为空时，先尝试获取现有角色
+                    character = CharacterManager.instance.GetCharacter(characterData.characterName,
+                        createIfDoesNotExist: false);
+
+                    // 如果未找到现有角色，则创建新的扮演角色
+                    if (character == null)
+                    {
+                        string castingName =
+                            $"{characterData.characterName}{CharacterManager.CHARACTER_CASTING_ID}{characterData.castingName}";
+                        character = CharacterManager.instance.CreateCharacter(castingName);
+                    }
+                }
                 
                 // 设置基础属性
                 character.displayName = characterData.displayName;

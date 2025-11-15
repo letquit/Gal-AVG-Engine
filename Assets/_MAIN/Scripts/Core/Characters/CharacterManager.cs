@@ -36,7 +36,7 @@ namespace CHARACTERS
         /// <summary>
         /// 角色转换标识符常量，用于字符串转换操作
         /// </summary>
-        private const string CHARACTER_CASTING_ID = " as ";
+        public const string CHARACTER_CASTING_ID = " as ";
 
         /// <summary>
         /// 角色名称标识符常量，用作路径中的占位符
@@ -162,6 +162,10 @@ namespace CHARACTERS
             CHARACTER_INFO info = GetCharacterInfo(characterName);
          
             Character character = CreateCharacterFromInfo(info);
+            
+            // 设置角色的别名
+            if (info.castingName != info.name)
+                character.castingName = info.castingName;
             
             // 添加角色实例到字典中
             characters.Add(info.name.ToLower(), character);

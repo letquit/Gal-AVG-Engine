@@ -40,6 +40,11 @@ namespace CHARACTERS
         /// 角色显示名称，用于在对话中展示的角色名字
         /// </summary>
         public string displayName = "";
+        
+        /// <summary>
+        /// 存储投射名称的公共字段
+        /// </summary>
+        public string castingName = "";
 
         /// <summary>
         /// 角色在UI中的根节点变换组件
