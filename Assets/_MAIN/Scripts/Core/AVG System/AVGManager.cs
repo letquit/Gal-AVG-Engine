@@ -16,6 +16,11 @@ namespace ADVENTUREGAME
         public static AVGManager instance { get; private set; }
 
         /// <summary>
+        /// 序列化的游戏配置数据对象引用
+        /// </summary>
+        [SerializeField] private AdventureGameSO config;
+        
+        /// <summary>
         /// 主摄像机引用变量
         /// </summary>
         public Camera mainCamera;
@@ -33,34 +38,36 @@ namespace ADVENTUREGAME
             linkSetup.SetupExternalLinks();
 
             // 创建一个空的AVG游戏保存实例
-            AVGGameSave.activeFile = new AVGGameSave();
+            if (AVGGameSave.activeFile == null)
+                AVGGameSave.activeFile = new AVGGameSave();
         }
 
         /// <summary>
-        /// 加载指定路径的对话文件并启动对话系统
+        /// Unity生命周期函数，在对象启用时调用，用于启动游戏加载流程
         /// </summary>
-        /// <param name="filePath">对话文件在Resources文件夹中的相对路径</param>
-        public void LoadFile(string filePath)
+        private void Start()
         {
-            // 创建存储文件行内容的列表
-            List<string> lines = new List<string>();
-            // 从Resources文件夹中加载文本资源
-            TextAsset file = Resources.Load<TextAsset>(filePath);
+            LoadGame();
+        }
 
-            try
+        /// <summary>
+        /// 加载游戏数据，根据是否为新游戏执行不同的加载逻辑
+        /// </summary>
+        private void LoadGame()
+        {
+            // 判断是否为新游戏
+            if (AVGGameSave.activeFile.newGame)
             {
-                // 读取文本资源的内容
-                lines = FileManager.ReadTextAsset(file);
+                // 新游戏：读取初始对话文件并开始对话
+                List<string> lines = FileManager.ReadTextAsset(config.startingFile);
+                Conversation start = new Conversation(lines);
+                DialogueSystem.instance.Say(start);
             }
-            catch
+            else
             {
-                // 当文件不存在时输出错误日志并重新抛出异常
-                Debug.LogError($"Dialogue file at path 'Resources/{filePath}' does not exist!");
-                throw;
+                // 存档游戏：激活已保存的游戏状态
+                AVGGameSave.activeFile.Activate();
             }
-        
-            // 调用对话系统播放加载的对话内容
-            DialogueSystem.instance.Say(lines, filePath);
         }
     }
 }

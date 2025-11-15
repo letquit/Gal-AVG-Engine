@@ -216,8 +216,12 @@ public class ConfigMenu : MenuPage
     /// </summary>
     public void SetTextArchitectSpeed()
     {
+        // 更新配置中的文本构建速度
         config.dialogueTextSpeed = ui.architectSpeed.value;
-        DialogueSystem.instance.conversationManager.architect.speed = config.dialogueTextSpeed;
+        
+        // 同步速度设置到对话系统的文本架构师模块
+        if (DialogueSystem.instance != null)
+            DialogueSystem.instance.conversationManager.architect.speed = config.dialogueTextSpeed;
     }
     
     /// <summary>
@@ -225,8 +229,14 @@ public class ConfigMenu : MenuPage
     /// </summary>
     public void SetAutoReaderSpeed()
     {
+        // 更新配置中的自动阅读速度
         config.dialogueAutoReadSpeed = ui.autoReaderSpeed.value;
 
+        // 检查对话系统实例是否存在
+        if (DialogueSystem.instance == null)
+            return;
+        
+        // 同步速度设置到自动阅读器模块
         AutoReader autoReader = DialogueSystem.instance.autoReader;
         if (autoReader != null)
             autoReader.speed = config.dialogueAutoReadSpeed;

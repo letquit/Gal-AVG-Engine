@@ -64,15 +64,18 @@ public class CanvasGroupController
     /// <returns>表示淡入过程的协程引用</returns>
     public Coroutine Show(float speed = 1f, bool immediate = false)
     {
+        // 如果已经在显示状态，直接返回当前显示协程
         if (isShowing)
             return co_showing;
+        // 如果正在隐藏状态，先停止隐藏协程
         else if (isHiding)
         {
-            DialogueSystem.instance.StopCoroutine(co_hiding);
+            owner.StopCoroutine(co_hiding);
             co_hiding = null;
         }
             
-        co_showing = DialogueSystem.instance.StartCoroutine(Fading(1, speed, immediate));
+        // 启动淡入动画协程，目标透明度为1（完全显示）
+        co_showing = owner.StartCoroutine(Fading(1, speed, immediate));
             
         return co_showing;
     }
@@ -85,15 +88,18 @@ public class CanvasGroupController
     /// <returns>表示淡出过程的协程引用</returns>
     public Coroutine Hide(float speed = 1f, bool immediate = false)
     {
+        // 如果已经在隐藏状态，直接返回当前隐藏协程
         if (isHiding)
             return co_hiding;
+        // 如果正在显示状态，先停止显示协程
         else if (isShowing)
         {
-            DialogueSystem.instance.StopCoroutine(co_showing);
+            owner.StopCoroutine(co_showing);
             co_showing = null;
         }
             
-        co_hiding = DialogueSystem.instance.StartCoroutine(Fading(0, speed, immediate));
+        // 启动淡出动画协程，目标透明度为0（完全隐藏）
+        co_hiding = owner.StartCoroutine(Fading(0, speed, immediate));
             
         return co_hiding;
     }

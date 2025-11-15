@@ -59,6 +59,11 @@ namespace ADVENTUREGAME
         /// </summary>
         public int slotNumber = 1;
 
+        /// <summary>
+        /// 标识是否为新游戏的标志变量
+        /// </summary>
+        public bool newGame = true;
+
         //两种不同的保存 其一是通过引用文件名和对话开始结束的索引 其二是保存对话的所有内容-所有行和进度(RPG)
 
         /// <summary>
@@ -112,6 +117,9 @@ namespace ADVENTUREGAME
         /// </summary>
         public void Save()
         {
+            // 设置新游戏标志
+            newGame = false;
+            
             // 捕获当前历史状态
             activeState = HistoryState.Capture();
             historyLogs = HistoryManager.instance.history.ToArray();

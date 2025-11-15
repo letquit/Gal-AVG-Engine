@@ -5,8 +5,8 @@ using UnityEngine;
 namespace COMMANDS
 {
     /// <summary>
-    /// 冒险游戏命令数据库扩展类
-    /// 用于向命令数据库添加冒险游戏相关的自定义命令
+    /// 游戏命令数据库扩展类
+    /// 用于向命令数据库添加游戏相关的自定义命令
     /// </summary>
     public class CMD_DatabaseExtension_AdventureGame : CMD_DatabaseExtension
     {

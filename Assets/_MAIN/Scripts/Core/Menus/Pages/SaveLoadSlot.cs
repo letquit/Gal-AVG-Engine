@@ -2,6 +2,7 @@ using System.IO;
 using ADVENTUREGAME;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -84,9 +85,22 @@ public class SaveLoadSlot : MonoBehaviour
     /// </summary>
     public void Load()
     {
-        AVGGameSave file = AVGGameSave.Load(filePath, true);
-        
+        // 加载指定路径的存档文件
+        AVGGameSave file = AVGGameSave.Load(filePath, false);
+        // 关闭存档加载菜单界面
         SaveAndLoadMenu.Instance.Close(closeAllMenus: true);
+        
+        // 根据当前场景决定加载方式
+        if (SceneManager.GetActiveScene().name == MainMenu.MAIN_MENU_SCENE)
+        {
+            // 在主菜单场景中加载游戏
+            MainMenu.instance.LoadGame(file);
+        }
+        else
+        {
+            // 在其他场景中激活存档数据
+            file.Activate();
+        }
     }
     
     /// <summary>

@@ -133,7 +133,6 @@ public class ChoicePanel : MonoBehaviour
         foreach (var button in buttons)
         {
             int lines = button.title.textInfo.lineCount;
-            Debug.Log(lines);
             button.layout.preferredHeight = BUTTON_HEIGHT_PADDING + (BUTTON_HEIGHT_PER_LINE * lines);
         }
     }

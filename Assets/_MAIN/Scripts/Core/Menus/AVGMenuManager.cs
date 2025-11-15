@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// AVGMenuManager 是一个管理游戏菜单页面切换与显示的核心类。
@@ -145,5 +146,21 @@ public class AVGMenuManager : MonoBehaviour
         rootCG.Hide();
         rootCG.SetInteractableState(false);
         isOpen = false;
+    }
+
+    /// <summary>
+    /// 点击主页按钮时调用的方法，用于加载主菜单场景
+    /// </summary>
+    public void Click_Home()
+    {
+        SceneManager.LoadScene(MainMenu.MAIN_MENU_SCENE);
+    }
+
+    /// <summary>
+    /// 点击退出按钮时调用的方法，用于退出应用程序
+    /// </summary>
+    public void Click_Quit()
+    {
+        Application.Quit();
     }
 }
