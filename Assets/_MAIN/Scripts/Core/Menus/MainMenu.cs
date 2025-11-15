@@ -3,6 +3,7 @@ using System.Collections;
 using ADVENTUREGAME;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// 主菜单控制类，负责处理游戏主菜单的各种功能，包括开始新游戏、加载游戏等操作
@@ -16,6 +17,9 @@ public class MainMenu : MonoBehaviour
     public AudioClip menuMusic;
     public CanvasGroup mainPanel;
     private CanvasGroupController mainCG;
+    
+    public Image blackImage;
+    private CanvasGroup blackImageCG;
 
     /// <summary>
     /// 在对象唤醒时设置单例实例
@@ -31,6 +35,12 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         mainCG = new CanvasGroupController(this, mainPanel);
+        if (blackImage != null)
+        {
+            blackImageCG = blackImage.GetComponent<CanvasGroup>();
+            if (blackImageCG != null)
+                blackImageCG.alpha = 0;
+        }
         AudioManager.instance.PlayTrack(menuMusic, channel: 0, startingVolume: 0.5f);
     }
 
@@ -60,13 +70,29 @@ public class MainMenu : MonoBehaviour
     private IEnumerator StartingGame()
     {
         // 隐藏主菜单面板并停止菜单音乐
-        mainCG.Hide(speed: 0.1f);
+        mainCG.Hide(speed: 0.3f);
         AudioManager.instance.StopTrack(0);
 
         // 等待面板完全隐藏
         while (mainCG.isVisible)
             yield return null;
+    
+        // 执行黑色遮罩淡入效果
+        if (blackImageCG != null)
+        {
+            float fadeDuration = 1.0f;
+            float elapsedTime = 0f;
         
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                blackImageCG.alpha = Mathf.Lerp(0f, 1f, elapsedTime / fadeDuration);
+                yield return null;
+            }
+        
+            blackImageCG.alpha = 1f;
+        }
+    
         // 加载游戏主场景
         SceneManager.LoadScene("GalAVG");
     }
