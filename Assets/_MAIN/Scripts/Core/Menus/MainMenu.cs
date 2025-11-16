@@ -10,16 +10,45 @@ using UnityEngine.UI;
 /// </summary>
 public class MainMenu : MonoBehaviour
 {
+    /// <summary>
+    /// 主菜单场景名称常量
+    /// </summary>
     public const string MAIN_MENU_SCENE = "Main Menu";
     
+    /// <summary>
+    /// 获取当前类的单例实例
+    /// </summary>
     public static MainMenu instance { get; private set; }
     
+    /// <summary>
+    /// 菜单背景音乐音频剪辑
+    /// </summary>
     public AudioClip menuMusic;
+
+    /// <summary>
+    /// 主面板的CanvasGroup组件引用
+    /// </summary>
     public CanvasGroup mainPanel;
+
+    /// <summary>
+    /// 控制主面板显示与隐藏的CanvasGroupController对象
+    /// </summary>
     private CanvasGroupController mainCG;
     
+    /// <summary>
+    /// 黑色过渡图像组件引用
+    /// </summary>
     public Image blackImage;
+
+    /// <summary>
+    /// 黑色图像的CanvasGroup组件，用于控制透明度变化
+    /// </summary>
     private CanvasGroup blackImageCG;
+    
+    /// <summary>
+    /// 确认对话框UI菜单的快捷访问属性
+    /// </summary>
+    private UIConfirmationMenu uiChoiceMenu => UIConfirmationMenu.instance;
 
     /// <summary>
     /// 在对象唤醒时设置单例实例
@@ -45,12 +74,12 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// 开始新游戏，创建新的游戏存档并启动游戏
+    /// 开始新游戏，弹出确认对话框让用户选择是否开启新游戏
     /// </summary>
-    public void StartNewGame()
+    public void Click_StartNewGame()
     {
-        AVGGameSave.activeFile = new AVGGameSave();
-        StartCoroutine(StartingGame());
+        uiChoiceMenu.Show("Start a new game?", new UIConfirmationMenu.ConfirmationButtopn("Yes", StartNewGame),
+            new UIConfirmationMenu.ConfirmationButtopn("No", null));
     }
 
     /// <summary>
@@ -60,6 +89,15 @@ public class MainMenu : MonoBehaviour
     public void LoadGame(AVGGameSave file)
     {
         AVGGameSave.activeFile = file;
+        StartCoroutine(StartingGame());
+    }
+
+    /// <summary>
+    /// 创建一个新的游戏存档，并启动游戏流程
+    /// </summary>
+    private void StartNewGame()
+    {
+        AVGGameSave.activeFile = new AVGGameSave();
         StartCoroutine(StartingGame());
     }
     

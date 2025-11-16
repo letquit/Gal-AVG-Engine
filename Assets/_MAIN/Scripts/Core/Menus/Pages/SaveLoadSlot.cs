@@ -20,6 +20,8 @@ public class SaveLoadSlot : MonoBehaviour
 
     [HideInInspector] public int fileNumber = 0;
     [HideInInspector] public string filePath = "";
+    
+    private UIConfirmationMenu uiChoiceMenu => UIConfirmationMenu.instance;
 
     /// <summary>
     /// 根据当前菜单功能（保存或加载）填充该槽位的详细信息。
@@ -72,9 +74,33 @@ public class SaveLoadSlot : MonoBehaviour
     }
 
     /// <summary>
-    /// 删除当前槽位对应的存档文件，并刷新界面显示。
+    /// 显示删除文件确认对话框，需要用户进行二次确认后执行删除操作
     /// </summary>
     public void Delete()
+    {
+        // 显示第一次确认对话框，询问是否要删除文件
+        uiChoiceMenu.Show(
+            // Title
+            "Delete this file? (<i>This cannot be undone!</i>)",
+            //Choice 1
+            new UIConfirmationMenu.ConfirmationButtopn("Yes", () =>
+                {
+                    // 显示第二次确认对话框，进一步确认删除操作
+                    uiChoiceMenu.Show(
+                        "Are you sure?",
+                        new UIConfirmationMenu.ConfirmationButtopn("I am sure", OnConfirmDelete),
+                        new UIConfirmationMenu.ConfirmationButtopn("Never", null));
+                },
+                autoCloseOnQuit: false
+            ),
+            //Choice 2
+            new UIConfirmationMenu.ConfirmationButtopn("No", null));
+    }
+
+    /// <summary>
+    /// 执行文件删除操作的回调函数，删除指定文件并刷新界面显示
+    /// </summary>
+    private void OnConfirmDelete()
     {
         File.Delete(filePath);
         PopulateDetails(SaveAndLoadMenu.Instance.menuFunction);

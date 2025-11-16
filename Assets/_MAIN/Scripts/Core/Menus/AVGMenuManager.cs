@@ -38,6 +38,12 @@ public class AVGMenuManager : MonoBehaviour
     /// 对根 CanvasGroup 的控制器封装对象。
     /// </summary>
     private CanvasGroupController rootCG;
+    
+    /// <summary>
+    /// 获取UI确认菜单的单例实例
+    /// </summary>
+    private UIConfirmationMenu uiChoiceMenu => UIConfirmationMenu.instance;
+
 
     /// <summary>
     /// 在Awake阶段初始化静态单例引用。
@@ -161,6 +167,9 @@ public class AVGMenuManager : MonoBehaviour
     /// </summary>
     public void Click_Quit()
     {
-        Application.Quit();
+        // 显示退出确认菜单，提示用户是否退出到桌面
+        uiChoiceMenu.Show("Quit to desktop?",
+            new UIConfirmationMenu.ConfirmationButtopn("Yes", () => Application.Quit()),
+            new UIConfirmationMenu.ConfirmationButtopn("No", null));
     }
 }
