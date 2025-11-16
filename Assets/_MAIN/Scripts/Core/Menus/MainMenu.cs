@@ -70,6 +70,9 @@ public class MainMenu : MonoBehaviour
             if (blackImageCG != null)
                 blackImageCG.alpha = 0;
         }
+        // 停止可能存在的其他音乐并播放主菜单音乐
+        AudioManager.instance.StopTrack(1); // 停止游戏音乐通道
+
         AudioManager.instance.PlayTrack(menuMusic, channel: 0, startingVolume: 0.5f);
     }
 

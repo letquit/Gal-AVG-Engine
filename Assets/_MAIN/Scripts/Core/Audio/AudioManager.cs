@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 音频管理器，用于控制打字机音效的播放和音频集的切换。
@@ -630,5 +631,53 @@ public class AudioManager : MonoBehaviour
         // 根据是否静音来决定最终音量值：静音时使用预设静音级别，否则根据音频衰减曲线计算
         volume = muted ? MUTED_VOLUME_LEVEL : audioFalloffCurve.Evaluate(volume);
         voicesMixer.audioMixer.SetFloat(VOICES_VOLUME_PARAMETER_NAME, volume);
+    }
+    
+    /// <summary>
+    /// 在组件启用时注册场景加载事件
+    /// </summary>
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    /// <summary>
+    /// 在组件禁用时注销场景加载事件
+    /// </summary>
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    /// <summary>
+    /// 场景加载完成时的回调处理
+    /// </summary>
+    /// <param name="scene">加载的场景</param>
+    /// <param name="mode">加载模式</param>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 如果是主菜单场景，确保只播放主菜单音乐
+        if (scene.name == MainMenu.MAIN_MENU_SCENE)
+        {
+            // 停止非0通道的音乐（假设通道0是主菜单音乐通道）
+            foreach (var channel in channels.Values)
+            {
+                if (channel.channelIndex != 0)
+                {
+                    channel.StopTrack();
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// 停止所有通道的音频播放
+    /// </summary>
+    public void StopAllTracks()
+    {
+        foreach (var channel in channels.Values)
+        {
+            channel.StopTrack();
+        }
     }
 }
