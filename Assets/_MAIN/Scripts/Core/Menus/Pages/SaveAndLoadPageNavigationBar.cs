@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,12 +23,26 @@ public class SaveAndLoadPageNavigationBar : MonoBehaviour
     /// </summary>
     public int selectedPage { get; private set; } = 1;
     private int maxPages = 0;
+    
+    /// <summary>
+    /// 当前显示的起始页码（滑动窗口起始点）
+    /// </summary>
+    private int visiblePageStart = 1;
+    
+    /// <summary>
+    /// 缓存分页按钮列表
+    /// </summary>
+    private List<Button> pageButtons = new List<Button>();
+
+    private Color selectedPageColor;
 
     /// <summary>
     /// Unity生命周期函数，在对象启用时调用。初始化菜单组件。
     /// </summary>
     private void Start()
     {
+        // 解析高亮颜色 #FFE7B6
+        ColorUtility.TryParseHtmlString("#FFE7B6", out selectedPageColor);
         InitializedMenu();
     }
 
@@ -48,19 +63,19 @@ public class SaveAndLoadPageNavigationBar : MonoBehaviour
         // 确定实际要显示的按钮数量，不超过最大按钮限制或总页数
         int pageButtonLimit = MAX_BUTTONS < maxPages ? MAX_BUTTONS : maxPages;
         
+        pageButtons.Clear();
+
         // 创建分页按钮
-        for (int i = 1; i <= pageButtonLimit; i++)
+        for (int i = 0; i < pageButtonLimit; i++)
         {
             GameObject ob = Instantiate(buttonPrefab.gameObject, buttonPrefab.transform.parent);
             ob.SetActive(true);
             
             Button button = ob.GetComponent<Button>();
+            pageButtons.Add(button);
 
-            ob.name = i.ToString();
-            TextMeshProUGUI txt = ob.GetComponentInChildren<TextMeshProUGUI>();
-            txt.text = i.ToString();
-            int closureIndex = i;
-            button.onClick.AddListener(() => SelectSaveFilePage(closureIndex));
+            int buttonIndex = i;
+            button.onClick.AddListener(() => SelectSaveFilePage(visiblePageStart + buttonIndex));
         }
 
         // 如果按钮数量小于总页数，则显示前后翻页按钮
@@ -69,6 +84,9 @@ public class SaveAndLoadPageNavigationBar : MonoBehaviour
         
         // 将下一页按钮置于层级最后
         nextButton.transform.SetAsLastSibling();
+        
+        // 初始化 UI 状态
+        SelectSaveFilePage(1);
     }
 
     /// <summary>
@@ -78,7 +96,53 @@ public class SaveAndLoadPageNavigationBar : MonoBehaviour
     private void SelectSaveFilePage(int pageNumber)
     {
         selectedPage = pageNumber;
+        
+        if (selectedPage < visiblePageStart)
+        {
+            visiblePageStart = selectedPage;
+        }
+        else if (selectedPage >= visiblePageStart + pageButtons.Count)
+        {
+            visiblePageStart = selectedPage - pageButtons.Count + 1;
+        }
+        
+        int maxStart = Mathf.Max(1, maxPages - pageButtons.Count + 1);
+        if (visiblePageStart > maxStart) visiblePageStart = maxStart;
+        if (visiblePageStart < 1) visiblePageStart = 1;
+
+        UpdateNavBarUI();
+
+        // 填充对应页面的存档槽位
         menu.PopulateSaveSlotsForPage(pageNumber);
+    }
+    
+    /// <summary>
+    /// 更新导航栏按钮的数字和颜色
+    /// </summary>
+    private void UpdateNavBarUI()
+    {
+        for (int i = 0; i < pageButtons.Count; i++)
+        {
+            Button btn = pageButtons[i];
+            int pageNum = visiblePageStart + i;
+            
+            btn.name = pageNum.ToString();
+            TextMeshProUGUI txt = btn.GetComponentInChildren<TextMeshProUGUI>();
+            if (txt != null)
+            {
+                txt.text = pageNum.ToString();
+            }
+            
+            // 高亮当前选中页
+            if (pageNum == selectedPage)
+            {
+                btn.image.color = selectedPageColor;
+            }
+            else
+            {
+                btn.image.color = Color.white;
+            }
+        }
     }
 
     /// <summary>
