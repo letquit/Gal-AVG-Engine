@@ -1,6 +1,8 @@
 ﻿
+PlayAmbience(RainyMood -v 0.1)
 Narrator "The sky rumbled as a storm approached.{c}Not soon after the storm worsened and the sky began to let down a deluge as lightning crackled above."
 
+ShowGalleryImage(ua)
 "Dashing through the rain and mud, two figures began to see lights emerge through the thick of the trees surrounding them."
 
 Stella as ??? "Look! I see lights ahead!"
@@ -9,6 +11,7 @@ Raelin as ??? "It's the village, hurry!{wa 1} We're almost there!"
 
 Narrator "Excitement filled their breath and fueled their steps.{c}Within moments, they broke through the forest boundaries and came into the village square."
 
+HideGalleryImage()
 PlaySong("223AM" -v 0.2)
 SetLayerMedia(background villagenight)
 CreateCharacter(Stella), CreateCharacter(Raelin), Stella.SetPosition(-0.3), Raelin.SetPosition(1.3), 
@@ -32,6 +35,7 @@ Raelin [0:B1,1:B_Scold] "Okay - first of all...{wa 0.5} Cold showers are not <i>
 Stella.Move(0.3 -spd 0.7)
 Stella [1:shy 1] "Hey - I think I see something over there!"
 
+ShowGalleryImage(1)
 Raelin.FaceRight()
 Raelin "It's a lodge! Maybe they have a spare room?"
 
@@ -49,6 +53,7 @@ choice "Where Should You Go?"
         Load(Chapter1_Ship)
 }
 
+HideGalleryImage()
 HideDB(-spd 1)
 Stella.Move(1.5 -spd 2), Raelin.Move(1.5 -spd 2), Raelin.FaceRight() Stella.Hide(), Raelin.Hide()
 wait(0.75)
