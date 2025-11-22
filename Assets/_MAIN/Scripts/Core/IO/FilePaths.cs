@@ -39,6 +39,11 @@ public class FilePaths
     /// 过渡效果纹理资源目录路径常量
     /// </summary>
     public static readonly string resources_blendTextures = $"{resources_graphics}Transition Effects/";
+
+    /// <summary>
+    /// 资源路径常量，表示Gallery文件夹的完整路径
+    /// </summary>
+    public static readonly string resources_gallery = $"{resources_graphics}Gallery/";
     
     /// <summary>
     /// 音频资源目录路径常量
