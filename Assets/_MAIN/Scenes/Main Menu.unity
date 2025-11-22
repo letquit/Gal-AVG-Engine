@@ -6167,8 +6167,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SaveAndLoadPageNavigationBar, Assembly-CSharp
+      - m_Target: {fileID: 363261602}
+        m_TargetAssemblyTypeName: GalleryMenu, Assembly-CSharp
         m_MethodName: ToNextPage
         m_Mode: 1
         m_Arguments:
@@ -28194,8 +28194,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SaveAndLoadPageNavigationBar, Assembly-CSharp
+      - m_Target: {fileID: 363261602}
+        m_TargetAssemblyTypeName: GalleryMenu, Assembly-CSharp
         m_MethodName: ToPreviousPage
         m_Mode: 1
         m_Arguments:

@@ -9,6 +9,21 @@ using UnityEngine.UI;
 /// </summary>
 public class GalleryMenu : MonoBehaviour
 {
+    /// <summary>
+    /// 页面按钮限制常量，用于控制页面导航按钮的最大显示数量
+    /// </summary>
+    private const int PAGE_BUTTON_LIMIT = 2;
+
+    /// <summary>
+    /// 最大页面数，表示分页控件中的总页面数量
+    /// </summary>
+    private int maxPages = 0;
+
+    /// <summary>
+    /// 当前选中的页面索引，表示用户当前查看的页面位置
+    /// </summary>
+    private int selectedPage = 0;
+    
     [SerializeField] private CanvasGroup root;
     private CanvasGroupController rootCG;
 
@@ -92,9 +107,12 @@ public class GalleryMenu : MonoBehaviour
     {
         int totalImages = galleryImages.Length;
 
-        int targetPages = (int)Mathf.Ceil((float)totalImages / previewsPerPage);
+        // 计算总页数
+        maxPages = (int)Mathf.Ceil((float)totalImages / previewsPerPage);
+        // 确定实际要显示的按钮数量，不超过最大按钮限制或总页数
+        int pagelimit = PAGE_BUTTON_LIMIT < maxPages ? PAGE_BUTTON_LIMIT : maxPages;
 
-        for (int i = 1; i <= targetPages; i++)
+        for (int i = 1; i <= pagelimit; i++)
         {
             GameObject buttonOB = Instantiate(panelSelectionButtonPrefab.gameObject,
                 panelSelectionButtonPrefab.transform.parent);
@@ -111,6 +129,10 @@ public class GalleryMenu : MonoBehaviour
             });
             txt.text = i.ToString();
         }
+        
+        // 如果按钮数量小于总页数，则显示前后翻页按钮
+        prevButton.gameObject.SetActive(pagelimit < maxPages);
+        nextButton.gameObject.SetActive(pagelimit < maxPages);
         
         nextButton.transform.SetAsLastSibling();
     }
@@ -158,6 +180,9 @@ public class GalleryMenu : MonoBehaviour
                 }
             }
         }
+
+        // 记录当前页码
+        selectedPage = pageNumber;
     }
 
     /// <summary>
@@ -179,5 +204,23 @@ public class GalleryMenu : MonoBehaviour
     {
         previewPanelCG.Hide();
         previewPanelCG.SetInteractableState(false);
+    }
+
+    /// <summary>
+    /// 跳转到下一页
+    /// </summary>
+    public void ToNextPage()
+    {
+        if (selectedPage < maxPages)
+            LoadPage(selectedPage + 1);
+    }
+    
+    /// <summary>
+    /// 跳转到上一页
+    /// </summary>
+    public void ToPreviousPage()
+    {
+        if (selectedPage > 1)
+            LoadPage(selectedPage - 1);
     }
 }
