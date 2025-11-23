@@ -640,7 +640,7 @@ public class AudioManager : MonoBehaviour
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
-
+    
     /// <summary>
     /// 在组件禁用时注销场景加载事件
     /// </summary>
@@ -648,7 +648,7 @@ public class AudioManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-
+    
     /// <summary>
     /// 场景加载完成时的回调处理
     /// </summary>
@@ -675,9 +675,24 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void StopAllTracks()
     {
-        foreach (var channel in channels.Values)
+        foreach (AudioChannel channel in channels.Values)
         {
             channel.StopTrack();
+        }
+    }
+
+    /// <summary>
+    /// 停止所有音效播放并销毁相关音频源对象
+    /// </summary>
+    public void StopAllSoundEffects()
+    {
+        // 获取sfxRoot下所有的音频源组件
+        AudioSource[] sources = sfxRoot.GetComponentsInChildren<AudioSource>();
+        
+        // 遍历并销毁所有音频源对象
+        foreach (var source in sources)
+        {
+            Destroy(source.gameObject);
         }
     }
 }

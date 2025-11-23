@@ -71,7 +71,10 @@ public class MainMenu : MonoBehaviour
                 blackImageCG.alpha = 0;
         }
         // 停止可能存在的其他音乐并播放主菜单音乐
-        AudioManager.instance.StopTrack(1); // 停止游戏音乐通道
+        // AudioManager.instance.StopTrack(1); // 停止游戏音乐通道
+        
+        AudioManager.instance.StopAllSoundEffects();
+        AudioManager.instance.StopAllTracks();
 
         AudioManager.instance.PlayTrack(menuMusic, channel: 0, startingVolume: 0.5f);
     }
@@ -134,6 +137,9 @@ public class MainMenu : MonoBehaviour
             blackImageCG.alpha = 1f;
         }
     
+        // 保存配置文件
+        AVG_Configuration.activeConfig.Save();
+        
         // 加载游戏主场景
         SceneManager.LoadScene("GalAVG");
     }

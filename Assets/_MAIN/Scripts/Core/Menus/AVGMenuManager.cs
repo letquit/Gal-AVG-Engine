@@ -159,15 +159,16 @@ public class AVGMenuManager : MonoBehaviour
     /// </summary>
     public void Click_Home()
     {
+        // 保存当前配置
+        AVG_Configuration.activeConfig.Save();
+        
         // 停止所有非主菜单音乐的轨道
         // 停止通道1（假设是游戏音乐通道）
         AudioManager.instance.StopTrack(1);
     
         // 确保主菜单音乐在通道0播放
         // 注意：实际的主菜单音乐播放应该在主菜单场景中处理
-    
         SceneManager.LoadScene(MainMenu.MAIN_MENU_SCENE);
-
     }
 
     /// <summary>
