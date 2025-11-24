@@ -8,7 +8,7 @@ namespace History
     /// 音频数据类，用于序列化和存储音频通道的状态信息
     /// </summary>
     [Serializable]
-    public class AudioData
+    public class AudioTrackData
     {
         public int channel = 0;
         public string trackName;
@@ -21,7 +21,7 @@ namespace History
         /// 构造函数，从AudioChannel对象初始化AudioData
         /// </summary>
         /// <param name="channel">音频通道对象，用于提取当前播放轨道的信息</param>
-        public AudioData(AudioChannel channel)
+        public AudioTrackData(AudioChannel channel)
         {
             this.channel = channel.channelIndex;
             
@@ -41,9 +41,9 @@ namespace History
         /// 捕获当前所有音频通道的数据快照
         /// </summary>
         /// <returns>包含所有活动音频通道数据的列表</returns>
-        public static List<AudioData> Capture()
+        public static List<AudioTrackData> Capture()
         {
-            List<AudioData> audioChannels = new List<AudioData>();
+            List<AudioTrackData> audioChannels = new List<AudioTrackData>();
 
             // 遍历所有音频通道，收集有活动轨道的通道数据
             foreach (var channel in AudioManager.instance.channels)
@@ -51,8 +51,8 @@ namespace History
                 if(channel.Value.activeTrack == null)
                     continue;
                 
-                AudioData data = new AudioData(channel.Value);
-                audioChannels.Add(data);
+                AudioTrackData trackData = new AudioTrackData(channel.Value);
+                audioChannels.Add(trackData);
             }
             
             return audioChannels;
@@ -62,7 +62,7 @@ namespace History
         /// 应用音频数据列表，更新音频通道的状态
         /// </summary>
         /// <param name="data">音频数据列表，包含各个通道的音频配置信息</param>
-        public static void Apply(List<AudioData> data)
+        public static void Apply(List<AudioTrackData> data)
         {
             // 缓存已处理的通道索引
             List<int> cache = new List<int>();

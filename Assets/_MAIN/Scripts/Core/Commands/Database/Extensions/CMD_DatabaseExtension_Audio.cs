@@ -61,13 +61,14 @@ namespace COMMANDS
             parameters.TryGetValue(PARAM_LOOP, out loop, defaultValue: false);  // 获取循环标志，默认不循环
 
             // 加载对应的AudioClip资源
-            AudioClip sound = Resources.Load<AudioClip>(FilePaths.GetPathToResource(FilePaths.resources_sfx, filepath));
+            string resourcesPath = FilePaths.GetPathToResource(FilePaths.resources_sfx, filepath);
+            AudioClip sound = Resources.Load<AudioClip>(resourcesPath);
 
             if (sound == null) // 若加载失败则直接返回
                 return;
 
             // 使用音频管理器播放该音效
-            AudioManager.instance.PlaySoundEffect(sound, volume: volume, pitch: pitch, loop: loop);
+            AudioManager.instance.PlaySoundEffect(sound, volume: volume, pitch: pitch, loop: loop, filePath: resourcesPath);
         }
 
         /// <summary>

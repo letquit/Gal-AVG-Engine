@@ -15,7 +15,10 @@ public class AudioManager : MonoBehaviour
     public const float MUTED_VOLUME_LEVEL = -80f;
     
     private const string SFX_PARENT_NAME = "SFX";
-    private const string SFX_NAME_FORMAT = "SFX - [{0}]";
+    
+    public static readonly char[] SFX_NAME_FORMAT_CONTAINERS = new char[] { '[', ']' };
+    private static string SFX_NAME_FORMAT = $"SFX - {SFX_NAME_FORMAT_CONTAINERS[0]}" + "{0}" + $"{SFX_NAME_FORMAT_CONTAINERS[1]}";
+    
     public const float TRACK_TRANSITION_SPEED = 1f;
     public static AudioManager instance { get; private set; }
     
@@ -29,6 +32,8 @@ public class AudioManager : MonoBehaviour
 
     private Transform sfxRoot;
     
+    public AudioSource[] allSFX => sfxRoot.GetComponentsInChildren<AudioSource>(); 
+    
     [Header("打字机音效设置")]
     [SerializeField] private List<AudioSet> audioSets = new List<AudioSet>();
     [SerializeField] private AudioSource typingSource;
@@ -36,7 +41,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] [Range(0.1f, 1.0f)] private float volumeMax = 0.9f;
     [SerializeField] [Range(0.5f, 1.5f)] private float pitchMin = 0.9f;
     [SerializeField] [Range(0.5f, 1.5f)] private float pitchMax = 1.1f;
-
+    
     /// <summary>
     /// 表示一个音频集，包含名称和对应的音频剪辑数组。
     /// </summary>
@@ -139,7 +144,7 @@ public class AudioManager : MonoBehaviour
             return null;
         }
 
-        return PlaySoundEffect(clip, mixer, volume, pitch, loop);
+        return PlaySoundEffect(clip, mixer, volume, pitch, loop, filePath);
     }
 
     /// <summary>
@@ -151,10 +156,15 @@ public class AudioManager : MonoBehaviour
     /// <param name="pitch">音调，正常为1，小于1降低音调，大于1提高音调，默认为1</param>
     /// <param name="loop">是否循环播放，默认为false</param>
     /// <returns>创建的AudioSource组件</returns>
-    public AudioSource PlaySoundEffect(AudioClip clip, AudioMixerGroup mixer = null, float volume = 1, float pitch = 1, bool loop = false)
+    public AudioSource PlaySoundEffect(AudioClip clip, AudioMixerGroup mixer = null, float volume = 1, float pitch = 1, bool loop = false, string filePath = "")
     {
+        // 获取音频剪辑的名称
+        string fileName = clip.name;
+        if (filePath != string.Empty)
+            fileName = filePath;
+        
         // 创建新的游戏对象并添加AudioSource组件用于播放音效
-        AudioSource effectSource = new GameObject(string.Format(SFX_NAME_FORMAT, clip.name)).AddComponent<AudioSource>();
+        AudioSource effectSource = new GameObject(string.Format(SFX_NAME_FORMAT, fileName)).AddComponent<AudioSource>();
         effectSource.transform.SetParent(sfxRoot);
         effectSource.transform.position = sfxRoot.position;
         
@@ -228,6 +238,24 @@ public class AudioManager : MonoBehaviour
                 return;
             }
         }
+    }
+    
+    /// <summary>
+    /// 检查指定名称的音效是否正在播放
+    /// </summary>
+    /// <param name="soundName">要检查的音效名称</param>
+    public bool IsPlayingSoundEffect(string soundName)
+    {
+        soundName = soundName.ToLower();
+        // 获取所有子级的AudioSource组件并查找匹配的音效
+        AudioSource[] sources = sfxRoot.GetComponentsInChildren<AudioSource>();
+        foreach (var source in sources)
+        {
+            if (source.clip.name.ToLower() == soundName)
+                return true;
+        }
+        
+        return false;
     }
 
     /// <summary>

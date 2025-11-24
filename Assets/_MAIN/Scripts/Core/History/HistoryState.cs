@@ -13,7 +13,8 @@ namespace History
     {
         public DialogueData dialogue;
         public List<CharacterData> characters;
-        public List<AudioData> audio;
+        public List<AudioTrackData> audio;
+        public List<AudioSFXData> sfx;
         public List<GraphicData> graphics;
         
         /// <summary>
@@ -30,7 +31,9 @@ namespace History
             // 捕获角色数据状态
             state.characters = CharacterData.Capture();
             // 捕获音频数据状态
-            state.audio = AudioData.Capture();
+            state.audio = AudioTrackData.Capture();
+            // 捕获音效数据状态
+            state.sfx = AudioSFXData.Capture();
             // 捕获图形数据状态
             state.graphics = GraphicData.Capture();
             
@@ -54,7 +57,9 @@ namespace History
             // 应用角色数据配置
             CharacterData.Apply(characters);
             // 应用音频数据配置
-            AudioData.Apply(audio);
+            AudioTrackData.Apply(audio);
+            // 应用音效数据配置
+            AudioSFXData.Apply(sfx);
             // 应用图形数据配置
             GraphicData.Apply(graphics);
         }
