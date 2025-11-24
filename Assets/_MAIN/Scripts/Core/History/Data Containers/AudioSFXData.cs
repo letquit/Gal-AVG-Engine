@@ -35,12 +35,13 @@ namespace History
                 AudioSFXData data = new AudioSFXData();
                 data.volume = sound.volume;
                 data.pitch = sound.pitch;
-                data.filePath = sound.clip.name;
-
-                // 从游戏对象名称中提取资源路径
-                string resourcesPath = sound.gameObject.name.Split(AudioManager.SFX_NAME_FORMAT_CONTAINERS)[1];
                 
+                // 从游戏对象名称中提取资源路径（格式：SFX - [路径]）
+                string resourcesPath = sound.gameObject.name.Split(AudioManager.SFX_NAME_FORMAT_CONTAINERS)[1];
                 data.filePath = resourcesPath;
+                
+                //正确设置 fileName（用于后续检查音效是否在播放）
+                data.fileName = sound.clip.name;
                 
                 audioList.Add(data);
             }
@@ -59,16 +60,33 @@ namespace History
             // 播放需要恢复的音效
             foreach (var sound in sfx)
             {
+                // 构造完整的音效名称用于检查（格式："SFX - [filePath]"）
+                string effectName = string.Format(AudioManager.SFX_NAME_FORMAT, sound.filePath);
+                
                 if (!AudioManager.instance.IsPlayingSoundEffect(sound.fileName))
-                    AudioManager.instance.PlaySoundEffect(sound.filePath, volume: sound.volume, pitch: sound.pitch,
-                        loop: true);
-                cache.Add(sound.fileName);
+                {
+                    // sound.filePath 已经包含完整路径（例如 "Audio/SFX/ChurchBellsFar"） 直接使用 Resources.Load
+                    AudioClip clip = Resources.Load<AudioClip>(sound.filePath);
+                    
+                    if (clip != null)
+                    {
+                        AudioManager.instance.PlaySoundEffect(clip, volume: sound.volume, pitch: sound.pitch,
+                            loop: true, filePath: sound.filePath);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[AudioSFXData] 无法加载音效资源：{sound.filePath}");
+                    }
+                }
+                
+                // 缓存的是完整的音效名称
+                cache.Add(effectName);
             }
 
             // 停止不需要继续播放的音效
             foreach (var source in AudioManager.instance.allSFX)
             {
-                if (!cache.Contains(source.name))
+                if (!cache.Contains(source.gameObject.name))
                     AudioManager.instance.StopSoundEffect(source.clip);
             }
         }

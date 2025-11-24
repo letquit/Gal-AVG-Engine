@@ -17,7 +17,7 @@ public class AudioManager : MonoBehaviour
     private const string SFX_PARENT_NAME = "SFX";
     
     public static readonly char[] SFX_NAME_FORMAT_CONTAINERS = new char[] { '[', ']' };
-    private static string SFX_NAME_FORMAT = $"SFX - {SFX_NAME_FORMAT_CONTAINERS[0]}" + "{0}" + $"{SFX_NAME_FORMAT_CONTAINERS[1]}";
+    public static string SFX_NAME_FORMAT = $"SFX - {SFX_NAME_FORMAT_CONTAINERS[0]}" + "{0}" + $"{SFX_NAME_FORMAT_CONTAINERS[1]}";
     
     public const float TRACK_TRANSITION_SPEED = 1f;
     public static AudioManager instance { get; private set; }
@@ -82,7 +82,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // 检查是否已存在实例，确保单例模式
         if (instance == null)
         {
             transform.SetParent(null);

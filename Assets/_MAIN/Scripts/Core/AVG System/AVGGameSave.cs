@@ -102,12 +102,12 @@ namespace ADVENTUREGAME
             // 从文件加载游戏存档对象
             AVGGameSave save = FileManager.Load<AVGGameSave>(filePath, ENCRYPT);
             
-            // 设置当前激活的存档文件
-            activeFile = save;
-            
-            // 根据参数决定是否立即激活存档
+            // 只有在需要激活时才设置 activeFile 这样在预览存档列表时不会污染 activeFile
             if (activateOnLoad)
+            {
+                activeFile = save;
                 save.Activate();
+            }
             
             return save;
         }

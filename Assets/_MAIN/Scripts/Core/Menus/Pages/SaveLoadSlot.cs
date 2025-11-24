@@ -111,11 +111,15 @@ public class SaveLoadSlot : MonoBehaviour
     /// </summary>
     public void Load()
     {
-        // 加载指定路径的存档文件
+        // 使用 activateOnLoad = false 先加载存档，然后手动处理
         AVGGameSave file = AVGGameSave.Load(filePath, false);
+    
+        // 手动设置 activeFile 和激活
+        AVGGameSave.activeFile = file;
+    
         // 关闭存档加载菜单界面
         SaveAndLoadMenu.Instance.Close(closeAllMenus: true);
-        
+    
         // 根据当前场景决定加载方式
         if (SceneManager.GetActiveScene().name == MainMenu.MAIN_MENU_SCENE)
         {
