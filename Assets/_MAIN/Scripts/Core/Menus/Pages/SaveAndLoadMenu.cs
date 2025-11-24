@@ -17,10 +17,6 @@ public class SaveAndLoadMenu : MenuPage
     /// 最大存档文件数量常量
     /// </summary>
     public const int MAX_FILES = 99;
-    /// <summary>
-    /// 存档文件存储路径
-    /// </summary>
-    private string savePath = FilePaths.gameSaves;
     
     /// <summary>
     /// 当前显示的页面编号

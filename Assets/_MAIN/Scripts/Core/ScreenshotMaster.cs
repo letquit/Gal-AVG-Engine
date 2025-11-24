@@ -94,6 +94,8 @@ public class ScreenshotMaster : MonoBehaviour
         if (!filePath.Contains('.'))
             filePath += extension;
         
+        FileManager.TryCreateDirectoryFromPath(filePath);
+        
         // 将字节数据写入文件
         File.WriteAllBytes(filePath, bytes);
     }
