@@ -34,6 +34,11 @@ namespace History
         /// 导航历史记录管理器
         /// </summary>
         private HistoryNavigation navigation;
+
+        /// <summary>
+        /// 获取当前是否正在查看历史记录的状态
+        /// </summary>
+        public bool isViewingHistory => navigation.isViewingHistory;
         
         /// <summary>
         /// 获取历史日志管理器实例

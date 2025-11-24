@@ -1,5 +1,6 @@
 using System.IO;
 using ADVENTUREGAME;
+using History;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -138,11 +139,22 @@ public class SaveLoadSlot : MonoBehaviour
     /// </summary>
     public void Save()
     {
+        // 检查是否正在查看历史记录，如果是则不允许保存
+        if (HistoryManager.instance.isViewingHistory)
+        {
+            UIConfirmationMenu.instance.Show("You cannot save while viewing history.",
+                new UIConfirmationMenu.ConfirmationButtopn("Okay", null));
+            return;
+        }
+        
+        // 获取当前活动的存档文件并设置槽位编号
         var activeSave = AVGGameSave.activeFile;
         activeSave.slotNumber = fileNumber;
         
+        // 执行存档操作
         activeSave.Save();
         
+        // 更新界面显示信息
         PopulateDetailsFromFile(SaveAndLoadMenu.Instance.menuFunction, activeSave);
     }
 }
