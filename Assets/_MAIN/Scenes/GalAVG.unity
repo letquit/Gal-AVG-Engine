@@ -22620,6 +22620,7 @@ MonoBehaviour:
       speakerScale: 0
     characters: []
     audio: []
+    sfx: []
     graphics: []
 --- !u!114 &1468261270
 MonoBehaviour:
@@ -22650,6 +22651,7 @@ MonoBehaviour:
         speakerScale: 0
       characters: []
       audio: []
+      sfx: []
       graphics: []
     historyLogs: []
     variables: []
@@ -27348,6 +27350,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1468261260}
+  - {fileID: 2011957912}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1747042079
@@ -30623,6 +30626,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2003957290}
   m_CullTransparentMesh: 1
+--- !u!1 &2011957909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2011957912}
+  - component: {fileID: 2011957911}
+  - component: {fileID: 2011957910}
+  m_Layer: 0
+  m_Name: Testing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &2011957910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011957909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe6c677b4ffbb4440bb8ba75cf4871e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2011957911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011957909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10159639f908420468377857af63f379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  file: {fileID: 4900000, guid: cab4098460a841b183341c7896b15222, type: 3}
+--- !u!4 &2011957912
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011957909}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1740762477}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2015209296
 GameObject:
   m_ObjectHideFlags: 0

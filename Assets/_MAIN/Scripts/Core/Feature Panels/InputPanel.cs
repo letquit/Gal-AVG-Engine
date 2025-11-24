@@ -87,9 +87,19 @@ public class InputPanel : MonoBehaviour
         // 检查输入是否为空，如果为空则不处理
         if (inputField.text == string.Empty)
             return;
-        
-        lastInput = inputField.text;
-        Hide();
+
+        string input = inputField.text;
+        if (CensorManager.Censor(ref input))
+        {
+            UIConfirmationMenu.instance.Show(
+                "You're input was not accepted due to a profanity filter! Please Try Again!",
+                new UIConfirmationMenu.ConfirmationButtopn(title: "Okay", () => inputField.text = ""));
+        }
+        else
+        {
+            lastInput = inputField.text;
+            Hide();
+        }
     }
 
     /// <summary>
